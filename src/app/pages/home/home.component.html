@@ -1,1 +1,412 @@
-<p>home.component works!</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="home.component.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    integrity="sha512-1ycn6IcaQQ40y8eX1nE8y9XfF26L8E7I5T5g2A34L5F8F7n3t2s1p9P6O5L0P5U3R2R5I9p5U8W1l1+8vI8Q==" crossorigin="anonymous"
+    referrerpolicy="no-referrer" />
+    <title>Home</title>
+</head>
+<body>
+    <header class="header">
+    <nav class="nav-container">
+        <a href="#" class="logo">GastroGuide</a>
+
+        <div class="nav-right">
+            <ul class="nav-links">
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#about-us">About Us</a></li>
+            </ul>
+
+            <div class="auth-buttons">
+                <a href="#login" class="btn btn-login">Login</a>
+                <a href="#register" class="btn btn-register">Register</a>
+            </div>
+        </div>
+    </nav>
+    </header>
+
+    <main class="hero-section">
+    <div class="hero-container">
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.
+            3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Chef cocinando" class="hero-img">
+            <div class="image-overlay"></div>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    Domina la <span class="highlight">Cocina</span>
+                    <br>con los Mejores Cursos en GastroGuide
+                </h1>
+
+                <p class="hero-description">
+                    Aprende técnicas culinarias profesionales desde casa.
+                    Más de 500 cursos especializados te esperan para convertirte
+                    en el chef que siempre soñaste ser.
+                </p>
+
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">15,000+</span>
+                        <span class="stat-label">Estudiantes</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Cursos</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Chefs Expertos</span>
+                    </div>
+                </div>
+
+                <div class="hero-buttons">
+                    <a href="#cursos" class="btn btn-primary">Explorar Cursos</a>
+                    <a href="#demo" class="btn btn-secondary">Ver Demo Gratuita</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+    <section class="methodology-section">
+    <div class="methodology-container">
+        <!-- Header de la sección -->
+        <div class="section-header">
+            <h2 class="section-title">Nuestra <span class="highlight">Metodología</span></h2>
+            <p class="section-subtitle">
+                Aprendizaje práctico diseñado por chefs profesionales para llevarte
+                desde principiante hasta experto culinario
+            </p>
+        </div>
+
+        <!-- Cards de metodología -->
+        <div class="methodology-cards">
+            <div class="method-card">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Chef enseñando técnicas">
+                    <div class="card-overlay">
+                        <div class="card-description">
+                            <h3>Aprende con Expertos</h3>
+                            <p>Nuestros chefs certificados con años de experiencia te guían paso a paso en cada técnica culinaria.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Instructores Profesionales</h4>
+                    <span class="card-number">01</span>
+                </div>
+            </div>
+
+            <div class="method-card">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1556909114-799105561566?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Práctica en cocina">
+                    <div class="card-overlay">
+                        <div class="card-description">
+                            <h3>Práctica Constante</h3>
+                            <p>Cada lección incluye ejercicios prácticos que puedes realizar en tu propia cocina con ingredientes accesibles.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Aprendizaje Práctico</h4>
+                    <span class="card-number">02</span>
+                </div>
+            </div>
+
+            <div class="method-card">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Comunidad de estudiantes">
+                    <div class="card-overlay">
+                        <div class="card-description">
+                            <h3>Comunidad Activa</h3>
+                            <p>Comparte tus creaciones, recibe feedback y conecta con otros estudiantes apasionados por la cocina.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Red de Estudiantes</h4>
+                    <span class="card-number">03</span>
+                </div>
+            </div>
+
+            <div class="method-card">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1556909114-45d1a3e2d5eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Certificación culinaria">
+                    <div class="card-overlay">
+                        <div class="card-description">
+                            <h3>Certificación Oficial</h3>
+                            <p>Al completar cada curso recibes un certificado que avala tus nuevas habilidades culinarias profesionales.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Certificación Profesional</h4>
+                    <span class="card-number">04</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Elemento llamativo adicional -->
+        <div class="methodology-features">
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <div class="icon-circle">
+                            <span>🎥</span>
+                        </div>
+                    </div>
+                    <h4>Videos HD</h4>
+                    <p>Contenido en alta definición para ver cada detalle</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <div class="icon-circle">
+                            <span>📱</span>
+                        </div>
+                    </div>
+                    <h4>Acceso Móvil</h4>
+                    <p>Aprende desde cualquier dispositivo, en cualquier momento</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <div class="icon-circle">
+                            <span>⏰</span>
+                        </div>
+                    </div>
+                    <h4>A tu Ritmo</h4>
+                    <p>Sin horarios fijos, avanza cuando puedas</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <div class="icon-circle">
+                            <span>🏆</span>
+                        </div>
+                    </div>
+                    <h4>Soporte 24/7</h4>
+                    <p>Ayuda disponible siempre que la necesites</p>
+                </div>
+            </div>
+
+            <div class="cta-banner">
+                <div class="cta-content">
+                    <h3>¿Listo para comenzar tu aventura culinaria?</h3>
+                    <p>Únete a miles de estudiantes que ya están cocinando como profesionales</p>
+                    <a href="#cursos" class="cta-button">Comenzar Ahora</a>
+                </div>
+                <div class="cta-decoration">
+                    <div class="floating-element element-1">🍳</div>
+                    <div class="floating-element element-2">👨‍🍳</div>
+                    <div class="floating-element element-3">🥘</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <section id="blog" class="blog-section">
+    <div class="blog-container">
+        <h2 class="main-title">Explora las Últimas <span class="highlight">Noticias y Consejos</span></h2>
+        <div class="blog-cards-container">
+            <div class="blog-card">
+                <img src="https://via.placeholder.com/400x250.png?text=Imagen+Blog+1" alt="Curso de Pastelería Francesa">
+                <div class="card-content">
+                    <h3>Secretos de la Pastelería Francesa</h3>
+                    <p>Descubre las técnicas y recetas clásicas para dominar los postres más exquisitos.</p>
+                    <a href="#" class="read-more">Leer más</a>
+                </div>
+            </div>
+            <div class="blog-card">
+                <img src="https://via.placeholder.com/400x250.png?text=Imagen+Blog+2" alt="Cocina Saludable">
+                <div class="card-content">
+                    <h3>Guía para una Cocina Saludable</h3>
+                    <p>Aprende a preparar platos deliciosos y nutritivos sin sacrificar el sabor.</p>
+                    <a href="#" class="read-more">Leer más</a>
+                </div>
+            </div>
+            <div class="blog-card">
+                <img src="https://via.placeholder.com/400x250.png?text=Imagen+Blog+3" alt="Tendencias Culinarias">
+                <div class="card-content">
+                    <h3>Las 5 Tendencias Culinarias de 2024</h3>
+                    <p>Mantente al día con lo último en el mundo gastronómico: desde la fermentación hasta la cocina de autor.</p>
+                    <a href="#" class="read-more">Leer más</a>
+                </div>
+            </div>
+        </div>
+        <div class="blog-info-text">
+            <h3 class="main-title">¡Sumérgete en el Mundo de la <span>Gastronomía</span>!</h3>
+            <p class="description-text">
+                En **GastroGuide**, nuestro blog no es solo un lugar para leer, es un espacio para inspirarte, aprender y conectar con la pasión por la cocina. Aquí compartimos artículos detallados sobre las últimas **tendencias culinarias**, te damos acceso a entrevistas exclusivas con nuestros chefs expertos y te presentamos guías prácticas para mejorar tus habilidades en la cocina, sin importar si eres un principiante o un profesional.
+            </p>
+            <p class="description-text">
+                Creemos que la cocina es un arte que se nutre del conocimiento y la práctica constante. Por eso, nuestros artículos están diseñados para complementar nuestros cursos, ofreciendo consejos sobre la selección de ingredientes, técnicas de preparación avanzadas y la historia detrás de los platos más icónicos.
+            </p>
+        </div>
+    </div>
+</section>
+
+    <section id="about-us" class="about-us-section">
+    <div class="about-us-container">
+        <h2 class="main-title">Nuestra Historia<span class="highlight"> y Visión</span></h2>
+        <p class="description-text">
+            En GastroGuide, creemos que la pasión por la cocina es un viaje que merece ser compartido. Fundamos esta plataforma con la misión de democratizar el conocimiento culinario de alta calidad, haciendo que las técnicas de chefs profesionales sean accesibles para todos, sin importar dónde se encuentren.
+        </p>
+
+        <div class="about-us-content">
+            <div class="about-info-block">
+                <h3>Nuestra Misión</h3>
+                <p>
+                    Ofrecer una experiencia de aprendizaje culinario interactiva y de primera clase, conectando a estudiantes de todo el mundo con los chefs más talentosos. Nos esforzamos por inspirar a cada persona a explorar su creatividad en la cocina y a dominar nuevas habilidades con confianza.
+                </p>
+            </div>
+            <div class="about-info-block">
+                <h3>Nuestros Valores</h3>
+                <ul>
+                    <li>**Pasión:** Nos mueve un amor profundo por la gastronomía en todas sus formas.</li>
+                    <li>**Calidad:** Solo ofrecemos cursos diseñados por expertos y con los más altos estándares.</li>
+                    <li>**Innovación:** Constantemente buscamos nuevas formas de mejorar la experiencia de aprendizaje.</li>
+                    <li>**Comunidad:** Fomentamos un espacio donde los amantes de la cocina pueden conectar y crecer juntos.</li>
+                </ul>
+            </div>
+            <div class="about-info-block">
+                <h3>¿Por Qué Elegirnos?</h3>
+                <p>
+                    Más de 15,000 estudiantes ya han transformado su cocina con nuestros cursos. Nuestro enfoque práctico, el acceso a más de 500 cursos especializados y el soporte de chefs expertos nos distinguen. En GastroGuide, no solo aprendes a cocinar, te conviertes en el chef que siempre soñaste ser.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="value-proposition-section">
+    <div class="value-proposition-container">
+        <h2 class="main-title">Aprende y Conecta en la Cocina con <span>GastroGuide</span></h2>
+        <p class="description-text">
+            [cite_start]GastroGuide es un proyecto fullstack que funciona como una plataforma integral de aprendizaje culinario, diseñada con Angular en el frontend y Spring Boot en el backend[cite: 7]. [cite_start]Combina elementos de entretenimiento con una economía de creadores, permitiendo a los usuarios consumir contenido gratuito en un feed social y acceder a cursos especializados[cite: 8].
+        </p>
+        <p class="description-text">
+            [cite_start]Nuestro objetivo principal es democratizar el aprendizaje culinario, haciendo que cualquier persona pueda aprender a cocinar de forma entretenida, mientras empoderamos a expertos para que moneticen sus conocimientos y fomenten una comunidad educativa sostenible[cite: 9].
+        </p>
+    </div>
+</section>
+
+<section class="for-who-section">
+    <div class="for-who-container">
+        <h2 class="main-title">GastroGuide, para <span>Estudiantes y Creadores</span></h2>
+        <div class="user-roles-container">
+            <div class="user-role-card student-card">
+                <i class="fas fa-user-graduate"></i> <h3>Para Estudiantes</h3>
+                <p>
+                    Si eres un aficionado a la cocina o un principiante, esta es tu plataforma. [cite_start]Encuentra cursos estructurados por niveles y un feed infinito de videos cortos para aprender a tu ritmo[cite: 26, 44].
+                </p>
+                <ul>
+                    [cite_start]<li><i class="fas fa-check-circle"></i> Feed infinito de recetas </li>
+                    [cite_start]<li><i class="fas fa-check-circle"></i> Biblioteca de cursos por niveles </li>
+                    [cite_start]<li><i class="fas fa-check-circle"></i> Modo cocina con comandos de voz</li>
+                    [cite_start]<li><i class="fas fa-check-circle"></i> Listas de compras automáticas </li>
+                </ul>
+            </div>
+            <div class="user-role-card creator-card">
+                <i class="fas fa-chalkboard-teacher"></i> <h3>Para Creadores</h3>
+                <p>
+                    Si eres un experto culinario, monetiza tu conocimiento y llega a una audiencia global. [cite_start]Te ofrecemos las herramientas para subir videos, crear cursos y gestionar tu audiencia[cite: 28, 52].
+                </p>
+                <ul>
+                    [cite_start]<li><i class="fas fa-check-circle"></i> Herramientas de creación de cursos</li>
+                    [cite_start]<li><i class="fas fa-check-circle"></i> Dashboard de analytics </li>
+                    [cite_start]<li><i class="fas fa-check-circle"></i> Sistema de monetización </li>
+                    [cite_start]<li><i class="fas fa-check-circle"></i> Comunidad de seguidores </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="unique-features-section">
+    <div class="unique-features-container">
+        <h2 class="main-title">Características que nos Hacen <span>Únicos</span></h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <i class="fas fa-robot"></i> <h4>Algoritmo Culinario</h4>
+                [cite_start]<p>Recomendaciones personalizadas basadas en tu perfil, habilidades y gustos, utilizando un servicio de machine learning[cite: 58].</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-camera"></i> <h4>Modo Ingredientes</h4>
+                [cite_start]<p>Escanea tu despensa con la cámara para detectar los ingredientes disponibles y sugerirte recetas instantáneamente[cite: 59].</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-trophy"></i> <h4>Challenges Comunitarios</h4>
+                [cite_start]<p>Participa en retos semanales con leaderboards y envía tus creaciones para ganar reconocimientos[cite: 60].</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-globe-americas"></i> <h4>Red Social Gastronómica</h4>
+                [cite_start]<p>Un feed para compartir tus creaciones y reaccionar a las de otros usuarios en una comunidad de amantes de la cocina[cite: 62].</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+  <footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-column about-us">
+            <a href="#" class="footer-logo">GastroGuide</a>
+            <p class="footer-description">
+                Tu plataforma para dominar el arte culinario. Aprende de chefs expertos,
+                explora nuevas recetas y conecta con una comunidad de apasionados por la cocina.
+            </p>
+        </div>
+
+        <div class="footer-column links">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#cursos">Cursos</a></li>
+                <li><a href="#about-us">Acerca de Nosotros</a></li>
+                <li><a href="#contact">Contacto</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column support">
+            <h3>Soporte</h3>
+            <ul>
+                <li><a href="#faq">Preguntas Frecuentes</a></li>
+                <li><a href="#privacy">Política de Privacidad</a></li>
+                <li><a href="#terms">Términos de Servicio</a></li>
+            </ul>
+        </div>
+
+        <div id="contact" class="footer-column social">
+            <h3>Síguenos</h3>
+            <div class="social-icons">
+                <a href="#" aria-label="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" aria-label="Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" aria-label="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2025 GastroGuide. Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+</body>
+</html>
