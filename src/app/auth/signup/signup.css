@@ -1,0 +1,251 @@
+:host {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 100vh;
+    background: #ffffff00;
+    /* fondo transparente para ver las ondas */
+    font-family: -apple-system, BlinkMacSystemFont, "San Francisco", Helvetica, Arial, sans-serif;
+    font-weight: 300;
+}
+
+h4 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #000;
+    opacity: .9;
+}
+
+h4 span {
+    color: #000;
+    font-weight: 700;
+}
+
+label {
+    font-size: 12.5px;
+    color: rgba(0, 0, 0, 0.8);
+    font-weight: 400;
+}
+
+.session {
+    display: flex;
+    background: rgba(255, 255, 255, 0.18);
+    /* efecto cristal */
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Panel izquierdo con bolas naranjas */
+.left {
+    position: relative;
+    inline-size: 220px;
+    background: rgba(255, 255, 255, 0.12);
+    border-start-start-radius: 16px;
+    border-end-start-radius: 16px;
+    overflow: hidden;
+}
+
+/* Dos bolas grandes con más movimiento */
+.left::before,
+.left::after {
+    content: '';
+    position: absolute;
+    inline-size: 450px;
+    block-size: 400px;
+    border-radius: 50%;
+    filter: blur(35px) brightness(1.2);
+    opacity: 0.75;
+    z-index: 0;
+}
+
+.left::before {
+    top: -220px;
+    left: -220px;
+    background: radial-gradient(circle at center, #FB8C00 0%, #EF6C00 100%);
+    animation: waves 6s infinite ease-in-out;
+}
+
+.left::after {
+    bottom: -220px;
+    right: -220px;
+    background: radial-gradient(circle at center, #F57C00 0%, #EF6C00 100%);
+    animation: waves2 7s infinite ease-in-out alternate;
+}
+
+/* Logo sobre las bolas */
+.left svg {
+    position: relative;
+    z-index: 1;
+    block-size: 40px;
+    inline-size: auto;
+    margin: 20px;
+    fill: #ffffff;
+}
+
+form {
+    padding: 40px 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    inline-size: 320px;
+    background: transparent;
+}
+
+form p {
+    line-height: 155%;
+    font-size: 15px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 400;
+    max-inline-size: 240px;
+    margin: 0 0 40px 0;
+    word-wrap: break-word;
+}
+
+a.discrete {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+    margin-inline-start: auto;
+    margin-block-start: 40px;
+    font-weight: 300;
+    text-decoration: none;
+    border-block-end: 1px solid transparent;
+    transition: all .3s ease;
+}
+
+a.discrete:hover {
+    border-block-end: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+/* Botón principal */
+button {
+    -webkit-appearance: none;
+    min-inline-size: 100px;
+    border-radius: 24px;
+    text-align: center;
+    padding: 15px 40px;
+    margin-block-start: 5px;
+    margin-inline-start: auto;
+    background-color: #EF6C00;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(239, 108, 0, .4);
+    border: none;
+    transition: all .3s ease;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    background-color: #F57C00;
+    box-shadow: 0 4px 12px rgba(239, 108, 0, .6);
+}
+
+button:active {
+    transform: scale(.98);
+}
+
+input {
+    font-size: 16px;
+    padding: 20px 0;
+    block-size: 56px;
+    border: none;
+    border-block-end: 1px solid rgba(0, 0, 0, 0.3);
+    background: transparent;
+    inline-size: 280px;
+    box-sizing: border-box;
+    transition: all .3s linear;
+    color: #000;
+    font-weight: 400;
+}
+
+input:focus {
+    border-block-end: 1px solid #FB8C00;
+    outline: 0;
+}
+
+.floating-label {
+    position: relative;
+    margin-block-end: 10px;
+    inline-size: 100%;
+}
+
+.floating-label label {
+    position: absolute;
+    inset-block-start: calc(50% - 7px);
+    inset-inline-start: 0;
+    opacity: 0;
+    transition: all .3s ease;
+    padding-inline-start: 44px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.floating-label input {
+    inline-size: calc(100% - 44px);
+    margin-inline-start: auto;
+    display: flex;
+}
+
+.floating-label .icon {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    block-size: 56px;
+    inline-size: 44px;
+    display: flex;
+}
+
+.floating-label .icon svg {
+    block-size: 30px;
+    inline-size: 30px;
+    margin: auto;
+    opacity: .25;
+    transition: all .3s ease;
+    fill: #000;
+}
+
+.floating-label input:not(:placeholder-shown) {
+    padding: 28px 0 12px 0;
+}
+
+.floating-label input:not(:placeholder-shown)+label {
+    transform: translateY(-10px);
+    opacity: .7;
+}
+
+.floating-label input:valid:not(:placeholder-shown)+label+.icon svg {
+    opacity: 1;
+    fill: #EF6C00;
+}
+
+/* Animaciones de las ondas */
+@keyframes waves {
+    0% {
+        transform: rotate(0deg) translate(0, 0);
+    }
+
+    50% {
+        transform: rotate(180deg) translate(20px, -20px);
+    }
+
+    100% {
+        transform: rotate(360deg) translate(0, 0);
+    }
+}
+
+@keyframes waves2 {
+    0% {
+        transform: rotate(0deg) translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: rotate(-180deg) translate(-25px, 25px) scale(1.1);
+    }
+
+    100% {
+        transform: rotate(-360deg) translate(0, 0) scale(1);
+    }
+}
