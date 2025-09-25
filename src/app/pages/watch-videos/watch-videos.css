@@ -1,0 +1,94 @@
+.videos-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 20px;
+  background: #000; /* Fondo oscuro estilo TikTok */
+  min-height: 100vh;
+}
+
+.video-card {
+  position: relative;
+  width: 320px;
+  height: 560px;
+  background: #111;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 1s ease;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-info {
+  position: absolute;
+  bottom: 70px;
+  left: 15px;
+  color: #fff;
+  text-align: left;
+  animation: slideUp 1s ease;
+}
+
+.video-info h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #fcae1e; /* color secundario */
+}
+
+.video-info p {
+  margin: 5px 0 0;
+  font-size: 0.9rem;
+}
+
+.video-actions {
+  position: absolute;
+  bottom: 100px;
+  right: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.video-actions button {
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  font-size: 1.5rem;
+  color: #fff;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.video-actions button:hover {
+  transform: scale(1.2);
+  background: #ef6c00;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
