@@ -458,3 +458,104 @@
         font-size: 1rem;
     }
 }
+
+/* ============================================
+   SECCIÓN DEL EQUIPO
+   ============================================ */
+
+.team-section {
+    margin: 6rem 0;
+    text-align: center;
+
+}
+
+.team-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 4rem;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+}
+
+.team-member {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-light);
+    backdrop-filter: blur(15px);
+    transition: all 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.team-member:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.member-image {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 2rem;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid var(--main-color);
+    box-shadow: 0 15px 30px rgba(239, 108, 0, 0.3);
+}
+
+.member-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.member-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(239, 108, 0, 0.95), rgba(245, 124, 0, 0.9));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.4s ease;
+    padding: 1.5rem;
+}
+
+.member-image:hover .member-overlay {
+    opacity: 1;
+}
+
+.member-image:hover img {
+    transform: scale(1.15);
+}
+
+.member-overlay p {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.team-member h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+}
+
+.member-role {
+    color: var(--main-color);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+

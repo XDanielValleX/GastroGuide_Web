@@ -28,5 +28,4 @@ export class Profilecomponent {
       reader.readAsDataURL(file);
     }
   }
-
 }
