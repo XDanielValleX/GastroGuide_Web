@@ -1,0 +1,57 @@
+<div class="perfil-container">
+  <!-- Lado izquierdo -->
+  <div class="perfil-card">
+    <div class="perfil-avatar">
+      <img [src]="fotoPerfil" alt="Foto de perfil" id="preview">
+    </div>
+
+    <button class="editar-btn" (click)="abrirSelector()">Editar Perfil</button>
+    <input
+      type="file"
+      accept="image/*"
+      id="fileInput"
+      (change)="cambiarImagen($event)"
+      hidden
+    >
+
+    <h2 class="perfil-nombre">Juan Pérez</h2>
+    <p class="perfil-rol">Estudiante de Gastronomía</p>
+  </div>
+
+
+
+  <!-- Lado derecho -->
+  <div class="perfil-detalles">
+    <div class="perfil-stats">
+      <div class="stat">
+        <h3>12</h3>
+        <p>Cursos</p>
+      </div>
+      <div class="stat">
+        <h3>45</h3>
+        <p>Videos vistos</p>
+      </div>
+      <div class="stat">
+        <h3>8</h3>
+        <p>Insignias</p>
+      </div>
+    </div>
+
+    <div class="perfil-bio card">
+      <h3>Sobre mí</h3>
+      <p>
+        Amante de la cocina internacional 🌎✨. Siempre buscando nuevas técnicas
+        y sabores para mejorar mis habilidades culinarias.
+      </p>
+    </div>
+
+    <div class="perfil-logros card">
+      <h3>Últimos logros</h3>
+      <ul>
+        <li>🍝 Certificado en Cocina Italiana</li>
+        <li>🍰 Curso de Postres completado en 1 semana</li>
+        <li>🏅 Insignia de Participación destacada</li>
+      </ul>
+    </div>
+  </div>
+</div>
