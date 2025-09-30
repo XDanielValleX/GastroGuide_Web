@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LoginComponent } from './login.component';
+import { PasswordCHG } from './password-chg';
 
-describe('LoginComponent', () => {
-  let component: LoginComponent;
-  let fixture: ComponentFixture<LoginComponent>;
+describe('PasswordCHG', () => {
+  let component: PasswordCHG;
+  let fixture: ComponentFixture<PasswordCHG>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LoginComponent]
+      imports: [PasswordCHG]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LoginComponent);
+    fixture = TestBed.createComponent(PasswordCHG);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
