@@ -1,0 +1,35 @@
+<div class="cursos-container">
+  <div class="cursos-header">
+    <h2>👨‍🍳 Mis Cursos</h2>
+    <div class="cursos-actions">
+      <input type="text" placeholder="Buscar curso..." />
+      <select>
+        <option value="">Todos</option>
+        <option value="en-progreso">En progreso</option>
+        <option value="completado">Completado</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="cursos-grid">
+    <div class="curso-card" *ngFor="let curso of cursos">
+      <img [src]="curso.imagen" [alt]="curso.titulo" />
+      <div class="curso-info">
+        <h3>{{ curso.titulo }}</h3>
+        <p>{{ curso.descripcion }}</p>
+
+        <div class="curso-meta">
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="curso.progreso"></div>
+          </div>
+          <span>{{ curso.progreso }}%</span>
+        </div>
+
+        <div class="curso-footer">
+          <span class="rating">⭐ {{ curso.rating }}</span>
+          <button class="btn-continuar">Continuar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+<div class="dashboard-container">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h2>GastroGuide<span>+</span></h2>
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/home2/perfil" routerLinkActive="active">👤 Perfil</a>
+      <a routerLink="/home2/ver-cursos" routerLinkActive="active">📚 Ver Mis Cursos</a>
+      <a routerLink="/home2/recetas" routerLinkActive="active">🍲 Ver Recetas</a>
+      <a routerLink="/home2/comprar" routerLinkActive="active">🛒 Comprar Cursos</a>
+      <a routerLink="/home2/crear" routerLinkActive="active">✏️ Crear Recetas</a>
+      <a routerLink="/home2/carrito" routerLinkActive="active">🧺 Carrito</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <section class="main-section">
+    <header class="topbar">
+      <input
+        type="text"
+        placeholder="Buscar cursos o recetas..."
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+      />
+      <button (click)="onSearch()">🔍</button>
+    </header>
+
+    <div class="content">
+      <h1 class="title">Cursos Destacados y Populares</h1>
+
+      <div class="featured-grid">
+        <div class="course-card" *ngFor="let i of [1,2,3,4,5,6]">
+          <img src="https://images.unsplash.com/photo-1604909053190-3e6a2ce9b4de?auto=format&fit=crop&w=800&q=80" alt="Curso" />
+          <div class="info">
+            <h3>Curso Especial {{ i }}</h3>
+            <p>Aprende nuevas técnicas con nuestros chefs profesionales.</p>
+            <button>Ver Curso</button>
+          </div>
+        </div>
+      </div>
+
+      <router-outlet></router-outlet>
+    </div>
+  </section>
+</div>
