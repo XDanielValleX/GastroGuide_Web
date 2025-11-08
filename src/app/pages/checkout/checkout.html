@@ -1,0 +1,20 @@
+<div class="checkout" *ngIf="curso; else notfound">
+  <h2>Confirmar compra</h2>
+  <div class="card">
+    <img [src]="curso!.imagen" alt="{{curso!.titulo}}"/>
+    <div class="info">
+      <h3>{{curso!.titulo}}</h3>
+      <p>{{curso!.descripcion}}</p>
+      <p class="price">Precio: {{curso!.precio | currency:'USD'}}</p>
+      <div class="actions">
+        <button (click)="confirmarCompra()" class="confirm">Confirmar compra</button>
+        <button (click)="cancelar()" class="cancel">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #notfound>
+  <p>Curso no encontrado.</p>
+  <a routerLink="/comprar-cursos">Volver a comprar</a>
+</ng-template>

@@ -4,3 +4,20 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+:root{
+    --brand-orange: #f4951f; /* primary warm */
+    --brand-dark: #1d150b;   /* dark brown for text */
+    --brand-green: #006837;  /* accent green */
+    --brand-cta: #fe3e00;    /* bright CTA */
+    --bg-soft: #fdecea;      /* soft background tint (subtle) */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    color: var(--brand-dark);
+    background: #fff;
+}
+
+a { color: inherit; text-decoration: none }
+

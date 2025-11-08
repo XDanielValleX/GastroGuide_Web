@@ -1,0 +1,5 @@
+<div class="toast-wrap" *ngIf="message">
+  <div class="toast" [class.success]="message.type==='success'" [class.error]="message.type==='error'">
+    {{ message.text }}
+  </div>
+</div>

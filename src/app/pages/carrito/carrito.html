@@ -1,0 +1,21 @@
+<div class="carrito">
+  <h2>Carrito</h2>
+  <div *ngIf="items && items.length; else empty">
+    <div *ngFor="let i of items" class="item">
+      <img [src]="i.imagen" alt="{{i.titulo}}" />
+      <div>
+        <h4>{{i.titulo}}</h4>
+        <p>{{i.precio | currency:'USD'}}</p>
+      </div>
+    </div>
+    <div class="cart-summary">
+      <div class="total">Total: {{ total | currency:'USD' }}</div>
+      <div class="acciones">
+        <button (click)="comprar()">Comprar</button>
+      </div>
+    </div>
+  </div>
+  <ng-template #empty>
+    <p>No hay cursos en el carrito.</p>
+  </ng-template>
+</div>

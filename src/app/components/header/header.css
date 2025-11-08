@@ -89,6 +89,8 @@
     gap: 1rem;
 }
 
+.badge { background: var(--brand-cta); color:#fff; padding:0.08rem 0.45rem; border-radius:999px; font-size:0.85rem; margin-left:0.4rem }
+
 .btn {
     padding: 0.75rem 1.5rem;
     border: none;

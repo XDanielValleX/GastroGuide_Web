@@ -1,0 +1,12 @@
+.comprar-cursos { padding: 1rem; }
+.lista { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 1rem; }
+.curso { border: 1px solid rgba(0,0,0,0.06); padding: 0.75rem; display:flex; gap:0.75rem; background: #fff; border-radius:10px }
+.curso img { width: 120px; height: 80px; object-fit: cover; border-radius: 6px; }
+.curso .meta { flex:1 }
+.curso .meta h3 a{ color: var(--brand-dark); font-weight:700 }
+.curso .foot { display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem }
+.precio { font-weight:700; color: var(--brand-cta) }
+.curso button{ background: var(--brand-green); color: #fff; border: none; padding: 0.45rem 0.7rem; border-radius:6px; cursor:pointer }
+.curso button:hover{ filter:brightness(0.95) }
+.curso .actions { display:flex; gap:0.5rem }
+.curso .buy-now { background: var(--brand-cta); padding:0.45rem 0.8rem }

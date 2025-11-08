@@ -1,0 +1,4 @@
+.toast-wrap{ position: fixed; right: 1rem; bottom: 1rem; z-index: 2000 }
+.toast{ background: rgba(0,0,0,0.9); color: #fff; padding: 0.7rem 1rem; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.3) }
+.toast.success{ background: var(--brand-green) }
+.toast.error{ background: #d32f2f }

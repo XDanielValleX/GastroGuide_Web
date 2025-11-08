@@ -2,9 +2,13 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
+import { ToastService } from '../../services/toast.service';
+
 import { RouterModule } from '@angular/router'; // ✅ necesario para routerLink
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-login',
@@ -19,12 +23,15 @@ export class Login {
   loading: boolean = false;
   error: string | null = null;
 
+  constructor(private router: Router, private toast: ToastService) {}
+
   constructor(private router: Router, private http: HttpClient) { }
+ 
 
   // ✅ Métodos para los botones de navegación
   onForgotPassword() {
     this.router.navigate(['/password-fg']);
-  }
+  
 
   onRegister() {
     this.router.navigate(['/signup']);
@@ -35,12 +42,19 @@ export class Login {
     this.router.navigate(['/']);
   }
 
+
+      // Redirigimos a la nueva vista Home2
+      this.router.navigate(['/home2']);
+    } else {
+      this.toast.show('Por favor, completa ambos campos para continuar.', 'error');
+      
   // Maneja el submit del formulario de login
   onSubmit() {
     this.error = null;
     if (!this.email || !this.password) {
       this.error = 'Por favor completa email y password';
       return;
+
     }
 
     this.loading = true;

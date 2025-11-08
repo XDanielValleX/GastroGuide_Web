@@ -1,0 +1,8 @@
+.curso-detalle { padding:1rem; background: linear-gradient(180deg, rgba(254,62,0,0.02), transparent); border-radius:10px }
+.curso-detalle h2{ color: var(--brand-dark); margin-bottom:0.5rem }
+.curso-detalle img { max-width: 100%; height: auto; border-radius:8px; margin:0.5rem 0 }
+.acciones { display:flex; gap:0.5rem }
+.acciones button { padding:0.6rem 0.9rem; border-radius:8px; border:none; cursor:pointer }
+.acciones button:first-child { background: var(--brand-orange); color: white }
+.acciones button:last-child { background: var(--brand-cta); color: white }
+.curso-detalle p{ color: rgba(29,21,11,0.9) }
