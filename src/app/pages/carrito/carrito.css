@@ -1,0 +1,5 @@
+.carrito { padding: 1rem }
+.item { display:flex; gap:0.75rem; align-items:center; margin-bottom:0.75rem; background: #fff; padding:0.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.04) }
+.item img { width:90px; height:60px; object-fit:cover; border-radius:6px }
+.acciones { margin-top: 1rem }
+.acciones button { background: var(--brand-cta); color: #fff; border:none; padding:0.6rem 0.9rem; border-radius:8px; cursor:pointer }

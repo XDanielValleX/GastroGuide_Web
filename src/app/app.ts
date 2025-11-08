@@ -6,15 +6,17 @@ import { filter } from 'rxjs/operators';
 // Importa tus componentes
 import { Footer } from './components/footer/footer';
 import { Header } from './components/header/header';
+import { Toast } from './components/toast/toast';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     CommonModule,     // para *ngIf, ng-template
-    RouterOutlet,     // ✅ necesario para <router-outlet>
-    Header,
-    Footer
+    RouterOutlet,     // ✅ necesario para <router-outlet> 
+  Header,
+  Footer,
+  Toast
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.css']

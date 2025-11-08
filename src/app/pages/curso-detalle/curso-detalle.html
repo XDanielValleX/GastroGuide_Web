@@ -1,0 +1,12 @@
+<div class="curso-detalle" *ngIf="curso">
+  <h2>{{curso.titulo}}</h2>
+  <img [src]="curso.imagen" alt="{{curso.titulo}}" />
+  <p>{{curso.descripcion}}</p>
+  <p><strong>Rating:</strong> {{curso.rating}}</p>
+  <p><strong>Precio:</strong> {{curso.precio | currency:'USD'}}</p>
+  <div class="acciones">
+    <button (click)="agregar()">Agregar al carrito</button>
+    <button (click)="comprarAhora()">Comprar ahora</button>
+  </div>
+</div>
+<div *ngIf="!curso">Curso no encontrado.</div>

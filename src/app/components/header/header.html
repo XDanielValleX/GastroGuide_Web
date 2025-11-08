@@ -1,17 +1,19 @@
 <header class="header">
     <nav class="nav-container">
-        <a href="#" class="logo">GastroGuide</a>
+        <a routerLink="/" class="logo">GastroGuide</a>
 
         <div class="nav-right">
             <ul class="nav-links">
-                <li><a href="/blog">Blog</a></li>
-                <li><a href="/contacto">Contact</a></li>
-                <li><a href="/nosotros">About Us</a></li>
+                <li><a routerLink="/comprar-cursos">Comprar</a></li>
+                <li><a routerLink="/mis-cursos">Mis cursos</a></li>
+                <li><a routerLink="/carrito">Carrito <span class="badge" *ngIf="cartCount">{{cartCount}}</span></a></li>
+                <li><a routerLink="/blog">Blog</a></li>
+                <li><a routerLink="/contacto">Contact</a></li>
             </ul>
 
             <div class="auth-buttons">
-                <a href="/login" class="btn btn-login">Login</a>
-                <a href="/signup" class="btn btn-register">Register</a>
+                <a routerLink="/login" class="btn btn-login">Login</a>
+                <a routerLink="/signup" class="btn btn-register">Register</a>
             </div>
         </div>
     </nav>

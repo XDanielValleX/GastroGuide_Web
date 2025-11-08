@@ -1,0 +1,8 @@
+.checkout { padding:1.2rem }
+.card { display:flex; gap:1rem; background:#fff; padding:1rem; border-radius:10px; align-items:flex-start; border:1px solid rgba(0,0,0,0.04) }
+.card img { width:220px; height:140px; object-fit:cover; border-radius:8px }
+.card .info h3 { color: var(--brand-dark); margin-bottom:0.5rem }
+.price { font-weight:700; color: var(--brand-cta) }
+.actions { margin-top:0.8rem; display:flex; gap:0.6rem }
+.confirm { background: var(--brand-green); color:#fff; border:none; padding:0.6rem 0.9rem; border-radius:8px }
+.cancel { background: transparent; border:1px solid rgba(0,0,0,0.08); padding:0.5rem 0.8rem; border-radius:8px }

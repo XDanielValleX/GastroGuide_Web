@@ -1,0 +1,19 @@
+<div class="comprar-cursos">
+  <h2>Comprar Cursos</h2>
+  <div class="lista">
+    <div class="curso" *ngFor="let c of cursos">
+      <img [src]="c.imagen" alt="{{c.titulo}}" />
+      <div class="meta">
+        <h3><a [routerLink]="['/curso', c.id]">{{c.titulo}}</a></h3>
+        <p>{{c.descripcion}}</p>
+        <div class="foot">
+          <span class="precio">{{c.precio | currency:'USD'}}</span>
+          <div class="actions">
+            <button (click)="agregarAlCarrito(c)">Agregar al carrito</button>
+            <a class="buy-now" [routerLink]="['/checkout', c.id]">Comprar ahora</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

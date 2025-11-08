@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,7 @@ export class Login {
   email = '';
   password = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private toast: ToastService) {}
 
   onLogin() {
     // Simulamos una autenticación temporal
@@ -25,7 +26,7 @@ export class Login {
       // Redirigimos a la nueva vista Home2
       this.router.navigate(['/home2']);
     } else {
-      alert('Por favor, completa ambos campos para continuar.');
+      this.toast.show('Por favor, completa ambos campos para continuar.', 'error');
     }
   }
 }
