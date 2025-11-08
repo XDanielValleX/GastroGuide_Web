@@ -33,7 +33,10 @@ export class AppComponent {
   isIndependentPage(): boolean {
     return (
       this.currentRoute.startsWith('/home2') ||
-      this.currentRoute.startsWith('/login')
+      this.currentRoute.startsWith('/login') ||
+      this.currentRoute.startsWith('/signup') ||
+      this.currentRoute.startsWith('/password-fg') ||
+      this.currentRoute.startsWith('/password-chg')
     );
   }
 }
