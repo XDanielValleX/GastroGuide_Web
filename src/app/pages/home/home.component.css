@@ -1,7 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800;900&display=swap');
 /* #######################seccion del main hero estilos y de mas#########################*/
+:host {
+    /* Palette variables */
+    --color-primary: #FF6028;        /* primario */
+    --color-secondary: #FB8C71;      /* secundario */
+    --color-tertiary: #EDEEE6;       /* terciario */
+    --color-quaternary: #EEE0C6;     /* cuarto */
+    --color-alert: #FF3036;          /* botones y alertas */
+    --color-accent: #F5C500;         /* otras cosas */
+    --color-button-alt: #99AF67;     /* botones */
+
+    /* Helpers */
+    --text-dark: #2c3e50;
+    --text-muted: #5a6c7d;
+    --white: #ffffff;
+
+    /* Typography */
+    --font-headings: 'Poppins', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
+    --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
+    font-family: var(--font-body);
+}
 .hero-section {
     min-height: 80vh;
-    background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 50%, #ffcc02 100%);
+    background: linear-gradient(135deg, var(--color-tertiary) 0%, var(--color-quaternary) 50%, var(--color-accent) 100%);
     position: relative;
     overflow: hidden;
     padding: 4rem 2rem;
@@ -14,8 +35,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 30% 20%, rgba(239, 108, 0, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(251, 188, 0, 0.1) 0%, transparent 50%);
+    background: radial-gradient(circle at 30% 20%, rgba(255, 96, 40, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(245, 197, 0, 0.1) 0%, transparent 50%);
     pointer-events: none;
 }
 
@@ -38,7 +59,7 @@
     border-radius: 25px;
     overflow: hidden;
     box-shadow:
-        0 25px 50px rgba(239, 108, 0, 0.3),
+        0 25px 50px rgba(255, 96, 40, 0.3),
         0 10px 25px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transform: perspective(1000px) rotateY(-5deg);
@@ -48,7 +69,7 @@
 .hero-image:hover {
     transform: perspective(1000px) rotateY(0deg) scale(1.02);
     box-shadow:
-        0 35px 70px rgba(239, 108, 0, 0.4),
+    0 35px 70px rgba(255, 96, 40, 0.4),
         0 15px 35px rgba(0, 0, 0, 0.15);
 }
 
@@ -64,6 +85,77 @@
     transform: scale(1.05);
 }
 
+/* Hero Carousel */
+.hero-carousel {
+    position: relative;
+}
+
+.hero-carousel .hero-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    transform: none;
+    transition: opacity 0.8s ease;
+}
+
+.hero-carousel .hero-image.active {
+    position: relative;
+    opacity: 1;
+}
+
+.hero-carousel .carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--color-primary);
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 3;
+}
+
+.hero-carousel .carousel-nav.prev { left: 10px; }
+.hero-carousel .carousel-nav.next { right: 10px; }
+
+.hero-carousel .carousel-indicators {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    z-index: 3;
+}
+
+.hero-carousel .carousel-indicators button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+}
+
+.hero-carousel .carousel-indicators button.active {
+    background: var(--color-primary);
+}
+
+/* Only scale the active image on hover */
+.hero-carousel:hover .hero-image.active .hero-img {
+    transform: scale(1.05);
+}
+
 .image-overlay {
     position: absolute;
     top: 0;
@@ -72,9 +164,9 @@
     bottom: 0;
     background: linear-gradient(
         135deg,
-        rgba(239, 108, 0, 0.2) 0%,
-        rgba(245, 124, 0, 0.1) 50%,
-        rgba(251, 188, 0, 0.2) 100%
+        rgba(255, 96, 40, 0.2) 0%,
+        rgba(251, 140, 113, 0.1) 50%,
+        rgba(245, 197, 0, 0.2) 100%
     );
     opacity: 0.7;
     transition: opacity 0.3s ease;
@@ -96,14 +188,15 @@
 .hero-title {
     font-size: 3.5rem;
     font-weight: 800;
-    color: #2c3e50;
+    color: var(--text-dark);
     line-height: 1.1;
     margin-bottom: 1.5rem;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: var(--font-headings);
 }
 
 .highlight {
-    background: linear-gradient(45deg, #EF6C00, #FBBC00);
+    background: linear-gradient(45deg, var(--color-primary), var(--color-accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -117,7 +210,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(45deg, #EF6C00, #FBBC00);
+    background: linear-gradient(45deg, var(--color-primary), var(--color-accent));
     border-radius: 2px;
     transform: scaleX(0);
     animation: underlineGrow 1s ease forwards 0.5s;
@@ -131,10 +224,13 @@
 
 .hero-description {
     font-size: 1.2rem;
-    color: #5a6c7d;
+    color: var(--text-muted);
     line-height: 1.6;
     margin-bottom: 2rem;
     max-width: 500px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0.3px;
 }
 
 /* Hero Stats */
@@ -150,7 +246,7 @@
     background: rgba(255, 255, 255, 0.9);
     padding: 1rem 1.5rem;
     border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(239, 108, 0, 0.1);
+    box-shadow: 0 10px 25px rgba(255, 96, 40, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
@@ -158,21 +254,23 @@
 
 .stat-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(239, 108, 0, 0.2);
+    box-shadow: 0 15px 35px rgba(255, 96, 40, 0.2);
 }
 
 .stat-number {
     display: block;
     font-size: 1.8rem;
     font-weight: bold;
-    color: #EF6C00;
+    color: var(--color-primary);
     margin-bottom: 0.25rem;
 }
 
 .stat-label {
     font-size: 0.9rem;
-    color: #5a6c7d;
+    color: var(--text-muted);
     font-weight: 500;
+    font-family: var(--font-body);
+    letter-spacing: 0.35px;
 }
 
 /* Hero Buttons */
@@ -197,28 +295,28 @@
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, #EF6C00, #F57C00);
-    color: white;
-    box-shadow: 0 10px 25px rgba(239, 108, 0, 0.3);
+    background: var(--color-button-alt);
+    color: var(--white);
+    box-shadow: 0 10px 25px rgba(153, 175, 103, 0.3);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(45deg, #D84315, #EF6C00);
+    background: var(--color-button-alt);
     transform: translateY(-2px);
-    box-shadow: 0 15px 35px rgba(239, 108, 0, 0.4);
+    box-shadow: 0 15px 35px rgba(153, 175, 103, 0.4);
 }
 
 .btn-secondary {
     background: transparent;
-    color: #EF6C00;
-    border: 2px solid #EF6C00;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
 }
 
 .btn-secondary:hover {
-    background: #EF6C00;
-    color: white;
+    background: var(--color-primary);
+    color: var(--white);
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(239, 108, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(255, 96, 40, 0.3);
 }
 
 .btn::before {
@@ -328,7 +426,8 @@
 
 /* #########################Methodology Section######################### */
 .methodology-section {
-    background: linear-gradient(135deg, #fff 0%, #fff8e1 50%, #ffe0b2 100%);
+    /* Softer blend for a calmer feel */
+    background: linear-gradient(180deg, var(--color-tertiary) 0%, var(--color-quaternary) 60%, var(--white) 100%);
     padding: 6rem 2rem;
     position: relative;
     overflow: hidden;
@@ -341,8 +440,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 20% 50%, rgba(239, 108, 0, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(251, 188, 0, 0.05) 0%, transparent 50%);
+    background: radial-gradient(circle at 20% 50%, rgba(255, 96, 40, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(245, 197, 0, 0.04) 0%, transparent 50%);
     pointer-events: none;
 }
 
@@ -362,13 +461,14 @@
 .section-title {
     font-size: 3rem;
     font-weight: 800;
-    color: #2c3e50;
+    color: var(--text-dark);
     margin-bottom: 1rem;
     line-height: 1.2;
+    font-family: var(--font-headings);
 }
 
 .section-title .highlight {
-    background: linear-gradient(45deg, #EF6C00, #FBBC00);
+    background: linear-gradient(45deg, var(--color-primary), var(--color-accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -377,10 +477,13 @@
 
 .section-subtitle {
     font-size: 1.2rem;
-    color: #5a6c7d;
+    color: var(--text-muted);
     max-width: 600px;
     margin: 0 auto;
     line-height: 1.6;
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0.3px;
 }
 
 /* Methodology Cards */
@@ -398,7 +501,7 @@
     background: rgba(255, 255, 255, 0.9);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 15px 35px rgba(239, 108, 0, 0.1);
+    box-shadow: 0 15px 35px rgba(255, 96, 40, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.4s ease;
@@ -407,7 +510,7 @@
 
 .method-card:hover {
     transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 25px 50px rgba(239, 108, 0, 0.2);
+    box-shadow: 0 25px 50px rgba(255, 96, 40, 0.2);
 }
 
 /* Card Overlay y otros estilos */
@@ -434,7 +537,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(239, 108, 0, 0.9), rgba(245, 124, 0, 0.8));
+    background: linear-gradient(135deg, rgba(255, 96, 40, 0.9), rgba(251, 140, 113, 0.8));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -464,6 +567,9 @@
     font-size: 0.95rem;
     line-height: 1.4;
     opacity: 0.95;
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0.25px;
 }
 
 .card-content {
@@ -475,16 +581,17 @@
 .card-content h4 {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text-dark);
     margin-bottom: 0.5rem;
+    font-family: var(--font-headings);
 }
 
 .card-number {
     position: absolute;
     top: -15px;
     right: 20px;
-    background: linear-gradient(45deg, #EF6C00, #F57C00);
-    color: white;
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    color: var(--white);
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -493,7 +600,7 @@
     justify-content: center;
     font-weight: 700;
     font-size: 1.1rem;
-    box-shadow: 0 5px 15px rgba(239, 108, 0, 0.3);
+    box-shadow: 0 5px 15px rgba(255, 96, 40, 0.3);
 }
 /* Features Grid */
 .methodology-features {
@@ -519,7 +626,7 @@
 
 .feature-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(239, 108, 0, 0.15);
+    box-shadow: 0 15px 30px rgba(255, 96, 40, 0.15);
 }
 
 .feature-icon {
@@ -529,14 +636,14 @@
 .icon-circle {
     width: 80px;
     height: 80px;
-    background: linear-gradient(45deg, #EF6C00, #FBBC00);
+    background: linear-gradient(45deg, var(--color-primary), var(--color-accent));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto;
     font-size: 2rem;
-    box-shadow: 0 10px 25px rgba(239, 108, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(255, 96, 40, 0.3);
     transition: all 0.3s ease;
 }
 
@@ -548,19 +655,23 @@
 .feature-item h4 {
     font-size: 1.3rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text-dark);
     margin-bottom: 0.5rem;
+    font-family: var(--font-headings);
 }
 
 .feature-item p {
-    color: #5a6c7d;
+    color: var(--text-muted);
     font-size: 0.95rem;
     line-height: 1.5;
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0.3px;
 }
 
 /* CTA Banner */
 .cta-banner {
-    background: linear-gradient(135deg, #EF6C00, #F57C00);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
     border-radius: 25px;
     padding: 3rem 2rem;
     text-align: center;
@@ -593,8 +704,9 @@
 .cta-content h3 {
     font-size: 2.2rem;
     font-weight: 700;
-    color: white;
+    color: var(--white);
     margin-bottom: 0.5rem;
+    font-family: var(--font-headings);
 }
 
 .cta-content p {
@@ -605,8 +717,8 @@
 
 .cta-button {
     display: inline-block;
-    background: white;
-    color: #EF6C00;
+    background: var(--white);
+    color: var(--color-primary);
     padding: 1rem 2.5rem;
     border-radius: 50px;
     font-weight: 600;
@@ -614,13 +726,14 @@
     text-decoration: none;
     transition: all 0.3s ease;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--color-button-alt);
 }
 
 .cta-button:hover {
     transform: translateY(-3px);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-    background: #FBBC00;
-    color: white;
+    background: var(--color-button-alt);
+    color: var(--white);
 }
 
 /* Floating Elements */
@@ -725,23 +838,102 @@
 
 /* Estilos para la sección "Propuesta de Valor" */
 .value-proposition-section {
-    padding: 80px 20px;
-    background-color: #ffdaaa; /* Un color de fondo muy suave, de la paleta terciaria */
+    padding: 6rem 2rem;
+    /* Start where methodology ends to ensure a seamless transition */
+    background: linear-gradient(180deg, var(--color-tertiary) 0%, var(--color-quaternary) 100%);
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.value-proposition-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(255, 96, 40, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(245, 197, 0, 0.08) 0%, transparent 45%);
+    pointer-events: none;
 }
 
 .value-proposition-container {
-    max-width: 900px;
+    max-width: 980px;
     margin: 0 auto;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    position: relative;
+}
+
+.value-proposition-container::after {
+    content: '';
+    position: absolute;
+    left: 2rem;
+    right: 2rem;
+    bottom: -8px;
+    height: 8px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-accent));
+    opacity: 0.8;
+    filter: blur(8px);
+    border-radius: 8px;
 }
 
 .value-proposition-container .main-title {
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
+    font-size: 2.2rem;
+    line-height: 1.2;
+    color: var(--text-dark);
+    font-family: var(--font-headings);
 }
 
 .value-proposition-container .description-text {
-    font-size: 1.2em;
-    color: #444;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--text-muted);
+    margin: 0 auto 1rem;
+    max-width: 760px;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0.35px;
+}
+
+.value-proposition-container .description-text + .description-text {
+    margin-top: 0.75rem;
+}
+
+.value-proposition-section .highlight {
+    background: linear-gradient(45deg, var(--color-primary), var(--color-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+@media (max-width: 768px) {
+    .value-proposition-section {
+        padding: 4rem 1rem;
+    }
+
+    .value-proposition-container {
+        padding: 1.5rem 1rem;
+        border-radius: 18px;
+    }
+
+    .value-proposition-container .main-title {
+        font-size: 1.9rem;
+    }
+
+    .value-proposition-container .description-text {
+        font-size: 1rem;
+        padding: 0.9rem 1rem;
+    }
 }
 
 
@@ -750,7 +942,8 @@
 
 .for-who-section {
     padding: 80px 20px;
-    background-color: #ffdaaa;
+    /* Continue blending from the previous section */
+    background: linear-gradient(180deg, var(--color-quaternary) 0%, var(--white) 100%);
     text-align: center;
 }
 
@@ -758,6 +951,32 @@
     max-width: 1200px;
     margin: 0 auto;
 }
+
+/* Enhanced title styling for GastroGuide audience section */
+.for-who-title {
+    font-family: var(--font-headings);
+    font-size: clamp(1.9rem, 3.6vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 2rem;
+    letter-spacing: .4px;
+    color: var(--text-dark);
+    text-align: center;
+}
+
+.for-who-title::after { content: none; }
+
+.for-who-title .accent-span {
+    background: linear-gradient(45deg,var(--color-primary),var(--color-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: static;
+}
+
+.for-who-title .accent-span::before { content: none; }
+
+/* Removed underline animation for a simpler heading per feedback */
 
 .user-roles-container {
     display: flex;
@@ -777,7 +996,7 @@
 
 .user-role-card i {
     font-size: 3em;
-    color: #EF6C00;
+    color: var(--color-primary);
     margin-bottom: 15px;
 }
 
@@ -793,6 +1012,9 @@
     color: #666;
     line-height: 1.6;
     margin-bottom: 20px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0.3px;
 }
 
 .user-role-card ul {
@@ -805,24 +1027,47 @@
     font-size: 1em;
     color: #555;
     line-height: 1.8;
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0.3px;
 }
 
 .user-role-card ul li i {
     font-size: 1em;
-    color: #EF6C00;
+    color: var(--color-primary);
     margin-right: 10px;
 }
 
 
 .unique-features-section {
     padding: 80px 20px;
-    background-color: #fef8f0;
+    /* Start at white to align with For-Who end, then drift to tertiary */
+    background: linear-gradient(180deg, var(--white) 0%, var(--color-tertiary) 100%);
     text-align: center;
 }
 
 .unique-features-container {
     max-width: 1000px;
     margin: 0 auto;
+}
+
+/* Simplified features title */
+.features-title {
+    font-family: var(--font-headings);
+    font-size: clamp(1.9rem, 3.6vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 2rem;
+    letter-spacing: .4px;
+    color: var(--text-dark);
+    text-align: center;
+}
+
+.features-title .accent-span {
+    background: linear-gradient(45deg,var(--color-primary),var(--color-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .features-grid {
@@ -847,7 +1092,7 @@
 
 .feature-item i {
     font-size: 2.5em;
-    color: #F57C00; /* Color secundario para los íconos */
+    color: var(--color-primary); /* Iconos usando primario */
     margin-bottom: 15px;
 }
 
@@ -862,4 +1107,7 @@
     font-size: 1em;
     color: #666;
     line-height: 1.6;
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0.3px;
 }
