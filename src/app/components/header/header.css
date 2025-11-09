@@ -1,8 +1,15 @@
+:host {
+    --color-primary: #FF6028;
+    --color-secondary: #FB8C71;
+    --white: #ffffff;
+    --color-accent: #F5C500;
+}
+
 .header {
-    background: linear-gradient(135deg, #EF6C00 0%, #F57C00 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(239, 108, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(255, 96, 40, 0.35);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -18,22 +25,23 @@
 }
 
 .logo {
-    font-size: 2.2rem;
-    font-weight: bold;
-    color: white;
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: var(--color-accent);
     text-decoration: none;
-    background: linear-gradient(45deg, #FBBC00, #FFF);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    -webkit-text-stroke: 0.6px rgba(255, 255, 255, 0.18);
+    text-shadow:
+        0 3px 10px rgba(245, 197, 0, 0.45),
+        0 1px 2px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
     padding-left: 2rem;
     margin-left: 0;
+    position: relative;
+    display: inline-block;
 }
 
 .logo:hover {
-    transform: scale(1.05);
+    transform: scale(1.07);
 }
 
 .nav-right {
@@ -52,7 +60,7 @@
 }
 
 .nav-links a {
-    color: white;
+    color: var(--white);
     text-decoration: none;
     font-weight: 500;
     font-size: 1rem;
@@ -70,7 +78,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(251, 188, 0, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(251, 140, 113, 0.35), transparent);
     transition: left 0.5s;
 }
 
@@ -79,9 +87,9 @@
 }
 
 .nav-links a:hover {
-    background: rgba(251, 188, 0, 0.2);
+    background: rgba(251, 140, 113, 0.25);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(239, 108, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 96, 40, 0.35);
 }
 
 .auth-buttons {
@@ -106,28 +114,28 @@
 
 .btn-login {
     background: transparent;
-    color: white;
-    border: 2px solid rgba(251, 188, 0, 0.8);
+    color: var(--white);
+    border: 2px solid rgba(255, 96, 40, 0.8);
 }
 
 .btn-login:hover {
-    background: rgba(251, 188, 0, 0.2);
-    border-color: #FBBC00;
+    background: rgba(251, 140, 113, 0.25);
+    border-color: var(--color-secondary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(251, 188, 0, 0.4);
+    box-shadow: 0 4px 15px rgba(255, 96, 40, 0.45);
 }
 
 .btn-register {
-    background: linear-gradient(45deg, #FBBC00, #F57C00);
-    color: white;
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    color: var(--white);
     border: 2px solid transparent;
     font-weight: 700;
 }
 
 .btn-register:hover {
-    background: linear-gradient(45deg, #FFC107, #EF6C00);
+    background: linear-gradient(45deg, var(--color-secondary), var(--color-primary));
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(251, 188, 0, 0.5);
+    box-shadow: 0 6px 20px rgba(255, 96, 40, 0.5);
 }
 
 .btn-register::before {
@@ -137,7 +145,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
     transition: left 0.5s;
 }
 
@@ -159,7 +167,7 @@
 
     .logo {
         padding-left: 1rem;
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
 
     .nav-right {
