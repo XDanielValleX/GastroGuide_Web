@@ -1,5 +1,5 @@
 <div class="creator-dashboard">
-	<header class="dash-hero">
+	<header class="dash-hero" *ngIf="showHeader">
 		<div>
 			<h1>Panel de creador</h1>
 			<p class="subtitle">Gestiona tus cursos, revisa estadísticas, edita tu perfil y crea reels desde un solo lugar.</p>
@@ -11,34 +11,52 @@
 	</header>
 
 	<main class="dash-main">
-		<section class="dashboard-grid" *ngIf="activeSection === 'dashboard'">
-			<article class="card" (click)="open('create')">
-				<div class="card-icon create"></div>
-				<h3>Crear cursos</h3>
-				<p>Diseña y publica nuevos cursos, añade lecciones, recursos y precios.</p>
-				<div class="card-footer"><button class="btn primary">Comenzar</button></div>
-			</article>
+		<section class="menu-layout" *ngIf="activeSection === 'dashboard'">
+			<nav class="menu">
+				<ul>
+					<li class="menu-item" role="button" tabindex="0" data-type="create" (click)="open('create')" [class.active]="isActive('create')">
+						<div class="mi-icon">🎓</div>
+						<div class="mi-body">
+							<h4>Crear cursos</h4>
+							<p class="muted">Publica lecciones, recursos y mete precios.</p>
+						</div>
+						<div class="mi-action"><button class="btn small primary">Comenzar</button></div>
+					</li>
 
-			<article class="card" (click)="open('stats')">
-				<div class="card-icon stats"></div>
-				<h3>Ver estadísticas</h3>
-				<p>Analiza rendimiento, ingresos, y engagement de tus cursos.</p>
-				<div class="card-footer"><button class="btn secondary">Revisar</button></div>
-			</article>
+					<li class="menu-item" role="button" tabindex="0" data-type="stats" (click)="open('stats')" [class.active]="isActive('stats')">
+						<div class="mi-icon">📊</div>
+						<div class="mi-body">
+							<h4>Ver estadísticas</h4>
+							<p class="muted">Métricas de ingresos y engagement.</p>
+						</div>
+						<div class="mi-action"><button class="btn small secondary">Revisar</button></div>
+					</li>
 
-			<article class="card" (click)="open('profile')">
-				<div class="card-icon profile"></div>
-				<h3>Perfil de creador</h3>
-				<p>Actualiza tu biografía, foto y enlaces sociales.</p>
-				<div class="card-footer"><button class="btn secondary">Editar</button></div>
-			</article>
+					<li class="menu-item" role="button" tabindex="0" data-type="profile" (click)="open('profile')" [class.active]="isActive('profile')">
+						<div class="mi-icon">👤</div>
+						<div class="mi-body">
+							<h4>Perfil de creador</h4>
+							<p class="muted">Edita biografía y enlaces sociales.</p>
+						</div>
+						<div class="mi-action"><button class="btn small secondary">Editar</button></div>
+					</li>
 
-			<article class="card" (click)="open('reels')">
-				<div class="card-icon reels"></div>
-				<h3>Crear reels</h3>
-				<p>Crea y publica reels promocionales para tus cursos.</p>
-				<div class="card-footer"><button class="btn primary">Nuevo</button></div>
-			</article>
+					<li class="menu-item" role="button" tabindex="0" data-type="reels" (click)="open('reels')" [class.active]="isActive('reels')">
+						<div class="mi-icon">🎬</div>
+						<div class="mi-body">
+							<h4>Crear reels</h4>
+							<p class="muted">Graba y publica clips promocionales.</p>
+						</div>
+						<div class="mi-action"><button class="btn small primary">Nuevo</button></div>
+					</li>
+					</ul>
+				</nav>
+
+			<div class="menu-preview">
+				<h3>Bienvenido, creador</h3>
+				<p class="muted">Selecciona una opción del menú para comenzar. Este panel actúa como área principal donde se cargará la sección seleccionada.</p>
+				<img src="/assets/images/creator-illustration.svg" alt="Creator" onerror="this.style.display='none'" />
+			</div>
 		</section>
 
 		<!-- placeholder panels -->

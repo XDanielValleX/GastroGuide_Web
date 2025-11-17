@@ -1,8 +1,8 @@
 
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home3',
@@ -11,10 +11,23 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './home3.html',
   styleUrl: './home3.css'
 })
-export class Home3 {
+export class Home3 implements OnInit {
   // UI state
   activeSection: 'dashboard' | 'create' | 'stats' | 'profile' | 'reels' = 'dashboard';
-  constructor(private router: Router) {}
+  showHeader: boolean = true;
+
+  constructor(private router: Router, private route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe(map => {
+      const noHeader = map.get('noHeader');
+      this.showHeader = !(noHeader === '1' || noHeader === 'true');
+    });
+  }
+
+  isActive(section: 'dashboard' | 'create' | 'stats' | 'profile' | 'reels') {
+    return this.activeSection === section;
+  }
 
   open(section: Home3['activeSection']) {
     this.activeSection = section;

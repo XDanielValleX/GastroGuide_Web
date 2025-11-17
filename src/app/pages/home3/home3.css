@@ -1,39 +1,134 @@
-:root{
-	--primary: #FF6028;
-	--secondary: #FB8C71;
-	--tertiary: #EDEEE6;
-	--quarto: #EEE0C6;
-	--alert: #FF3036;
-	--success: #99AF67;
-	--accent: #F5C500;
-	--muted: #6b6b6b;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap');
+
+/* Palette (direct hex values) */
+/* primary: #FF6028  secondary: #FB8C71  tertiary: #EDEEE6  quarto: #EEE0C6  alert: #FF3036  success: #99AF67  accent: #F5C500  muted: #6b6b6b */
+
+/* Layout & base */
+.creator-dashboard{
+	padding:28px 20px;
+	font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	color:#202020;
+	background: linear-gradient(180deg, rgba(255,255,255,0.98), #EDEEE6);
+	min-height: 100vh;
 }
 
-.creator-dashboard{ padding:22px; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; color:#222 }
-.dash-hero{ display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px }
-.dash-hero h1{ color:var(--primary); margin:0; font-size:24px }
-.dash-hero .subtitle{ margin:4px 0 0 0; color:var(--muted) }
-.actions-top{ display:flex; gap:10px }
+.dash-hero{
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+	gap:18px;
+	margin-bottom:28px;
+}
+.dash-hero h1{ color:#FF6028; margin:0; font-size:32px; letter-spacing:0.2px; font-family:'Poppins',sans-serif }
+.dash-hero .subtitle{ margin:6px 0 0 0; color:#6b6b6b; font-size:15px }
+.actions-top{ display:flex; gap:10px; align-items:center }
 
-.dash-main{ margin-top:12px }
-.dashboard-grid{ display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)) }
-.card{ background:linear-gradient(180deg,#fff, var(--tertiary)); border-radius:12px; padding:18px; box-shadow:0 8px 30px rgba(0,0,0,0.06); cursor:pointer; display:flex; flex-direction:column; gap:10px; transition:transform .16s ease, box-shadow .16s ease }
-.card:hover{ transform:translateY(-6px); box-shadow:0 18px 50px rgba(0,0,0,0.08) }
-.card .card-icon{ width:56px; height:56px; border-radius:10px; background:linear-gradient(90deg,var(--secondary),var(--primary)); }
-.card h3{ margin:0 }
-.card p{ color:var(--muted); margin:0 }
-.card-footer{ margin-top:auto; display:flex; justify-content:flex-end }
+/* Buttons */
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:999px; padding:10px 16px; font-weight:600; cursor:pointer; border:none }
+.btn.primary, .btn-primary{ background:#99AF67; color:#fff }
+.btn.primary:hover, .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 30px rgba(153,175,103,0.18) }
+.btn.secondary{ background:transparent; color:#FF6028; border:2px solid #FF6028 }
+.btn.ghost{ background:transparent; color:#6b6b6b; border:1px dashed rgba(0,0,0,0.06) }
+.btn.small{ padding:6px 10px; border-radius:8px }
 
-.btn{ border:0; padding:8px 12px; border-radius:8px; font-weight:600 }
-.btn.primary{ background: linear-gradient(90deg,var(--primary), var(--secondary)); color:white }
-.btn.secondary{ background:transparent; border:1px solid rgba(0,0,0,0.08); }
-.btn.ghost{ background:transparent; color:var(--primary); border:1px dashed rgba(0,0,0,0.04) }
+/* Layout: left menu + preview */
+.menu-layout{ display:grid; grid-template-columns: 360px 1fr; gap:28px; align-items:start }
 
-.panel{ padding:20px; background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.06) }
-.back{ background:transparent; border:0; color:var(--muted); margin-bottom:12px }
+/* Menu: full vertical span, scrollable */
+.menu{
+	width:100%;
+	/* make menu span most of the viewport vertically and stick in place */
+	position:sticky;
+	top:28px;
+	height: calc(100vh - 56px); /* edge-to-edge vertically (accounts for top offset) */
+	overflow:auto; /* allow internal scroll if content overflows */
+	display:flex;
+	flex-direction:column;
+	justify-content:flex-start;
+	background: linear-gradient(180deg, rgba(255,255,255,0.98), #ffffff);
+	border-radius:18px;
+	padding:18px 18px 28px 18px;
+	box-shadow:0 18px 60px rgba(6,6,6,0.06);
+	border:1px solid rgba(0,0,0,0.04);
+}
 
-@media (max-width:700px){
+/* Scrollbar polish */
+.menu::-webkit-scrollbar{ width:10px }
+.menu::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.08); border-radius:6px }
+
+.menu ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; height:100%; justify-content:center; }
+
+/* Background panel behind the options */
+.menu-item{
+	display:flex;
+	align-items:center;
+	gap:12px;
+	padding:12px 10px;
+	min-height:80px; /* reduced size */
+	border-radius:10px;
+	transition:transform .14s ease, box-shadow .14s ease, background-color .14s ease;
+	cursor:pointer;
+	position:relative;
+	z-index:2;
+	background: linear-gradient(180deg, #ffffff, rgba(255,255,255,0.98));
+	border:1px solid rgba(0,0,0,0.06);
+	box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+	backdrop-filter: blur(6px);
+	width:100%;
+	box-sizing:border-box;
+}
+.menu-item:hover{ transform:translateY(-4px); box-shadow:0 14px 36px rgba(0,0,0,0.07); background: linear-gradient(180deg,#ffffff,#fffefe); }
+.menu-item:focus{ outline:3px solid rgba(255,96,40,0.12); outline-offset:2px }
+.menu-item.active{ box-shadow:0 24px 60px rgba(0,0,0,0.09); background: linear-gradient(90deg, rgba(255,96,40,0.03), rgba(251,140,113,0.02)); }
+
+.mi-icon{ width:56px; height:56px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; color:#fff; flex-shrink:0; text-shadow:0 1px 0 rgba(0,0,0,0.12); box-shadow: 0 4px 12px rgba(0,0,0,0.05); flex:0 0 56px }
+.mi-icon > *{ position:relative; z-index:2 }
+
+.mi-body{ min-width:0 }
+.mi-body h4{ margin:0; font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.mi-body .muted{ margin:6px 0 0 0; color:#6b6b6b; font-size:12px; display:block; max-height:2.4em; overflow:hidden }
+.mi-action{ margin-left:auto; display:flex; align-items:center }
+.mi-action .btn.small{ padding:6px 8px; font-size:12px }
+
+/* Center menu items on large screens but align top on smaller */
+@media (max-width:1200px){
+	.menu ul{ justify-content:flex-start }
+}
+
+/* Preview */
+.menu-preview{ flex:1; background: linear-gradient(180deg, rgba(255,255,255,0.98), #FFFDF7); border-radius:18px; padding:28px; box-shadow:0 14px 48px rgba(6,6,6,0.06); display:flex; flex-direction:column; gap:12px; align-items:flex-start }
+.menu-preview h3{ margin:0; color:#FF6028; font-family:'Poppins',sans-serif }
+.menu-preview p{ margin:0; color:#6b6b6b }
+.menu-preview img{ width:420px; max-width:100%; border-radius:12px; margin-top:12px }
+
+/* Colored icons */
+.menu .menu-item[data-type="create"] .mi-icon{ background: linear-gradient(135deg,#FF6028,#FB8C71) !important; box-shadow: 0 18px 48px rgba(255,96,40,0.14) }
+.menu .menu-item[data-type="stats"] .mi-icon{ background: linear-gradient(135deg,#F5C500,#EEE0C6) !important; color:#111; box-shadow:0 12px 30px rgba(245,197,0,0.08) }
+.menu .menu-item[data-type="profile"] .mi-icon{ background: linear-gradient(135deg,#EDEEE6,#ffffff) !important; color:#111; border:1px solid rgba(0,0,0,0.06); box-shadow:0 8px 20px rgba(0,0,0,0.04) }
+.menu .menu-item[data-type="reels"] .mi-icon{ background: linear-gradient(135deg,#FB8C71,#F5C500) !important; box-shadow: 0 18px 48px rgba(245,197,0,0.12) }
+
+.menu-item.active::before{ content:""; position:absolute; left:0; top:10px; bottom:10px; width:8px; background: linear-gradient(180deg, #FF6028, #FB8C71); border-top-left-radius:10px; border-bottom-left-radius:10px }
+
+/* Preview actions */
+.menu-preview .actions{ display:flex; gap:10px; margin-top:12px }
+.menu-preview .actions .btn{ background:#FF6028; border:none; color:#fff; padding:10px 14px; border-radius:8px; cursor:pointer }
+.menu-preview .actions .btn.secondary{ background:#FB8C71; color:#111 }
+
+/* Accessibility */
+.menu-item[tabindex]{ -webkit-tap-highlight-color: transparent }
+
+/* Responsive */
+@media (max-width:900px){
+	.menu-layout{ grid-template-columns: 1fr; }
+	.menu{ width:100%; height:auto; max-height:65vh; }
+	.menu-preview img{ display:none }
+}
+
+@media (max-width:480px){
 	.dash-hero{ flex-direction:column; align-items:flex-start }
-	.actions-top{ width:100%; justify-content:space-between }
+	.menu-item{ padding:12px }
+	.mi-icon{ width:56px; height:56px; font-size:20px }
+	.menu{ padding:12px }
 }
+
 
