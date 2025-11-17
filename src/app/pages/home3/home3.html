@@ -1,0 +1,65 @@
+<div class="creator-dashboard">
+	<header class="dash-hero">
+		<div>
+			<h1>Panel de creador</h1>
+			<p class="subtitle">Gestiona tus cursos, revisa estadísticas, edita tu perfil y crea reels desde un solo lugar.</p>
+		</div>
+		<div class="actions-top">
+			<button class="btn primary" (click)="open('create')">Crear curso</button>
+			<button class="btn ghost" (click)="open('reels')">Crear reels</button>
+		</div>
+	</header>
+
+	<main class="dash-main">
+		<section class="dashboard-grid" *ngIf="activeSection === 'dashboard'">
+			<article class="card" (click)="open('create')">
+				<div class="card-icon create"></div>
+				<h3>Crear cursos</h3>
+				<p>Diseña y publica nuevos cursos, añade lecciones, recursos y precios.</p>
+				<div class="card-footer"><button class="btn primary">Comenzar</button></div>
+			</article>
+
+			<article class="card" (click)="open('stats')">
+				<div class="card-icon stats"></div>
+				<h3>Ver estadísticas</h3>
+				<p>Analiza rendimiento, ingresos, y engagement de tus cursos.</p>
+				<div class="card-footer"><button class="btn secondary">Revisar</button></div>
+			</article>
+
+			<article class="card" (click)="open('profile')">
+				<div class="card-icon profile"></div>
+				<h3>Perfil de creador</h3>
+				<p>Actualiza tu biografía, foto y enlaces sociales.</p>
+				<div class="card-footer"><button class="btn secondary">Editar</button></div>
+			</article>
+
+			<article class="card" (click)="open('reels')">
+				<div class="card-icon reels"></div>
+				<h3>Crear reels</h3>
+				<p>Crea y publica reels promocionales para tus cursos.</p>
+				<div class="card-footer"><button class="btn primary">Nuevo</button></div>
+			</article>
+		</section>
+
+		<!-- placeholder panels -->
+		<section class="panel" *ngIf="activeSection !== 'dashboard'">
+			<button class="back" (click)="backToDashboard()">← Volver</button>
+			<div *ngIf="activeSection === 'create'">
+				<h2>Crear curso</h2>
+				<p>Formulario de creación (placeholder). Aquí puedes diseñar el flujo de creación de curso.</p>
+			</div>
+			<div *ngIf="activeSection === 'stats'">
+				<h2>Estadísticas</h2>
+				<p>Gráficas y métricas (placeholder).</p>
+			</div>
+			<div *ngIf="activeSection === 'profile'">
+				<h2>Perfil de creador</h2>
+				<p>Formulario de perfil (placeholder).</p>
+			</div>
+			<div *ngIf="activeSection === 'reels'">
+				<h2>Crear Reels</h2>
+				<p>Editor de reels (placeholder).</p>
+			</div>
+		</section>
+	</main>
+</div>

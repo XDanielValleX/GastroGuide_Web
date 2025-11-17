@@ -1,0 +1,39 @@
+:root{
+	--primary: #FF6028;
+	--secondary: #FB8C71;
+	--tertiary: #EDEEE6;
+	--quarto: #EEE0C6;
+	--alert: #FF3036;
+	--success: #99AF67;
+	--accent: #F5C500;
+	--muted: #6b6b6b;
+}
+
+.creator-dashboard{ padding:22px; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; color:#222 }
+.dash-hero{ display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px }
+.dash-hero h1{ color:var(--primary); margin:0; font-size:24px }
+.dash-hero .subtitle{ margin:4px 0 0 0; color:var(--muted) }
+.actions-top{ display:flex; gap:10px }
+
+.dash-main{ margin-top:12px }
+.dashboard-grid{ display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)) }
+.card{ background:linear-gradient(180deg,#fff, var(--tertiary)); border-radius:12px; padding:18px; box-shadow:0 8px 30px rgba(0,0,0,0.06); cursor:pointer; display:flex; flex-direction:column; gap:10px; transition:transform .16s ease, box-shadow .16s ease }
+.card:hover{ transform:translateY(-6px); box-shadow:0 18px 50px rgba(0,0,0,0.08) }
+.card .card-icon{ width:56px; height:56px; border-radius:10px; background:linear-gradient(90deg,var(--secondary),var(--primary)); }
+.card h3{ margin:0 }
+.card p{ color:var(--muted); margin:0 }
+.card-footer{ margin-top:auto; display:flex; justify-content:flex-end }
+
+.btn{ border:0; padding:8px 12px; border-radius:8px; font-weight:600 }
+.btn.primary{ background: linear-gradient(90deg,var(--primary), var(--secondary)); color:white }
+.btn.secondary{ background:transparent; border:1px solid rgba(0,0,0,0.08); }
+.btn.ghost{ background:transparent; color:var(--primary); border:1px dashed rgba(0,0,0,0.04) }
+
+.panel{ padding:20px; background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.06) }
+.back{ background:transparent; border:0; color:var(--muted); margin-bottom:12px }
+
+@media (max-width:700px){
+	.dash-hero{ flex-direction:column; align-items:flex-start }
+	.actions-top{ width:100%; justify-content:space-between }
+}
+

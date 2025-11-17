@@ -1,0 +1,86 @@
+<div class="courses-page">
+	<header class="courses-header">
+		<div class="hero">
+			<h1>Cursos</h1>
+			<p class="subtitle">Explora cursos modernos y especializados — aprende a tu ritmo.</p>
+		</div>
+	</header>
+
+	<div class="controls">
+		<div class="search">
+			<input type="text" placeholder="Buscar cursos, instructores, temas..." [(ngModel)]="searchTerm" (input)="applyFilters()" />
+			<button class="btn secondary" type="button" (click)="searchTerm=''; applyFilters()">Limpiar</button>
+		</div>
+		<div class="actions">
+			<select [(ngModel)]="selectedSort" (change)="applyFilters()">
+				<option value="popular">Más populares</option>
+				<option value="new">Más nuevos</option>
+				<option value="price_asc">Precio: bajo a alto</option>
+				<option value="price_desc">Precio: alto a bajo</option>
+			</select>
+		</div>
+	</div>
+
+	<section class="catalog">
+		<!-- loading / error states -->
+		<div class="state" *ngIf="loading">
+			<p class="loading-text">Cargando cursos...</p>
+		</div>
+		<div class="state error" *ngIf="error">
+			<p class="error-text">{{ error }}</p>
+		</div>
+
+		<!-- grid -->
+		<div class="grid" *ngIf="!loading && filteredCourses.length">
+			<div class="card" *ngFor="let course of pagedCourses">
+				<div class="card-media">
+					  <img [src]="course.image || '/assets/images/placeholder-course.png'" [alt]="course.title" (error)="onImgError($event)" />
+				</div>
+				<div class="card-body">
+					<h3 class="title">{{ course.title }}</h3>
+					<p class="instructor">{{ course.instructor }}</p>
+					<p class="desc">{{ course.description || (course.title + ' - excelente curso') }}</p>
+				</div>
+				<div class="card-meta">
+					<div class="rating">
+						<span class="value">★{{ course.rating || 0 }}</span>
+						<span class="students">({{ course.students || 0 }})</span>
+					</div>
+					<div class="price">{{ formatPrice(course.price) }}</div>
+				</div>
+				<div class="card-actions">
+					<button class="btn primary" type="button" (click)="enroll(course)">Inscribirme</button>
+					<button class="btn ghost" type="button" (click)="openPreview(course)">Vista previa</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- empty -->
+		<div class="empty" *ngIf="!loading && !filteredCourses.length">
+			<p>No se encontraron cursos. Intenta otra búsqueda.</p>
+		</div>
+	</section>
+
+	<!-- pagination -->
+	<footer class="pagination" *ngIf="filteredCourses.length > pageSize">
+		<button class="btn page" type="button" (click)="changePage(-1)">«</button>
+		<span class="page-info">Página {{page}} de {{ totalPages }}</span>
+		<button class="btn page" type="button" (click)="changePage(1)">»</button>
+	</footer>
+
+	<!-- preview modal -->
+	<div class="preview-overlay" *ngIf="previewCourse">
+		<div class="preview-modal">
+			<button class="close" type="button" (click)="closePreview()">×</button>
+			<img class="preview-img" [src]="previewCourse.image || '/assets/images/placeholder-course.png'" [alt]="previewCourse.title" (error)="onImgError($event)" />
+			<h2>{{ previewCourse.title }}</h2>
+			<p class="meta">Instructor: {{ previewCourse.instructor }} • ★{{ previewCourse.rating || 0 }}</p>
+			<p>{{ previewCourse.description }}</p>
+			<div class="preview-actions">
+				<button class="btn primary" type="button" (click)="enroll(previewCourse!)">Inscribirme</button>
+				<button class="btn ghost" type="button" (click)="closePreview()">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
