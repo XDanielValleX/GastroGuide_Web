@@ -1,0 +1,83 @@
+<div class="creator-dashboard">
+	<header class="dash-hero" *ngIf="showHeader">
+		<div>
+			<h1>Panel de creador</h1>
+			<p class="subtitle">Gestiona tus cursos, revisa estadísticas, edita tu perfil y crea reels desde un solo lugar.</p>
+		</div>
+		<div class="actions-top">
+			<button class="btn primary" (click)="open('create')">Crear curso</button>
+			<button class="btn ghost" (click)="open('reels')">Crear reels</button>
+		</div>
+	</header>
+
+	<main class="dash-main">
+		<section class="menu-layout" *ngIf="activeSection === 'dashboard'">
+			<nav class="menu">
+				<ul>
+					<li class="menu-item" role="button" tabindex="0" data-type="create" (click)="open('create')" [class.active]="isActive('create')">
+						<div class="mi-icon">🎓</div>
+						<div class="mi-body">
+							<h4>Crear cursos</h4>
+							<p class="muted">Publica lecciones, recursos y mete precios.</p>
+						</div>
+						<div class="mi-action"><button class="btn small primary">Comenzar</button></div>
+					</li>
+
+					<li class="menu-item" role="button" tabindex="0" data-type="stats" (click)="open('stats')" [class.active]="isActive('stats')">
+						<div class="mi-icon">📊</div>
+						<div class="mi-body">
+							<h4>Ver estadísticas</h4>
+							<p class="muted">Métricas de ingresos y engagement.</p>
+						</div>
+						<div class="mi-action"><button class="btn small secondary">Revisar</button></div>
+					</li>
+
+					<li class="menu-item" role="button" tabindex="0" data-type="profile" (click)="open('profile')" [class.active]="isActive('profile')">
+						<div class="mi-icon">👤</div>
+						<div class="mi-body">
+							<h4>Perfil de creador</h4>
+							<p class="muted">Edita biografía y enlaces sociales.</p>
+						</div>
+						<div class="mi-action"><button class="btn small secondary">Editar</button></div>
+					</li>
+
+					<li class="menu-item" role="button" tabindex="0" data-type="reels" (click)="open('reels')" [class.active]="isActive('reels')">
+						<div class="mi-icon">🎬</div>
+						<div class="mi-body">
+							<h4>Crear reels</h4>
+							<p class="muted">Graba y publica clips promocionales.</p>
+						</div>
+						<div class="mi-action"><button class="btn small primary">Nuevo</button></div>
+					</li>
+					</ul>
+				</nav>
+
+			<div class="menu-preview">
+				<h3>Bienvenido, creador</h3>
+				<p class="muted">Selecciona una opción del menú para comenzar. Este panel actúa como área principal donde se cargará la sección seleccionada.</p>
+				<img src="/assets/images/creator-illustration.svg" alt="Creator" onerror="this.style.display='none'" />
+			</div>
+		</section>
+
+		<!-- placeholder panels -->
+		<section class="panel" *ngIf="activeSection !== 'dashboard'">
+			<button class="back" (click)="backToDashboard()">← Volver</button>
+			<div *ngIf="activeSection === 'create'">
+				<h2>Crear curso</h2>
+				<p>Formulario de creación (placeholder). Aquí puedes diseñar el flujo de creación de curso.</p>
+			</div>
+			<div *ngIf="activeSection === 'stats'">
+				<h2>Estadísticas</h2>
+				<p>Gráficas y métricas (placeholder).</p>
+			</div>
+			<div *ngIf="activeSection === 'profile'">
+				<h2>Perfil de creador</h2>
+				<p>Formulario de perfil (placeholder).</p>
+			</div>
+			<div *ngIf="activeSection === 'reels'">
+				<h2>Crear Reels</h2>
+				<p>Editor de reels (placeholder).</p>
+			</div>
+		</section>
+	</main>
+</div>

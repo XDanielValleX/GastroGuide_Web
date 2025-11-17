@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 // Importa tus componentes
@@ -33,6 +33,8 @@ export class AppComponent {
   isIndependentPage(): boolean {
     return (
       this.currentRoute.startsWith('/home2') ||
+      this.currentRoute.startsWith('/home3') ||
+      this.currentRoute.startsWith('/blog') ||
       this.currentRoute.startsWith('/login') ||
       this.currentRoute.startsWith('/signup') ||
       this.currentRoute.startsWith('/password-fg') ||

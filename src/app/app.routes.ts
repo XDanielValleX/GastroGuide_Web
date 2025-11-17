@@ -8,6 +8,8 @@ import { Signup } from './auth/signup/signup';
 import { PasswordFG } from './auth/password-fg/password-fg';
 import { PasswordCHG } from './auth/password-chg/password-chg';
 import { Home2 } from './pages/home2/home2';
+import { Courses } from './pages/courses/courses';
+import { Home3 } from './pages/home3/home3';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -16,7 +18,9 @@ export const routes: Routes = [
   { path: 'password-fg', component: PasswordFG },
   { path: 'password-chg', component: PasswordCHG },
   { path: 'home2', component: Home2 },
+  { path: 'home3', component: Home3 },
   { path: 'nosotros', component: About },
   { path: 'blog', component: Blog },
   { path: 'contacto', component: Contact },
+  { path: 'courses', component: Courses }
 ];
