@@ -1,0 +1,150 @@
+<div class="reels-container">
+  <!-- Sidebar izquierdo estilo TikTok -->
+  <aside class="sidebar-left">
+    <div class="logo-section">
+      <div class="logo-icon">🍳</div>
+      <h1 class="logo-text">GastroGuide</h1>
+    </div>
+    
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Buscar" class="search-input" />
+    </div>
+
+    <nav class="nav-menu">
+      <button class="nav-item active">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Para ti</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">🧭</span>
+        <span class="nav-label">Explorar</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">Siguiendo</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">📺</span>
+        <span class="nav-label">LIVE</span>
+      </button>
+      <button class="nav-item" (click)="showForm = !showForm">
+        <span class="nav-icon">➕</span>
+        <span class="nav-label">Cargar</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Perfil</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">⋯</span>
+        <span class="nav-label">Más</span>
+      </button>
+    </nav>
+
+    <button class="login-btn">Iniciar sesión</button>
+
+    <div class="sidebar-footer">
+      <a href="#">Company</a>
+      <a href="#">Program</a>
+      <a href="#">Terms & Policies</a>
+      <p>© 2025 GastroGuide</p>
+    </div>
+
+    <!-- Formulario temporal para agregar reels -->
+    <div class="upload-form" *ngIf="showForm">
+      <h3>Agregar Reel (Manual)</h3>
+      <form (ngSubmit)="addReel()">
+        <input type="text" placeholder="Título" [(ngModel)]="newReel.title" name="title" required />
+        <input type="text" placeholder="URL del video" [(ngModel)]="newReel.src" name="src" required />
+        <button type="submit" class="submit-btn">Guardar</button>
+      </form>
+      <!-- TODO: Reemplazar con lógica de upload real -->
+    </div>
+  </aside>
+
+  <!-- Área principal del video -->
+  <main class="video-feed" *ngIf="current as reel">
+    <div class="video-container">
+      <video 
+        [src]="reel.src" 
+        autoplay 
+        loop 
+        playsinline
+        class="main-video"
+      ></video>
+
+      <!-- Información overlay en la parte inferior -->
+      <div class="video-info-overlay">
+        <div class="author-section">
+          <div class="author-avatar">
+            <img [src]="'https://ui-avatars.com/api/?name=' + reel.author + '&background=FF6028&color=fff'" alt="Avatar" />
+          </div>
+          <div class="author-details">
+            <h3 class="author-name">{{ reel.author }}</h3>
+            <p class="video-caption">{{ reel.title }}</p>
+            <div class="video-tags">
+              <span class="tag">#legend</span>
+              <span class="tag">#trendin</span>
+              <span class="more-link">... más</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flechas de navegación -->
+      <button class="nav-arrow arrow-up" (click)="prev()" [disabled]="currentIndex === 0" aria-label="Video anterior">
+        <span>▲</span>
+      </button>
+      <button class="nav-arrow arrow-down" (click)="next()" [disabled]="currentIndex === reels.length - 1" aria-label="Siguiente video">
+        <span>▼</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- Barra de acciones derecha -->
+  <aside class="actions-sidebar" *ngIf="current as reel">
+    <!-- Botones superiores -->
+    <div class="top-actions">
+      <button class="top-btn">Obtener M...</button>
+      <button class="top-btn">Obtener la...</button>
+    </div>
+
+    <!-- Avatar del autor con botón follow -->
+    <div class="action-item author-action">
+      <div class="action-avatar">
+        <img [src]="'https://ui-avatars.com/api/?name=' + reel.author + '&background=FF6028&color=fff'" alt="Avatar" />
+        <button class="follow-btn">+</button>
+      </div>
+    </div>
+
+    <!-- Botón de like -->
+    <button class="action-item" [class.liked]="reel.liked" (click)="toggleLike(reel)">
+      <div class="action-icon">❤️</div>
+      <span class="action-count">{{ reel.likes >= 1000 ? (reel.likes/1000 | number:'1.0-1') + 'M' : reel.likes }}</span>
+    </button>
+
+    <!-- Botón de comentarios -->
+    <button class="action-item">
+      <div class="action-icon">💬</div>
+      <span class="action-count">{{ reel.comments >= 1000 ? (reel.comments/1000 | number:'1.0-1') + 'K' : reel.comments }}</span>
+    </button>
+
+    <!-- Botón de guardados -->
+    <button class="action-item">
+      <div class="action-icon">🔖</div>
+      <span class="action-count">{{ reel.saves >= 1000 ? (reel.saves/1000 | number:'1.0-1') + 'K' : reel.saves }}</span>
+    </button>
+
+    <!-- Botón de compartir -->
+    <button class="action-item">
+      <div class="action-icon">↗️</div>
+      <span class="action-count">{{ reel.shares >= 1000 ? (reel.shares/1000 | number:'1.0-1') + 'K' : reel.shares }}</span>
+    </button>
+
+    <!-- Indicador adicional -->
+    <div class="extra-indicator">
+      <span class="indicator-count">{{ currentIndex + 1 }}/{{ reels.length }}</span>
+    </div>
+  </aside>
+</div>

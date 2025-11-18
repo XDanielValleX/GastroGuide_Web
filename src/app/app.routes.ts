@@ -1,15 +1,16 @@
 import { Routes } from '@angular/router';
-import { Blog } from './pages/blog/blog';
-import { HomeComponent } from './pages/home/home.component';
-import { About } from './pages/about/about';
-import { Contact } from './pages/contact/contact';
 import { Login } from './auth/login/login';
-import { Signup } from './auth/signup/signup';
-import { PasswordFG } from './auth/password-fg/password-fg';
 import { PasswordCHG } from './auth/password-chg/password-chg';
-import { Home2 } from './pages/home2/home2';
+import { PasswordFG } from './auth/password-fg/password-fg';
+import { Signup } from './auth/signup/signup';
+import { About } from './pages/about/about';
+import { Blog } from './pages/blog/blog';
+import { Contact } from './pages/contact/contact';
 import { Courses } from './pages/courses/courses';
+import { HomeComponent } from './pages/home/home.component';
+import { Home2 } from './pages/home2/home2';
 import { Home3 } from './pages/home3/home3';
+import { Reels } from './pages/reels/reels';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -22,5 +23,6 @@ export const routes: Routes = [
   { path: 'nosotros', component: About },
   { path: 'blog', component: Blog },
   { path: 'contacto', component: Contact },
-  { path: 'courses', component: Courses }
+  { path: 'courses', component: Courses },
+  { path: 'reels', component: Reels }
 ];

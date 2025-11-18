@@ -34,7 +34,7 @@
 		<div class="grid" *ngIf="!loading && filteredCourses.length">
 			<div class="card" *ngFor="let course of pagedCourses">
 				<div class="card-media">
-					  <img [src]="course.image || '/assets/images/placeholder-course.png'" [alt]="course.title" (error)="onImgError($event)" />
+				<img [src]="course.image || '/assets/images/placeholder-course.png'" [alt]="course.title" (error)="onImgError($event)" />
 				</div>
 				<div class="card-body">
 					<h3 class="title">{{ course.title }}</h3>
