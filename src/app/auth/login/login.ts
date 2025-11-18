@@ -44,7 +44,7 @@ export class Login {
     }
 
     this.loading = true;
-    const url = `${environment.apiUrl}/v1/auth/login`;
+    const url = `${environment.apiUrl}/api/v1/auth/login`;
     this.http.post<any>(url, { email: this.email, password: this.password }).subscribe({
       next: (resp) => {
         // Intentar extraer el token de forma flexible

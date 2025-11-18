@@ -52,7 +52,7 @@ export class Signup {
     // Enviar el payload que el backend espera (no enviar 'username' si el backend no lo reconoce)
     const payload = { email, password, confirmPassword: confirm };
     console.debug('Register payload:', payload);
-    this.http.post(`${environment.apiUrl}/v1/auth/register`, payload).subscribe({
+    this.http.post(`${environment.apiUrl}/api/v1/auth/register`, payload).subscribe({
       next: () => {
         this.message = 'Registro exitoso. Redirigiendo al login...';
         setTimeout(() => this.router.navigate(['/login']), 1000);

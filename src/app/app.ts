@@ -38,7 +38,8 @@ export class AppComponent {
       this.currentRoute.startsWith('/login') ||
       this.currentRoute.startsWith('/signup') ||
       this.currentRoute.startsWith('/password-fg') ||
-      this.currentRoute.startsWith('/password-chg')
+      this.currentRoute.startsWith('/password-chg') ||
+      this.currentRoute.startsWith('/reels')
     );
   }
 }

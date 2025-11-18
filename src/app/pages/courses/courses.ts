@@ -47,7 +47,7 @@ export class Courses {
   fetchCourses() {
     this.loading = true;
     this.error = null;
-    const url = `${environment.apiUrl}/v1/courses/all`;
+    const url = `${environment.apiUrl}/api/v1/courses/all`;
     this.http.get<any>(url).subscribe({
       next: (resp) => {
         // accept different shapes: resp.data || resp.courses || resp
