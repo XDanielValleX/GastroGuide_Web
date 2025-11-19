@@ -5,13 +5,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'; // ✅ necesario para routerLink
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { AlertDialog } from '../../shared/alert/alert';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   templateUrl: './login.html',
   styleUrls: ['./login.css'],
-  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule] // ✅ agregado RouterModule y HttpClientModule
+  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule, AlertDialog] // ✅ agregado RouterModule y HttpClientModule
 })
 export class Login {
   email: string = '';

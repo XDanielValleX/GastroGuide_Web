@@ -5,13 +5,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { AlertDialog } from '../../shared/alert/alert';
 
 @Component({
   selector: 'app-password-fg',
   standalone: true,
   templateUrl: './password-fg.html',
   styleUrls: ['./password-fg.css'],
-  imports: [CommonModule, FormsModule, RouterModule]
+  imports: [CommonModule, FormsModule, RouterModule, AlertDialog]
 })
 export class PasswordFG {
   email = '';

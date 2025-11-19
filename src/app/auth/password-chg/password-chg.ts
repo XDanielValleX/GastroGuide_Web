@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { AlertDialog } from '../../shared/alert/alert';
 
 @Component({
   selector: 'app-password-chg',
   standalone: true,
   templateUrl: './password-chg.html',
   styleUrls: ['./password-chg.css'],
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, AlertDialog]
 })
 export class PasswordCHG {
   password = '';

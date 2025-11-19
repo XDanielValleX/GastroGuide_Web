@@ -59,7 +59,13 @@ export class Profile implements OnInit {
     try {
       const cached = localStorage.getItem('user');
       if (cached) {
-        this.user = JSON.parse(cached);
+        const cachedUser = JSON.parse(cached);
+        // Merge para no perder propiedades por guardar sólo username/email tras signup
+        this.user = { ...this.user, ...cachedUser };
+        // Si backend guarda 'username' en lugar de 'name'
+        if ((cachedUser as any).username && !cachedUser.name) {
+          this.user.name = (cachedUser as any).username;
+        }
         this.originalEditable = this.pickEditable();
       }
     } catch {}
