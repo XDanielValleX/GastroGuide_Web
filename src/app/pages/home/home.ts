@@ -4,12 +4,12 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-home.component',
+  selector: 'app-home',
   imports: [CommonModule],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  templateUrl: './home.html',
+  styleUrl: './home.css'
 })
-export class HomeComponent {
+export class Home {
   constructor(private router: Router) {}
 
   // Hero carousel state

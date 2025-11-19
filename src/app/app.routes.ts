@@ -7,13 +7,15 @@ import { About } from './pages/about/about';
 import { Blog } from './pages/blog/blog';
 import { Contact } from './pages/contact/contact';
 import { Courses } from './pages/courses/courses';
-import { HomeComponent } from './pages/home/home.component';
+import { Home } from './pages/home/home';
 import { Home2 } from './pages/home2/home2';
 import { Home3 } from './pages/home3/home3';
 import { Reels } from './pages/reels/reels';
+import { Profile } from './pages/profile/profile';
+
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: Home },
   { path: 'login', component: Login },
   { path: 'signup', component: Signup },
   { path: 'password-fg', component: PasswordFG },
@@ -24,5 +26,6 @@ export const routes: Routes = [
   { path: 'blog', component: Blog },
   { path: 'contacto', component: Contact },
   { path: 'courses', component: Courses },
-  { path: 'reels', component: Reels }
+  { path: 'reels', component: Reels },
+  { path: 'profile', component: Profile }
 ];
