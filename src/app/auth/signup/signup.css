@@ -54,10 +54,12 @@ label {
     content: '';
     position: absolute;
     inline-size: 450px;
-    block-size: 400px;
-    border-radius: 50%;
+    /* un poco más grandes */
+    inline-size: 350px;
+    block-size: 350px;
     filter: blur(35px) brightness(1.2);
     opacity: 0.75;
+    /* menos transparencia */
     z-index: 0;
 }
 

@@ -6,12 +6,19 @@
     </div>
 
     <nav class="menu">
-      <a routerLink="/profile" routerLinkActive="active">👤 Perfil</a>
+      <a href="/profile?noHeader=1" class="profile-link">
+        <img [src]="user.image" alt="Foto de perfil" class="avatar" />
+        <div class="profile-meta">
+          <span class="name">{{ user.name }}</span>
+          <span class="role">Mi perfil</span>
+        </div>
+      </a>
       <a routerLink="/courses" routerLinkActive="active">📚 Ver Mis Cursos</a>
       <a routerLink="/home2/recetas" routerLinkActive="active">🍲 Ver Recetas</a>
       <a routerLink="/home2/comprar" routerLinkActive="active">🛒 Comprar Cursos</a>
       <a routerLink="/home2/crear" routerLinkActive="active">✏️ Crear Recetas</a>
       <a routerLink="/home2/carrito" routerLinkActive="active">🧺 Carrito</a>
+      <button class="logout-btn" (click)="onLogout()">⎋ Cerrar sesión</button>
     </nav>
   </aside>
 

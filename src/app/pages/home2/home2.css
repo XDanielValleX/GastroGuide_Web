@@ -50,6 +50,35 @@
   color: #1d150b;
 }
 
+/* Perfil en sidebar */
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.profile-link .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f4951f;
+}
+.profile-link .profile-meta { display: flex; flex-direction: column; line-height: 1.1; }
+.profile-link .name { font-weight: 700; }
+.profile-link .role { font-size: 12px; opacity: .85; }
+
+/* Botón cerrar sesión */
+.logout-btn {
+  background: #fe3e00;
+  border: none;
+  color: #fff;
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+.logout-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+
 /* === MAIN SECTION === */
 .main-section {
   flex: 1;
