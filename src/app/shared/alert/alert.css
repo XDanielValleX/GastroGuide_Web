@@ -1,0 +1,43 @@
+/* Overlay transparente para que parezca flotante sobre el formulario */
+.alert-overlay{
+  position:fixed; inset:0; display:grid; place-items:start center; z-index:9999;
+  padding-top:32px; /* separarlo un poco del borde superior */
+  background:transparent; /* sin oscurecer el resto */
+}
+
+/* Burbuja estilo globo de diálogo */
+.alert-bubble{
+  min-width: min(520px, 92vw);
+  padding: 16px 20px 18px; border-radius:18px;
+  border:2px solid #ff7a00;
+  background:#fff; color:#b45300; /* tono más oscuro para contraste */
+  position:relative; box-shadow:0 8px 24px rgba(0,0,0,.18);
+  font-weight:600; line-height:1.3;
+  animation:bubbleIn .25s ease-out;
+  transition:filter .18s, transform .18s;
+}
+.alert-bubble.success{ border-color:#28a745; color:#1f7e34; }
+.alert-bubble.info{ border-color:#0d6efd; color:#0d4ab3; }
+
+/* Cola del globo */
+.alert-bubble::after{
+  content:""; position:absolute; left:54px; bottom:-14px; width:28px; height:28px;
+  background:#fff; border:2px solid currentColor; border-top:none; border-left:none;
+  transform:rotate(45deg); box-shadow:0 8px 24px rgba(0,0,0,.18);
+  border-radius:0 0 6px 0;
+}
+.alert-bubble.closing{ animation:bubbleOut .18s ease-in forwards; }
+
+.content{ display:flex; align-items:center; gap:14px; }
+.icon{ font-size:24px; line-height:1; }
+.msg{ white-space:pre-wrap; }
+
+.close{
+  position:absolute; top:8px; right:10px; cursor:pointer;
+  background:transparent; border:none; color:inherit; font-size:18px;
+  padding:4px; line-height:1;
+}
+.close:hover{ filter:brightness(0.85); }
+
+@keyframes bubbleIn{ 0%{ transform:translateY(8px) scale(.96); opacity:0 } 100%{ transform:translateY(0) scale(1); opacity:1 } }
+@keyframes bubbleOut{ 100%{ transform:translateY(8px) scale(.96); opacity:0 } }
