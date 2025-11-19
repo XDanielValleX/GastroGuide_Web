@@ -11,9 +11,69 @@
       <p class="email">{{ user.email }}</p>
       <p class="role">{{ user.role }}</p>
 
-      <!-- Botón editar + input oculto -->
+      <!-- Botones de acción principales -->
+      <div class="actions">
+        <button class="btn secondary" (click)="irAlInicio()">↩️ Ir a inicio</button>
+        <button class="btn" (click)="activarEdicion()" *ngIf="!modoEdicion">✏️ Editar datos</button>
+        <button class="btn success" (click)="guardarCambios()" [disabled]="!modoEdicion || !hasChanges || !isValid">💾 Guardar</button>
+      </div>
+
+      <!-- Botón editar foto + input oculto -->
       <button class="edit-btn" (click)="openSelector()">Editar foto</button>
       <input type="file" hidden id="fileInput" accept="image/*" (change)="changeImage($event)">
+    </div>
+
+    <!-- DATOS PERSONALES EDITABLES -->
+    <div class="profile-section card">
+      <h3>Datos personales</h3>
+
+      <!-- Vista lectura -->
+      <div class="readonly" *ngIf="!modoEdicion">
+        <div class="info-item"><label>Nombre</label><span>{{ user.name }}</span></div>
+        <div class="info-item"><label>Fecha de nacimiento</label><span>{{ user.birthDate | date:'longDate' }}</span></div>
+        <div class="info-item"><label>Teléfono</label><span>{{ user.phone }}</span></div>
+        <div class="info-item"><label>Género</label><span>{{ user.gender }}</span></div>
+        <div class="info-item"><label>Dirección</label><span>{{ user.address }}</span></div>
+      </div>
+
+      <!-- Edición -->
+      <div class="form-grid" *ngIf="modoEdicion">
+        <label class="full">
+          <span>Nombre</span>
+          <input type="text" [(ngModel)]="user.name" (ngModelChange)="onFieldChange()" placeholder="Tu nombre completo" [class.invalid]="!validation.name">
+          <small class="error-text" *ngIf="!validation.name">Mínimo 3 caracteres</small>
+        </label>
+        <label>
+          <span>Fecha de nacimiento</span>
+          <input type="date" [(ngModel)]="user.birthDate" (ngModelChange)="onFieldChange()" [class.invalid]="!validation.birthDate">
+          <small class="error-text" *ngIf="!validation.birthDate">Fecha inválida</small>
+        </label>
+        <label>
+          <span>Teléfono</span>
+          <input type="tel" [(ngModel)]="user.phone" (ngModelChange)="onFieldChange()" placeholder="Ej: +51 999 999 999" [class.invalid]="!validation.phone">
+          <small class="error-text" *ngIf="!validation.phone">Debe tener al menos 9 dígitos</small>
+        </label>
+        <label>
+          <span>Género</span>
+          <select [(ngModel)]="user.gender" (ngModelChange)="onFieldChange()">
+            <option>Masculino</option>
+            <option>Femenino</option>
+            <option>Otro</option>
+            <option>Prefiero no decir</option>
+          </select>
+        </label>
+        <label class="full">
+          <span>Dirección</span>
+          <input type="text" [(ngModel)]="user.address" (ngModelChange)="onFieldChange()" placeholder="Calle, número, ciudad">
+        </label>
+      </div>
+    </div>
+
+    <!-- BIO -->
+    <div class="profile-section card">
+      <h3>Sobre mí</h3>
+      <p *ngIf="!modoEdicion">{{ user.bio }}</p>
+      <textarea *ngIf="modoEdicion" class="bio-textarea" rows="4" [(ngModel)]="user.bio" (ngModelChange)="onFieldChange()" placeholder="Cuenta algo sobre ti..."></textarea>
     </div>
 
     <!-- INFO PRINCIPAL (tu diseño original) -->
@@ -46,12 +106,6 @@
 
     </div>
 
-    <!-- BIO -->
-    <div class="profile-section card">
-      <h3>Sobre mí</h3>
-      <p>{{ user.bio }}</p>
-    </div>
-
     <!-- LOGROS -->
     <div class="profile-section card">
       <h3>Últimos logros</h3>
@@ -61,5 +115,8 @@
     </div>
 
   </div>
+
+  <!-- Toast sencillo -->
+  <div class="toast" *ngIf="toast">{{ toast }}</div>
 
 </div>

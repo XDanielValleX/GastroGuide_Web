@@ -19,6 +19,7 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'signup', component: Signup },
   { path: 'password-fg', component: PasswordFG },
+  { path: 'password-chg/:token', component: PasswordCHG },
   { path: 'password-chg', component: PasswordCHG },
   { path: 'home2', component: Home2 },
   { path: 'home3', component: Home3 },

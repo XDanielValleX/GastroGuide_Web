@@ -57,7 +57,6 @@ label {
     /* un poco más grandes */
     inline-size: 350px;
     block-size: 350px;
-
     filter: blur(35px) brightness(1.2);
     opacity: 0.75;
     /* menos transparencia */

@@ -1,7 +1,7 @@
 
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
@@ -13,4 +13,10 @@ import { RouterModule } from '@angular/router';
 export class Footer {
 
   // Footer component: navigation handled via routerLink in the template.
+  constructor(private router: Router) {}
+
+  get showFooter(): boolean {
+    const url = this.router?.url || '';
+    return !(url.startsWith('/home2') || url.includes('noHeader=1'));
+  }
 }

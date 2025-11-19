@@ -2,12 +2,15 @@
 .profile-wrapper {
   position: relative;
   width: 100%;
-  height: 100vh;
+  min-height: 100vh; /* fallback */
+  height: 100svh; /* bloquear el scroll del body y usar interno */
   background: linear-gradient(160deg, #EEE0C6, #EDEEE6);
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  overflow: hidden; /* sin scroll externo */
 }
 
 /* ========= Blobs animados ========= */
@@ -45,14 +48,35 @@
 /* ========= Tarjeta de perfil ========= */
 .profile-card {
   position: relative;
-  width: 520px;
-  padding: 40px;
+  width: 100%;
+  max-width: 520px;
+  padding: 32px;
   border-radius: 22px;
   background: rgba(255,255,255,0.22);
   backdrop-filter: blur(18px);
   border: 1px solid rgba(255,255,255,0.35);
   box-shadow: 0 8px 32px rgba(0,0,0,0.25);
   animation: fadeIn 0.8s ease;
+  max-height: calc(100svh - 48px); /* 2 * padding vertical del wrapper */
+  overflow-y: auto; /* scroll interno */
+  overscroll-behavior: contain; /* evitar propagación al body */
+  overflow-x: hidden;
+  /* Scrollbar estilizado con WebKit; Firefox usará el estilo por defecto */
+}
+
+/* Scrollbar estilizado (WebKit: Chrome/Edge/Opera) */
+.profile-card::-webkit-scrollbar { width: 10px; }
+.profile-card::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.35);
+  border-radius: 999px;
+}
+.profile-card::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #99AF67, #FF6028);
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.7);
+}
+.profile-card::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #8aa55b, #ff7a50);
 }
 
 @keyframes fadeIn {
@@ -179,4 +203,104 @@
 .profile-section li {
   margin-bottom: 6px;
   font-size: 15px;
+}
+
+/* ========= Acciones ========= */
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.btn {
+  flex: 1 1 auto;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #fff;
+  background: #FF6028;
+  box-shadow: 0 4px 12px rgba(255,96,40,0.35);
+  transition: transform .2s ease, filter .2s ease;
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+.btn.success { background: #99AF67; box-shadow: 0 4px 12px rgba(153,175,103,0.45); }
+.btn.secondary { background: #5a5a5a; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; filter: none; }
+
+/* ========= Formulario editable ========= */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.form-grid label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #333; opacity: .9; }
+.form-grid label.full { grid-column: 1 / -1; }
+.form-grid input, .form-grid select {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.65);
+  outline: none;
+}
+.form-grid input:focus, .form-grid select:focus { box-shadow: 0 0 0 3px rgba(255,96,40,0.2); border-color: #FF6028; }
+.form-grid input.invalid, .form-grid select.invalid { border-color: #e64a19; box-shadow: 0 0 0 3px rgba(230,74,25,0.15); }
+.error-text { color: #e64a19; font-size: 12px; margin-top: 4px; }
+
+/* Bio */
+.bio-textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.65);
+  outline: none;
+}
+.bio-textarea:focus { box-shadow: 0 0 0 3px rgba(255,96,40,0.2); border-color: #FF6028; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  z-index: 1000;
+}
+
+/* ========= Responsivo ========= */
+@media (max-width: 768px) {
+  .background-blobs::before,
+  .background-blobs::after {
+    width: 300px;
+    height: 300px;
+    filter: blur(35px);
+  }
+
+  .profile-wrapper { align-items: flex-start; padding: 16px 12px; }
+
+  .profile-card { padding: 24px; max-height: calc(100svh - 32px); }
+  .profile-card::-webkit-scrollbar { width: 8px; }
+
+  .profile-photo { width: 96px; height: 96px; }
+  .profile-header h2 { font-size: 22px; }
+}
+
+@media (max-width: 480px) {
+  .background-blobs::before,
+  .background-blobs::after {
+    width: 220px;
+    height: 220px;
+    filter: blur(28px);
+  }
+
+  .profile-card { padding: 18px; border-radius: 18px; max-height: calc(100svh - 24px); }
+
+  .info-item { padding: 10px 12px; }
 }
