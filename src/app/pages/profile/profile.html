@@ -1,57 +1,65 @@
-<div class="perfil-container">
-  <!-- Lado izquierdo -->
-  <div class="perfil-card">
-    <div class="perfil-avatar">
-      <img [src]="fotoPerfil" alt="Foto de perfil" id="preview">
+<div class="profile-wrapper">
+
+  <div class="background-blobs"></div>
+
+  <div class="profile-card">
+
+    <!-- HEADER -->
+    <div class="profile-header">
+      <img [src]="user.image" alt="Foto de perfil" id="preview" class="profile-photo">
+      <h2>{{ user.name }}</h2>
+      <p class="email">{{ user.email }}</p>
+      <p class="role">{{ user.role }}</p>
+
+      <!-- Botón editar + input oculto -->
+      <button class="edit-btn" (click)="openSelector()">Editar foto</button>
+      <input type="file" hidden id="fileInput" accept="image/*" (change)="changeImage($event)">
     </div>
 
-    <button class="editar-btn" (click)="abrirSelector()">Editar Perfil</button>
-    <input
-      type="file"
-      accept="image/*"
-      id="fileInput"
-      (change)="cambiarImagen($event)"
-      hidden
-    >
+    <!-- INFO PRINCIPAL (tu diseño original) -->
+    <div class="profile-info">
 
-    <h2 class="perfil-nombre">Juan Pérez</h2>
-    <p class="perfil-rol">Estudiante de Gastronomía</p>
-  </div>
-
-
-
-  <!-- Lado derecho -->
-  <div class="perfil-detalles">
-    <div class="perfil-stats">
-      <div class="stat">
-        <h3>12</h3>
-        <p>Cursos</p>
+      <div class="info-item">
+        <label>Miembro desde</label>
+        <span>{{ user.joined }}</span>
       </div>
-      <div class="stat">
-        <h3>45</h3>
-        <p>Videos vistos</p>
+
+      <div class="info-item">
+        <label>Cursos comprados</label>
+        <span>{{ user.courses }}</span>
       </div>
-      <div class="stat">
-        <h3>8</h3>
-        <p>Insignias</p>
+
+      <div class="info-item">
+        <label>Recetas creadas</label>
+        <span>{{ user.recipes }}</span>
       </div>
+
+      <div class="info-item">
+        <label>Videos vistos</label>
+        <span>{{ user.videos }}</span>
+      </div>
+
+      <div class="info-item">
+        <label>Insignias</label>
+        <span>{{ user.badges }}</span>
+      </div>
+
     </div>
 
-    <div class="perfil-bio card">
+    <!-- BIO -->
+    <div class="profile-section card">
       <h3>Sobre mí</h3>
-      <p>
-        Amante de la cocina internacional 🌎✨. Siempre buscando nuevas técnicas
-        y sabores para mejorar mis habilidades culinarias.
-      </p>
+      <p>{{ user.bio }}</p>
     </div>
 
-    <div class="perfil-logros card">
+    <!-- LOGROS -->
+    <div class="profile-section card">
       <h3>Últimos logros</h3>
       <ul>
-        <li>🍝 Certificado en Cocina Italiana</li>
-        <li>🍰 Curso de Postres completado en 1 semana</li>
-        <li>🏅 Insignia de Participación destacada</li>
+        <li *ngFor="let a of user.achievements">{{ a }}</li>
       </ul>
     </div>
+
   </div>
+
 </div>

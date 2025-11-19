@@ -1,215 +1,182 @@
-/* Layout general */
-.perfil-container {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 40px;
-  max-width: 1200px;
-  margin: 50px auto;
-  padding: 20px;
-  font-family: 'Poppins', sans-serif;
+/* ========= Fondo general con animación gastronómica ========= */
+.profile-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(160deg, #EEE0C6, #EDEEE6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
-/* Tarjeta izquierda */
-.perfil-card {
-  background: linear-gradient(135deg, #ef6c00, #f57c00);
-  color: white;
-  border-radius: 20px;
-  padding: 30px;
-  text-align: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  animation: fadeInLeft 1s ease;
+/* ========= Blobs animados ========= */
+.background-blobs::before,
+.background-blobs::after {
+  content: "";
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  filter: blur(45px);
+  opacity: 0.65;
+  animation: blobMove 10s infinite alternate ease-in-out;
+}
 
+.background-blobs::before {
+  background: radial-gradient(circle, #FF6028 0%, #FB8C71 100%);
+  top: -120px;
+  left: -140px;
+}
+
+.background-blobs::after {
+  background: radial-gradient(circle, #F5C500 0%, #99AF67 100%);
+  bottom: -150px;
+  right: -150px;
+  animation-duration: 13s;
+}
+
+@keyframes blobMove {
+  0% { transform: scale(1) translate(0,0); }
+  50% { transform: scale(1.15) translate(20px, -20px); }
+  100% { transform: scale(1) translate(-10px, 10px); }
+}
+
+/* ========= Tarjeta de perfil ========= */
+.profile-card {
+  position: relative;
+  width: 520px;
+  padding: 40px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========= Encabezado ========= */
+.profile-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.profile-photo {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid #FF6028;
+  box-shadow: 0 0 12px rgba(255, 96, 40, 0.4);
+}
+
+.profile-header h2 {
+  font-size: 26px;
+  margin-top: 14px;
+  color: #FF6028;
+  font-weight: 700;
+}
+
+.profile-header .email {
+  font-size: 14px;
+  opacity: 0.8;
+  color: #333;
+}
+
+.profile-header .role {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #5a5a5a;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* ========= Info ========= */
+.profile-info {
+  margin-top: 25px;
   display: flex;
   flex-direction: column;
-  align-items: center;  /* Centra todos los elementos */
+  gap: 12px;
 }
 
-.perfil-avatar {
-  margin-bottom: 15px;
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.35);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
-.perfil-avatar img {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  border: 4px solid white;
-  object-fit: cover; /* Ajusta bien la imagen dentro del círculo */
-  transition: transform 0.3s ease;
+.info-item label {
+  font-size: 14px;
+  color: #333;
+  opacity: 0.75;
 }
 
-.perfil-avatar img:hover {
-  transform: scale(1.1);
+.info-item span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
 }
 
-.editar-btn {
-  background: white;
-  color: #ef6c00;
+/* ========= Botón ========= */
+.edit-btn {
+  width: 100%;
+  margin-top: 25px;
+  padding: 14px;
+  border-radius: 16px;
   border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
-  margin-bottom: 20px; /* separa el botón del nombre */
-  transition: background 0.3s ease, transform 0.3s ease;
-}
-
-.editar-btn:hover {
-  background: #fcae1e;
+  font-size: 15px;
+  font-weight: 600;
   color: white;
-  transform: scale(1.05);
+  background-color: #99AF67;
+  box-shadow: 0 4px 12px rgba(153,175,103,0.45);
+  transition: all 0.3s ease;
 }
 
-.perfil-nombre {
-  font-size: 1.8rem;
-  margin: 10px 0 5px 0;
+.edit-btn:hover {
+  background-color: #8aa55b;
+  transform: translateY(-3px);
 }
 
-.perfil-rol {
-  font-size: 1rem;
+.edit-btn:active {
+  transform: scale(0.97);
+}
+
+/* ========= Sección BIO y LOGROS ========= */
+.profile-section {
+  margin-top: 25px;
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.profile-section h3 {
+  font-size: 18px;
+  color: #FF6028;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.profile-section p {
+  color: #333;
   opacity: 0.9;
 }
 
-
-/* Panel derecho */
-.perfil-detalles {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  animation: fadeInRight 1s ease;
+.profile-section ul {
+  padding-left: 18px;
+  color: #333;
 }
 
-/* Stats */
-.perfil-stats {
-  display: flex;
-  justify-content: space-between;
-  text-align: center;
-  background: #fff;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-
-.stat h3 {
-  font-size: 2rem;
-  color: #ef6c00;
-}
-
-.stat p {
-  font-size: 0.9rem;
-  color: #555;
-}
-
-/* Tarjetas secundarias */
-.card {
-  background: #fff;
-  border-radius: 20px;
-  padding: 25px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-}
-
-.card h3 {
-  margin-bottom: 12px;
-  color: #f57c00;
-}
-
-.card p,
-.card li {
-  color: #444;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-/* Animaciones */
-@keyframes fadeInLeft {
-  from { opacity: 0; transform: translateX(-40px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes fadeInRight {
-  from { opacity: 0; transform: translateX(40px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-/* --- Responsive --- */
-
-/* Tablets (menor a 992px) */
-@media (max-width: 992px) {
-  .perfil-container {
-    grid-template-columns: 1fr;
-    gap: 30px;
-    padding: 15px;
-  }
-
-  .perfil-card {
-    padding: 30px 20px;
-  }
-
-  .perfil-avatar img {
-    width: 130px;
-    height: 130px;
-  }
-
-  .perfil-nombre {
-    font-size: 1.7rem;
-  }
-
-  .perfil-stats {
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-
-  .stat {
-    flex: 1 1 45%;
-  }
-}
-
-/* Celulares (menor a 600px) */
-@media (max-width: 600px) {
-  .perfil-container {
-    grid-template-columns: 1fr;
-    margin: 20px auto;
-    gap: 20px;
-  }
-
-  .perfil-card {
-    padding: 25px 15px;
-    border-radius: 20px;
-  }
-
-  .perfil-avatar img {
-    width: 110px;
-    height: 110px;
-  }
-
-  .editar-btn {
-    padding: 8px 18px;
-    font-size: 0.85rem;
-  }
-
-  .perfil-nombre {
-    font-size: 1.5rem;
-  }
-
-  .perfil-rol {
-    font-size: 0.9rem;
-  }
-
-  .perfil-stats {
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-  }
-
-  .stat h3 {
-    font-size: 1.5rem;
-  }
-
-  .card {
-    padding: 20px 15px;
-  }
+.profile-section li {
+  margin-bottom: 6px;
+  font-size: 15px;
 }
