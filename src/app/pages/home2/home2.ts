@@ -13,12 +13,14 @@ import { Router } from '@angular/router';
 })
 export class Home2 {
   searchQuery = '';
-  user = {
-    name: 'Daniel Valle',
-    image: 'assets/profile.jpg'
-  };
+  user: { name: string; image: string } = { name: 'Daniel Valle', image: 'assets/profile.jpg' };
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+    try {
+      const cached = localStorage.getItem('user');
+      if (cached) this.user = JSON.parse(cached);
+    } catch {}
+  }
 
   onSearch() {
     if (this.searchQuery.trim()) {

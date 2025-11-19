@@ -16,6 +16,7 @@
         <button class="btn secondary" (click)="irAlInicio()">↩️ Ir a inicio</button>
         <button class="btn" (click)="activarEdicion()" *ngIf="!modoEdicion">✏️ Editar datos</button>
         <button class="btn success" (click)="guardarCambios()" [disabled]="!modoEdicion || !hasChanges || !isValid">💾 Guardar</button>
+        <button class="btn warning" (click)="irACambiarPassword()">🔐 Cambiar contraseña</button>
       </div>
 
       <!-- Botón editar foto + input oculto -->
