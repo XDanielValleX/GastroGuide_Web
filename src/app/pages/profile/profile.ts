@@ -82,6 +82,10 @@ export class Profile {
     this.router.navigateByUrl('/home2');
   }
 
+  irACambiarPassword() {
+    this.router.navigateByUrl('/password-chg');
+  }
+
   // --- selector de imagen ---
   openSelector() {
     document.getElementById('fileInput')?.click();

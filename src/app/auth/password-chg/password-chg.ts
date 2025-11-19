@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { AuthService } from '../auth.service';
+import { CommonModule, Location } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-password-chg',
@@ -22,16 +23,17 @@ export class PasswordCHG {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private auth: AuthService
+    private http: HttpClient,
+    private location: Location
   ) {
     // Acepta token tanto por query (?token=...) como por parámetro (/password-chg/:token)
     this.token = this.route.snapshot.queryParamMap.get('token')
       || this.route.snapshot.paramMap.get('token');
   }
 
-  // Métodos de navegación
-  onReturnToLogin() {
-    this.router.navigate(['/login']);
+  // Navegar hacia atrás
+  goBack() {
+    this.location.back();
   }
 
   submit() {
@@ -50,15 +52,18 @@ export class PasswordCHG {
       return;
     }
     this.loading = true;
-    this.auth.resetPassword(this.token, this.password).subscribe({
-      next: (msg) => {
-        this.successMsg = msg || 'Contraseña actualizada. Puedes iniciar sesión.';
-        this.loading = false;
-      },
-      error: (err) => {
-        this.errorMsg = err?.error?.message || 'No se pudo actualizar la contraseña.';
-        this.loading = false;
-      }
-    });
+    const url = `${environment.apiUrl}/auth/reset-password`;
+    this.http
+      .post<{ message?: string }>(url, { token: this.token, password: this.password })
+      .subscribe({
+        next: (res) => {
+          this.successMsg = res?.message || 'Contraseña actualizada. Puedes iniciar sesión.';
+          this.loading = false;
+        },
+        error: (err) => {
+          this.errorMsg = err?.error?.message || 'No se pudo actualizar la contraseña.';
+          this.loading = false;
+        }
+      });
   }
 }
