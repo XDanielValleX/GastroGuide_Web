@@ -15,12 +15,12 @@
       <div class="actions">
         <button class="btn secondary" (click)="irAlInicio()">↩️ Ir a inicio</button>
         <button class="btn" (click)="activarEdicion()" *ngIf="!modoEdicion">✏️ Editar datos</button>
-        <button class="btn success" (click)="guardarCambios()" [disabled]="!modoEdicion || !hasChanges || !isValid">💾 Guardar</button>
-        <button class="btn warning" (click)="irACambiarPassword()">🔐 Cambiar contraseña</button>
+        <button class="btn success" *ngIf="modoEdicion" (click)="guardarCambios()" [disabled]="!hasChanges || !isValid">💾 Guardar</button>
+        <button class="btn warning" *ngIf="modoEdicion" (click)="irACambiarPassword()">🔐 Cambiar contraseña</button>
       </div>
 
       <!-- Botón editar foto + input oculto -->
-      <button class="edit-btn" (click)="openSelector()">Editar foto</button>
+      <button class="edit-btn" *ngIf="modoEdicion" (click)="openSelector()">Editar foto</button>
       <input type="file" hidden id="fileInput" accept="image/*" (change)="changeImage($event)">
     </div>
 
