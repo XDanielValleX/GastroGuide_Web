@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Router } from '@angular/router';
+import { Footer2 } from '../../components/footer2/footer2';
+import { Header2 } from '../../components/header2/header2';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
@@ -11,7 +13,7 @@ import { environment } from '../../../environments/environment';
   standalone: true,
   templateUrl: './home2.html',
   styleUrls: ['./home2.css'],
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, HttpClientModule]
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, HttpClientModule, Footer2, Header2]
 })
 export class Home2 {
   searchQuery = '';
@@ -25,8 +27,10 @@ export class Home2 {
     } catch {}
   }
 
-  onSearch() {
-    if (this.searchQuery.trim()) {
+  onSearch(query?: string) {
+    const q = (query !== undefined && query !== null) ? String(query) : this.searchQuery;
+    if (typeof q === 'string' && q.trim()) {
+      this.searchQuery = q;
       console.log('Buscando:', this.searchQuery);
     }
   }

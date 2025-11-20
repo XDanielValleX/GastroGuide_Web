@@ -14,8 +14,9 @@ interface Course {
   description?: string;
   image?: string;
   price?: number;
-  rating?: number;
-  students?: number;
+  discountPrice?: number | null;
+  language?: string;
+  publishedAt?: string | null;
 }
 
 @Component({
@@ -60,15 +61,50 @@ export class Courses {
           description: c.description || c.summary || '',
           image: c.image || c.thumbnail || '/assets/images/placeholder-course.png',
           price: c.price ?? c.cost ?? 0,
-          rating: c.rating ?? 0,
-          students: c.students ?? c.enrolled ?? 0
+          discountPrice: c.discountPrice ?? c.offerPrice ?? null,
+          language: c.language || c.lang || 'ES',
+          publishedAt: c.publishedAt || c.createdAt || c.date || null
         })) : [];
+
+        // add a preloaded sample card at the top for visual preview (only if not present)
+        const sampleId = 'sample-preview-1';
+        const exists = this.courses.some((x: any) => x.id === sampleId);
+        if (!exists) {
+          this.courses.unshift({
+            id: sampleId,
+            title: 'Curso: Técnicas esenciales de cocina moderna',
+            instructor: 'Chef Maria López',
+            description: 'Aprende técnicas profesionales de cocina, desde corte hasta presentación y emplatado moderno.',
+            image: '/assets/images/creator-illustration.svg',
+            price: 49.99,
+            discountPrice: 29.99,
+            language: 'ES',
+            publishedAt: new Date().toISOString()
+          } as any);
+        }
         this.applyFilters();
         this.loading = false;
       },
       error: (err) => {
         console.error('Error loading courses', err);
         this.error = err?.error?.message || err?.message || 'Error cargando cursos';
+        // ensure the sample preview card still appears when the API fails
+        const sampleId = 'sample-preview-1';
+        const exists = this.courses.some((x: any) => x.id === sampleId);
+        if (!exists) {
+          this.courses.unshift({
+            id: sampleId,
+            title: 'Curso: Técnicas esenciales de cocina moderna',
+            instructor: 'Chef Maria López',
+            description: 'Aprende técnicas profesionales de cocina, desde corte hasta presentación y emplatado moderno.',
+            image: '/jhon.jpeg',
+            price: 49.99,
+            discountPrice: 29.99,
+            language: 'ES',
+            publishedAt: new Date().toISOString()
+          } as any);
+        }
+        this.applyFilters();
         this.loading = false;
       }
     });
@@ -93,8 +129,13 @@ export class Courses {
         list.sort((a, b) => (b.price || 0) - (a.price || 0));
         break;
       default:
-        // popular or default: sort by rating desc then students
-        list.sort((a, b) => ((b.rating || 0) - (a.rating || 0)) || ((b.students || 0) - (a.students || 0)));
+          // default: sort by published date (newer first), then by title
+          list.sort((a, b) => {
+            const da = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+            const db = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+            if (db !== da) return db - da;
+            return (a.title || '').localeCompare(b.title || '');
+          });
     }
 
     this.filteredCourses = list;
@@ -149,6 +190,16 @@ export class Courses {
     if (p === undefined || p === null) return 'Gratis';
     if (p === 0) return 'Gratis';
     return `$${p.toFixed(2)}`;
+  }
+
+  formatDate(d: string | null | undefined) {
+    if (!d) return '';
+    try {
+      const dt = new Date(d);
+      return dt.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    } catch (e) {
+      return d as string;
+    }
   }
 
   onImgError(event: any) {

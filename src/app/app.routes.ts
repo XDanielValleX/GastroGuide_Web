@@ -12,6 +12,7 @@ import { Home2 } from './pages/home2/home2';
 import { Home3 } from './pages/home3/home3';
 import { Reels } from './pages/reels/reels';
 import { Profile } from './pages/profile/profile';
+import { ProfileC } from './pages/profile-c/profile-c';
 
 
 export const routes: Routes = [
@@ -28,5 +29,6 @@ export const routes: Routes = [
   { path: 'contacto', component: Contact },
   { path: 'courses', component: Courses },
   { path: 'reels', component: Reels },
-  { path: 'profile', component: Profile }
+  { path: 'profile', component: Profile },
+  { path: 'profile-creator', component: ProfileC }
 ];

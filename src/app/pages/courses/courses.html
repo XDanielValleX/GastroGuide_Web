@@ -34,7 +34,7 @@
 		<div class="grid" *ngIf="!loading && filteredCourses.length">
 			<div class="card" *ngFor="let course of pagedCourses">
 				<div class="card-media">
-				<img [src]="course.image || '/assets/images/placeholder-course.png'" [alt]="course.title" (error)="onImgError($event)" />
+					<img [src]="course.image || '/assets/images/placeholder-course.png'" [alt]="course.title" (error)="onImgError($event)" />
 				</div>
 				<div class="card-body">
 					<h3 class="title">{{ course.title }}</h3>
@@ -42,15 +42,16 @@
 					<p class="desc">{{ course.description || (course.title + ' - excelente curso') }}</p>
 				</div>
 				<div class="card-meta">
-					<div class="rating">
-						<span class="value">★{{ course.rating || 0 }}</span>
-						<span class="students">({{ course.students || 0 }})</span>
+					<div class="meta-left">
+						<div class="lang">{{ course.language || 'ES' }}</div>
 					</div>
-					<div class="price">{{ formatPrice(course.price) }}</div>
-				</div>
-				<div class="card-actions">
-					<button class="btn primary" type="button" (click)="enroll(course)">Inscribirme</button>
-					<button class="btn ghost" type="button" (click)="openPreview(course)">Vista previa</button>
+					<div class="meta-right">
+						<div class="price-block">
+							<span *ngIf="course.discountPrice != null" class="price-discount">{{ formatPrice(course.discountPrice) }}</span>
+							<span [class.price-original]="course.discountPrice != null" class="price">{{ formatPrice(course.price) }}</span>
+						</div>
+						<div class="published">{{ formatDate(course.publishedAt) }}</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -74,7 +75,7 @@
 			<button class="close" type="button" (click)="closePreview()">×</button>
 			<img class="preview-img" [src]="previewCourse.image || '/assets/images/placeholder-course.png'" [alt]="previewCourse.title" (error)="onImgError($event)" />
 			<h2>{{ previewCourse.title }}</h2>
-			<p class="meta">Instructor: {{ previewCourse.instructor }} • ★{{ previewCourse.rating || 0 }}</p>
+			<p class="meta">Instructor: {{ previewCourse.instructor }} • {{ previewCourse.language || 'ES' }} • {{ formatDate(previewCourse.publishedAt) }}</p>
 			<p>{{ previewCourse.description }}</p>
 			<div class="preview-actions">
 				<button class="btn primary" type="button" (click)="enroll(previewCourse!)">Inscribirme</button>

@@ -4,12 +4,13 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Statistics } from '../statistics/statistics';
 import { CreateReels } from '../create-reels/create-reels';
+import { ProfileC } from '../profile-c/profile-c';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home3',
   standalone: true,
-  imports: [CommonModule, NgIf, FormsModule, RouterModule, Statistics, CreateReels],
+  imports: [CommonModule, NgIf, FormsModule, RouterModule, Statistics, CreateReels, ProfileC],
   templateUrl: './home3.html',
   styleUrl: './home3.css'
 })
@@ -49,6 +50,11 @@ export class Home3 implements OnInit {
         // this.router.navigate(['/creator/reels']);
         break;
     }
+    // Smooth scroll panel into view after state change
+    setTimeout(() => {
+      const panel = document.querySelector('.panel-section');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
   }
 
   backToDashboard() {

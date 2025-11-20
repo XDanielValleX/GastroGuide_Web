@@ -1,0 +1,28 @@
+<header class="header2" role="banner">
+	<div class="brand">
+		<a routerLink="/" class="brand-link">GastroGuide<span>+</span></a>
+	</div>
+
+	<div class="header-inner">
+		<nav class="header-nav" aria-label="Navegación principal">
+			<a routerLink="/courses" routerLinkActive="active">Cursos</a>
+			<a routerLink="/home2/recetas" routerLinkActive="active">Recetas</a>
+			<a routerLink="/home2/carrito" routerLinkActive="active">Carrito</a>
+		</nav>
+
+		<div class="search-wrap">
+			<div class="search-box">
+				<input type="text" [(ngModel)]="query" placeholder="Buscar cursos o recetas..." aria-label="Buscar" (keyup.enter)="onSearch()" />
+				<button class="btn search" (click)="onSearch()">Buscar</button>
+			</div>
+		</div>
+
+		<div class="profile-actions">
+			<div class="profile-quick">
+				<img *ngIf="user?.image" [src]="user?.image" alt="Avatar" class="mini-avatar" />
+				<span class="mini-name">{{ user?.name }}</span>
+			</div>
+			<button class="btn logout" (click)="onLogoutClick()" aria-label="Cerrar sesión">Cerrar sesión</button>
+		</div>
+	</div>
+</header>
