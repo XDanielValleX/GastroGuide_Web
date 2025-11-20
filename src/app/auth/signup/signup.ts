@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AlertDialog } from '../../shared/alert/alert';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-signup',
@@ -36,6 +37,12 @@ export class Signup {
       return;
     }*/
 
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailPattern.test(email)) {
+      this.message = 'Ingresa un correo válido (ej. usuario@dominio.com).';
+      return;
+    }
+
     if (password !== confirm) {
       this.message = 'Las contraseñas no coinciden.';
       return;
@@ -59,7 +66,11 @@ export class Signup {
     // Enviar el payload incluyendo username (ajustar si backend usa 'name')
     const payload: any = { email, password, confirmPassword: confirm };
     console.debug('Register payload:', payload);
-    this.http.post(`${environment.apiUrl}/api/v1/auth/register`, payload).subscribe({
+    this.http.post(`${environment.apiUrl}/api/v1/auth/register`, payload)
+      .pipe(finalize(() => {
+        this.loading = false;
+      }))
+      .subscribe({
       next: () => {
         this.message = 'Registro exitoso. Redirigiendo al login...';
         // Persistencia mínima local para que el perfil muestre datos
@@ -81,9 +92,6 @@ export class Signup {
         } else {
           this.message = 'Error registrando usuario.';
         }
-      },
-      complete: () => {
-        this.loading = false;
       }
     });
   }
