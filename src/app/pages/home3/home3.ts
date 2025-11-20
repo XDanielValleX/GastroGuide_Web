@@ -1,13 +1,15 @@
 
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Statistics } from '../statistics/statistics';
+import { CreateReels } from '../create-reels/create-reels';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home3',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, NgIf, FormsModule, RouterModule, Statistics, CreateReels],
   templateUrl: './home3.html',
   styleUrl: './home3.css'
 })

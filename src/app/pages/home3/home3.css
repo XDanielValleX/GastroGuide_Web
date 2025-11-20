@@ -101,6 +101,32 @@
 .menu-preview p{ margin:0; color:#6b6b6b }
 .menu-preview img{ width:420px; max-width:100%; border-radius:12px; margin-top:12px }
 
+/* Back button used in internal panels */
+.back-btn{
+	display:inline-flex;
+	align-items:center;
+	gap:8px;
+	padding:8px 12px;
+	background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.95));
+	border:1px solid rgba(0,0,0,0.06);
+	border-radius:10px;
+	color:#FF6028;
+	font-weight:700;
+	cursor:pointer;
+	box-shadow:0 8px 22px rgba(0,0,0,0.06);
+	transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.back-btn .back-svg{ width:18px; height:18px; stroke: #FF6028 }
+.back-btn:hover{ transform:translateX(-6px); box-shadow:0 14px 36px rgba(0,0,0,0.08) }
+.back-btn:active{ transform:translateX(-3px) }
+.back-btn:focus{ outline:2px solid rgba(255,96,40,0.12); outline-offset:2px }
+.back-btn .back-text{ display:inline-block }
+
+@media (max-width:900px){
+	.back-btn{ padding:6px 10px; gap:6px }
+	.back-btn .back-text{ font-size:14px }
+}
+
 /* Colored icons */
 .menu .menu-item[data-type="create"] .mi-icon{ background: linear-gradient(135deg,#FF6028,#FB8C71) !important; box-shadow: 0 18px 48px rgba(255,96,40,0.14) }
 .menu .menu-item[data-type="stats"] .mi-icon{ background: linear-gradient(135deg,#F5C500,#EEE0C6) !important; color:#111; box-shadow:0 12px 30px rgba(245,197,0,0.08) }

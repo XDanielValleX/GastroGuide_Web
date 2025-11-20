@@ -1,6 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+* { margin:0; padding:0; box-sizing:border-box }
+
+/* Variables globales GastroGuide */
+:root {
+    --gg-primary:#FF6028;
+    --gg-secondary:#FB8C71;
+    --gg-tertiary:#EDEEE6;
+    --gg-quaternary:#EEE0C6;
+    --gg-alert:#FF3036;
+    --gg-success:#99AF67;
+    --gg-accent:#F5C500;
+    --gg-text:#202020;
+    --gg-muted:#6b6b6b;
 }
+
+body{background:#ffffff; color:var(--gg-text); font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
