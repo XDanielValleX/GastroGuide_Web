@@ -1,0 +1,77 @@
+<div class="creator-profile">
+	<div class="profile-card">
+		<div class="pc-header">
+			<div class="avatar-block">
+				<div class="avatar-wrapper" [class.has-avatar]="data.avatarUrl">
+					<img *ngIf="data.avatarUrl" [src]="data.avatarUrl" alt="Avatar creador" />
+					<div *ngIf="!data.avatarUrl" class="avatar-placeholder">👤</div>
+					<button type="button" class="avatar-edit-btn" (click)="toggleAvatarEdit()" aria-label="Editar imagen de perfil">
+						<span *ngIf="!editingAvatar">Editar foto</span>
+						<span *ngIf="editingAvatar">Cancelar</span>
+					</button>
+					<div class="avatar-edit-panel" *ngIf="editingAvatar">
+						<label class="file-label">
+							<input type="file" accept="image/*" (change)="onAvatarSelected($event)" />
+							<span>Subir imagen</span>
+						</label>
+						<button type="button" class="btn tiny alert" (click)="removeAvatar()" *ngIf="data.avatarUrl">Quitar</button>
+					</div>
+				</div>
+			</div>
+			<div class="primary-info">
+				<div class="title-line">
+					<h1 *ngIf="!editingInfo" class="name">{{ data.name }}</h1>
+					<div class="edit-fields" *ngIf="editingInfo">
+						<input [(ngModel)]="tempName" placeholder="Nombre" />
+						<input [(ngModel)]="tempUsername" placeholder="Usuario" />
+					</div>
+					<button class="edit-info-btn" type="button" (click)="toggleInfoEdit()" aria-label="Editar información">
+						<span *ngIf="!editingInfo">Editar</span>
+						<span *ngIf="editingInfo">Cerrar</span>
+					</button>
+				</div>
+				<p class="username" *ngIf="!editingInfo">@{{ data.username }}</p>
+				<div class="bio-block">
+					<p *ngIf="!editingInfo" class="bio">{{ data.bio }}</p>
+					<textarea *ngIf="editingInfo" [(ngModel)]="tempBio" rows="3" placeholder="Biografía"></textarea>
+				</div>
+				<div class="categories">
+					<div *ngIf="!editingInfo" class="cat-list">
+						<span *ngFor="let c of data.categories" class="cat-pill">{{ c }}</span>
+					</div>
+					<div *ngIf="editingInfo" class="cat-edit">
+						<div class="cat-current">
+							<span *ngFor="let c of tempCategories" class="cat-pill editable" (click)="removeCategory(c)" title="Quitar">{{ c }} ×</span>
+						</div>
+						<div class="cat-add">
+							<input [(ngModel)]="newCategory" placeholder="Nueva categoría" (keyup.enter)="addCategory()" />
+							<button type="button" class="btn tiny secondary" (click)="addCategory()">Agregar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="pc-body">
+			<div class="stats-grid">
+				<div class="stat-box">
+					<div class="stat-value">{{ data.followers | number }}</div>
+					<div class="stat-label">Seguidores</div>
+				</div>
+				<div class="stat-box">
+					<div class="stat-value">{{ data.courses }}</div>
+					<div class="stat-label">Cursos</div>
+				</div>
+				<div class="stat-box">
+					<div class="stat-value">{{ data.earnings | currency:'USD':'symbol':'1.0-0' }}</div>
+					<div class="stat-label">Ingresos mensuales</div>
+				</div>
+			</div>
+
+			<div class="actions-info" *ngIf="editingInfo">
+				<button type="button" class="btn primary" (click)="saveInfo()">Guardar cambios</button>
+				<button type="button" class="btn ghost" (click)="cancelInfo()">Cancelar</button>
+			</div>
+		</div>
+	</div>
+</div>

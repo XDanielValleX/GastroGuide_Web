@@ -1,0 +1,61 @@
+<footer class="gg-footer" role="contentinfo">
+	<div class="footer-inner">
+		<div class="brand-block">
+			<h2 class="brand">GastroGuide<span>+</span></h2>
+			<p class="tagline">Formación y creatividad gastronómica en un solo lugar.</p>
+			<form class="newsletter" (submit)="onSubscribe($event)" aria-label="Suscripción al boletín">
+				<label for="nl-email" class="sr-only">Correo electrónico</label>
+				<input id="nl-email" type="email" [(ngModel)]="email" name="email" placeholder="Tu correo" required />
+				<button class="btn accent" type="submit" [disabled]="submitting">{{ submitting ? 'Enviando...' : 'Suscribirme' }}</button>
+			</form>
+			<p class="note" *ngIf="submitted">¡Gracias! Revisa tu bandeja para confirmar.</p>
+		</div>
+
+		<nav class="link-groups" aria-label="Enlaces principales">
+			<div class="group">
+				<h5>Explorar</h5>
+				<ul>
+					<li><a routerLink="/courses">Cursos</a></li>
+					<li><a routerLink="/home2/recetas">Recetas</a></li>
+					<li><a routerLink="/blog">Blog</a></li>
+					<li><a routerLink="/nosotros">Nosotros</a></li>
+				</ul>
+			</div>
+			<div class="group">
+				<h5>Creador</h5>
+				<ul>
+					<li><a routerLink="/home3" queryParams="{ section: 'profile' }">Perfil</a></li>
+					<li><a routerLink="/home3" queryParams="{ section: 'create' }">Crear Curso</a></li>
+					<li><a routerLink="/home3" queryParams="{ section: 'reels' }">Reels</a></li>
+					<li><a routerLink="/home3" queryParams="{ section: 'stats' }">Estadísticas</a></li>
+				</ul>
+			</div>
+			<div class="group">
+				<h5>Legal</h5>
+				<ul>
+					<li><a routerLink="/terminos">Términos</a></li>
+					<li><a routerLink="/privacidad">Privacidad</a></li>
+					<li><a routerLink="/cookies">Cookies</a></li>
+					<li><a routerLink="/contacto">Contacto</a></li>
+				</ul>
+			</div>
+		</nav>
+
+		<div class="social-block" aria-label="Redes sociales">
+			<h5>Conecta</h5>
+			<div class="social-row">
+				<a href="#" aria-label="Instagram" class="social">IG</a>
+				<a href="#" aria-label="YouTube" class="social">YT</a>
+				<a href="#" aria-label="TikTok" class="social">TT</a>
+			</div>
+		</div>
+	</div>
+	<div class="footer-base">
+		<p>© {{ year }} GastroGuide. Todos los derechos reservados.</p>
+		<div class="mini-links">
+			<a routerLink="/privacidad">Privacidad</a>
+			<a routerLink="/terminos">Términos</a>
+			<a routerLink="/cookies">Cookies</a>
+		</div>
+	</div>
+</footer>

@@ -1,0 +1,43 @@
+.header2 { width:100%; background: linear-gradient(90deg, var(--gg-primary), var(--gg-secondary)); color:var(--gg-on-primary); box-shadow: 0 6px 18px rgba(8,18,28,0.08); border-bottom: 1px solid rgba(0,0,0,0.06); position:relative; }
+.header-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns: minmax(120px, auto) 1fr minmax(160px, auto); align-items:center; gap:12px; padding:.9rem 1rem; padding-left:140px; padding-right:20px; min-height:64px; }
+.brand { position:absolute; left:8px; top:50%; transform:translateY(-50%); z-index:12; }
+.brand .brand-link { font-weight:900; font-size:1.45rem; color:var(--gg-tertiary); text-decoration:none; display:inline-flex; align-items:center; gap:.35rem; letter-spacing:0.6px; }
+.brand .brand-link span { color:var(--gg-accent); font-weight:900; font-size:1.05em; }
+.search-wrap { display:flex; justify-content:center; }
+.search-box { display:flex; gap:.5rem; width:100%; max-width:360px; background: transparent; padding:.2rem; border-radius:999px; border:1px solid rgba(255,255,255,0.12); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+.search-box input { flex:1; padding:.5rem .75rem; border-radius:999px; border:none; background:transparent; color:var(--gg-tertiary); font-weight:600; }
+.search-box input::placeholder { color: rgba(255,255,255,0.72); }
+.search-box .btn.search { background: transparent; color: rgba(255,255,255,0.95); border: 1px solid rgba(255,255,255,0.12); padding:.4rem .8rem; border-radius:999px; font-weight:700; box-shadow: none; transition: all .18s ease; }
+.search-box:hover { box-shadow: 0 10px 26px rgba(0,0,0,0.10); }
+.search-box .btn.search:hover { background: linear-gradient(90deg, var(--gg-success), var(--gg-accent)); color:#07202a; transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,0.12); }
+.search-box .btn.search:focus-visible { outline: 3px solid rgba(255,255,255,0.12); outline-offset: 3px; }
+.header-nav { display:flex; gap:1.2rem; align-items:center; justify-self:start; }
+.header-nav a { color: rgba(255,255,255,0.95); text-decoration:none; padding: .45rem .85rem; border-radius: 999px; font-weight:700; background: transparent; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 6px 18px rgba(0,0,0,0.08); transition: all .18s ease; white-space:nowrap; }
+.header-nav a:hover { background: rgba(255,255,255,0.10); color: var(--gg-accent); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,0.12); }
+.header-nav a:focus-visible { outline: 3px solid rgba(255,255,255,0.12); outline-offset:3px; color: var(--gg-secondary); }
+.header-nav a.active { background: linear-gradient(90deg, var(--gg-primary), var(--gg-secondary), var(--gg-accent)); color: #07202a; box-shadow: 0 10px 30px rgba(0,0,0,0.18); border-color: rgba(255,255,255,0.06); }
+.profile-actions { display:flex; gap:.75rem; align-items:center; justify-self:end; margin-left:8px; z-index:10; }
+.profile-quick { display:flex; gap:.6rem; align-items:center; }
+.mini-avatar { width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.08); }
+.mini-name { font-weight:600; color:rgba(255,255,255,0.92); }
+.btn.ghost { background:transparent; border:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.92); padding:.45rem .6rem; border-radius:10px; }
+.btn.ghost:hover { background:rgba(255,255,255,0.08); color:#fff; }
+
+/* Logout button styling (prominent, right aligned) */
+.btn.logout { background: transparent; border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.95); padding: .5rem .85rem; border-radius: 999px; font-weight:700; box-shadow: 0 6px 18px rgba(0,0,0,0.08); transition: all .18s ease; }
+.btn.logout:hover { background: linear-gradient(90deg, var(--gg-secondary), var(--gg-primary)); color: #07202a; border-color: rgba(255,255,255,0.14); transform: translateY(-2px); }
+.btn.logout:active { transform: translateY(0); }
+.btn.logout:focus-visible { outline: 3px solid rgba(255,255,255,0.12); outline-offset: 3px; }
+
+@media (max-width:900px) {
+	.header-inner { padding:.6rem .9rem; padding-left:60px; padding-right:20px; grid-template-columns: minmax(80px, auto) 1fr minmax(120px, auto); }
+	.header-nav { display:none; }
+	.mini-name { display:none; }
+	.search-wrap { justify-content:flex-start; }
+}
+
+@media (max-width:480px) {
+ 	.brand { position:static; transform:none; margin-right:8px; }
+ 	.header-inner { padding-left:12px; padding-right:12px; grid-template-columns: 1fr auto; }
+}
+
