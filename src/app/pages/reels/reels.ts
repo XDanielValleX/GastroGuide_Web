@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ReelStatsService } from '../../shared/reel-stats.service';
+import { ReelsService, ReelItem } from '../../shared/reels.service';
 
 @Component({
   selector: 'app-reels',
@@ -9,70 +11,45 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './reels.html',
   styleUrl: './reels.css'
 })
-export class Reels {
-  // TODO: Replace manual in-memory reels with data fetched via a ReelsService from backend.
-  // This will be populated by reels created/subidos en la otra vista de creación.
-  reels: Reel[] = [
-    {
-      id: 1,
-      title: 'Introducción a la Plataforma',
-      author: 'GastroGuide',
-      src: 'https://www.w3schools.com/html/mov_bbb.mp4',
-      thumbnail: 'https://placehold.co/720x1280/FF6028/FFFFFF?text=Intro',
-      duration: 10,
-      createdAt: new Date(),
-      likes: 120,
-      comments: 14,
-      saves: 5,
-      shares: 2,
-      liked: false
-    },
-    {
-      id: 2,
-      title: 'Tips de Estudio Rápidos',
-      author: 'ChefPro',
-      src: 'https://www.w3schools.com/html/movie.mp4',
-      thumbnail: 'https://placehold.co/720x1280/FB8C71/FFFFFF?text=Tips',
-      duration: 8,
-      createdAt: new Date(),
-      likes: 506,
-      comments: 102,
-      saves: 46,
-      shares: 12,
-      liked: true
-    },
-    {
-      id: 3,
-      title: 'Cuchillos y Seguridad',
-      author: 'ProCocina',
-      src: 'https://www.w3schools.com/html/mov_bbb.mp4',
-      thumbnail: 'https://placehold.co/720x1280/EDEEE6/333?text=Cuchillos',
-      duration: 15,
-      createdAt: new Date(),
-      likes: 92,
-      comments: 8,
-      saves: 30,
-      shares: 4,
-      liked: false
-    }
-  ];
+export class Reels implements OnInit {
+  reels: ReelItem[] = [];
 
   // Índice del reel que se muestra en el feed (estilo TikTok)
   currentIndex = 0;
   // Formulario temporal para agregar manualmente
   showForm = false;
   newReel = { title: '', src: '' };
+  // Panel de comentarios
+  showComments = false;
+  newCommentText = '';
+
+  // Video controls
+  @ViewChild('videoPlayer') videoPlayer?: ElementRef<HTMLVideoElement>;
+  isPlaying = true;
+  isMuted = false;
+  currentTime = 0;
+  duration = 0;
+  seekValue = 0;
 
   // Para futura paginación/infinite scroll
   isLoadingMore = false;
 
-  get current(): Reel | null {
+  get current(): ReelItem | null {
     return this.reels[this.currentIndex] || null;
+  }
+
+  constructor(private stats: ReelStatsService, private reelsSvc: ReelsService) {
+    this.reelsSvc.reels$.subscribe(list => this.reels = list);
+  }
+
+  ngOnInit(): void {
+    if (this.current) this.stats.registerView(this.current.id);
   }
 
   next(): void {
     if (this.currentIndex < this.reels.length - 1) {
       this.currentIndex++;
+      if (this.current) this.stats.registerView(this.current.id);
     } else {
       // TODO: Trigger loadMore() cuando se alcance el final y backend esté listo
     }
@@ -81,12 +58,71 @@ export class Reels {
   prev(): void {
     if (this.currentIndex > 0) {
       this.currentIndex--;
+      if (this.current) this.stats.registerView(this.current.id);
     }
   }
 
-  toggleLike(reel: Reel): void {
+  toggleLike(reel: ReelItem): void {
     reel.liked = !reel.liked;
     reel.likes += reel.liked ? 1 : -1;
+    if (reel.liked) this.stats.registerLike(reel.id);
+  }
+
+  toggleCommentsPanel(): void {
+    this.showComments = !this.showComments;
+  }
+
+  // Video control methods
+  togglePlay(): void {
+    const video = this.videoPlayer?.nativeElement;
+    if (!video) return;
+    if (video.paused) {
+      video.play();
+      this.isPlaying = true;
+    } else {
+      video.pause();
+      this.isPlaying = false;
+    }
+  }
+
+  toggleMute(): void {
+    const video = this.videoPlayer?.nativeElement;
+    if (!video) return;
+    video.muted = !video.muted;
+    this.isMuted = video.muted;
+  }
+
+  onVideoTimeUpdate(event: Event): void {
+    const video = event.target as HTMLVideoElement;
+    this.currentTime = video.currentTime;
+    this.duration = video.duration || 0;
+    this.seekValue = this.duration > 0 ? (this.currentTime / this.duration) * 100 : 0;
+  }
+
+  onSeek(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const video = this.videoPlayer?.nativeElement;
+    if (!video || !this.duration) return;
+    const newTime = (parseFloat(input.value) / 100) * this.duration;
+    video.currentTime = newTime;
+    this.currentTime = newTime;
+  }
+
+  formatTime(seconds: number): string {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  submitComment(reel: ReelItem): void {
+    const text = this.newCommentText.trim();
+    if (!text) return;
+    if (!reel.commentList) reel.commentList = [];
+    reel.commentList.push({ text, createdAt: new Date().toISOString() });
+    reel.comments = reel.commentList.length;
+    this.stats.registerComment(reel.id);
+    this.newCommentText = '';
   }
 
   addReel(): void {
@@ -94,26 +130,12 @@ export class Reels {
       alert('Título y URL del video requeridos');
       return;
     }
-    const nextId = this.reels.length ? Math.max(...this.reels.map(r => r.id)) + 1 : 1;
-    this.reels.unshift({
-      id: nextId,
-      title: this.newReel.title.trim(),
-      author: 'NuevoAutor',
-      src: this.newReel.src.trim(),
-      thumbnail: 'https://placehold.co/720x1280/EEE0C6/333?text=Nuevo',
-      duration: undefined,
-      createdAt: new Date(),
-      likes: 0,
-      comments: 0,
-      saves: 0,
-      shares: 0,
-      liked: false
-    });
+    this.reelsSvc.addReel({ title: this.newReel.title.trim(), author: 'NuevoAutor', src: this.newReel.src.trim(), thumbnail: undefined });
     this.currentIndex = 0; // Mostrar el nuevo primero
+    if (this.current) this.stats.registerView(this.current.id);
     this.newReel.title = '';
     this.newReel.src = '';
     this.showForm = false;
-    // TODO: Persistir via servicio backend cuando esté disponible.
   }
 
   loadMore(): void {
@@ -129,7 +151,7 @@ export class Reels {
         src: 'https://www.w3schools.com/html/mov_bbb.mp4',
         thumbnail: 'https://placehold.co/720x1280/FF6028/FFFFFF?text=+'+id,
         duration: 12,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         likes: 0,
         comments: 0,
         saves: 0,
@@ -155,19 +177,4 @@ export class Reels {
   }
 
   // TODO: Integrar eventos (like, comentar, guardar, compartir) con backend.
-}
-
-interface Reel {
-  id: number;
-  title: string;
-  author: string;
-  src: string;
-  thumbnail?: string;
-  duration?: number;
-  createdAt?: Date;
-  likes: number;
-  comments: number;
-  saves: number;
-  shares: number;
-  liked: boolean;
 }

@@ -17,16 +17,8 @@
         <span class="nav-label">Para ti</span>
       </button>
       <button class="nav-item">
-        <span class="nav-icon">🧭</span>
-        <span class="nav-label">Explorar</span>
-      </button>
-      <button class="nav-item">
         <span class="nav-icon">👥</span>
         <span class="nav-label">Siguiendo</span>
-      </button>
-      <button class="nav-item">
-        <span class="nav-icon">📺</span>
-        <span class="nav-label">LIVE</span>
       </button>
       <button class="nav-item" (click)="showForm = !showForm">
         <span class="nav-icon">➕</span>
@@ -36,10 +28,7 @@
         <span class="nav-icon">👤</span>
         <span class="nav-label">Perfil</span>
       </button>
-      <button class="nav-item">
-        <span class="nav-icon">⋯</span>
-        <span class="nav-label">Más</span>
-      </button>
+      
     </nav>
 
     <button class="login-btn">Iniciar sesión</button>
@@ -66,13 +55,16 @@
   <!-- Área principal del video -->
   <main class="video-feed" *ngIf="current as reel">
     <div class="video-container">
-      <video 
-        [src]="reel.src" 
-        autoplay 
-        loop 
-        playsinline
-        class="main-video"
-      ></video>
+      <div class="video-frame">
+        <video 
+          #videoPlayer
+          [src]="reel.src" 
+          autoplay 
+          loop 
+          playsinline
+          class="main-video"
+          (timeupdate)="onVideoTimeUpdate($event)"
+        ></video>
 
       <!-- Información overlay en la parte inferior -->
       <div class="video-info-overlay">
@@ -92,24 +84,75 @@
         </div>
       </div>
 
-      <!-- Flechas de navegación -->
-      <button class="nav-arrow arrow-up" (click)="prev()" [disabled]="currentIndex === 0" aria-label="Video anterior">
-        <span>▲</span>
-      </button>
-      <button class="nav-arrow arrow-down" (click)="next()" [disabled]="currentIndex === reels.length - 1" aria-label="Siguiente video">
-        <span>▼</span>
-      </button>
+      <!-- Controles superiores estilo TikTok -->
+      <div class="top-controls">
+        <button class="ctrl-icon-btn play-btn" (click)="togglePlay()" aria-label="Play/Pause" [class.playing]="isPlaying">
+          <!-- SVG icon: switches visually with CSS by toggling .playing on the button -->
+          <svg class="play-svg" viewBox="0 0 64 64" aria-hidden="true">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#FF6028"/>
+                <stop offset="1" stop-color="#FB8C71"/>
+              </linearGradient>
+            </defs>
+            <!-- play triangle -->
+            <g class="icon-play">
+              <path d="M22 16 L50 32 L22 48 Z" fill="url(#g1)" />
+            </g>
+            <!-- pause bars -->
+            <g class="icon-pause" fill="url(#g1)">
+              <rect x="20" y="16" width="8" height="32" rx="2" />
+              <rect x="36" y="16" width="8" height="32" rx="2" />
+            </g>
+          </svg>
+        </button>
+        <button class="ctrl-icon-btn mute-btn" (click)="toggleMute()" aria-label="Mute/Unmute" [class.muted]="isMuted">
+          <!-- SVG for mute/unmute: icon switches by toggling .muted on the button -->
+          <svg class="mute-svg" viewBox="0 0 64 64" aria-hidden="true">
+            <!-- unmuted: speaker + waves -->
+            <g class="icon-unmuted" fill="#fff" opacity="0.95">
+              <path d="M14 26v12c0 1.1.9 2 2 2h6l10 8V16L22 26h-6c-1.1 0-2 .9-2 2z" />
+              <path class="wave1" d="M44 24c1.5 2 2.4 4.5 2.4 7s-.9 5-2.4 7" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.9"/>
+              <path class="wave2" d="M48 20c3 4 4.8 8.6 4.8 14s-1.8 10-4.8 14" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.75"/>
+            </g>
+            <!-- muted: speaker with cross -->
+            <g class="icon-muted" fill="#fff" opacity="0">
+              <path d="M14 26v12c0 1.1.9 2 2 2h6l10 8V16L22 26h-6c-1.1 0-2 .9-2 2z" />
+              <g stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M44 20 L52 28 M52 20 L44 28" />
+              </g>
+            </g>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Barra de progreso (solo visible al hover sobre el video) -->
+      <div class="progress-wrapper">
+        <div class="progress-inner">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="0.1"
+            class="progress-bar"
+            [value]="seekValue"
+            (input)="onSeek($event)"
+            aria-label="Barra de progreso del video"
+          />
+          <div class="progress-times">
+            <span class="time current">{{ formatTime(currentTime) }}</span>
+            <span class="time sep">/</span>
+            <span class="time total">{{ formatTime(duration) }}</span>
+          </div>
+        </div>
+      </div>
+      </div><!-- .video-frame -->
+      <!-- Navegación por scroll o gestos: flechas removidas -->
     </div>
   </main>
 
   <!-- Barra de acciones derecha -->
   <aside class="actions-sidebar" *ngIf="current as reel">
-    <!-- Botones superiores -->
-    <div class="top-actions">
-      <button class="top-btn">Obtener M...</button>
-      <button class="top-btn">Obtener la...</button>
-    </div>
-
     <!-- Avatar del autor con botón follow -->
     <div class="action-item author-action">
       <div class="action-avatar">
@@ -125,7 +168,7 @@
     </button>
 
     <!-- Botón de comentarios -->
-    <button class="action-item">
+    <button class="action-item" (click)="toggleCommentsPanel()">
       <div class="action-icon">💬</div>
       <span class="action-count">{{ reel.comments >= 1000 ? (reel.comments/1000 | number:'1.0-1') + 'K' : reel.comments }}</span>
     </button>
@@ -141,10 +184,20 @@
       <div class="action-icon">↗️</div>
       <span class="action-count">{{ reel.shares >= 1000 ? (reel.shares/1000 | number:'1.0-1') + 'K' : reel.shares }}</span>
     </button>
-
-    <!-- Indicador adicional -->
-    <div class="extra-indicator">
-      <span class="indicator-count">{{ currentIndex + 1 }}/{{ reels.length }}</span>
-    </div>
   </aside>
+  <!-- Panel de comentarios -->
+  <div class="comments-panel" *ngIf="showComments && current as reel">
+    <div class="cp-header">
+      <h3>Comentarios</h3>
+      <button class="cp-close" (click)="toggleCommentsPanel()">×</button>
+    </div>
+    <div class="cp-body">
+      <div class="comment-item" *ngFor="let c of reel.commentList">{{ c.text }} <span class="date">{{ c.createdAt | date:'shortTime' }}</span></div>
+      <div *ngIf="!reel.commentList || reel.commentList.length === 0" class="empty">Sé el primero en comentar.</div>
+    </div>
+    <form class="cp-form" (ngSubmit)="submitComment(reel)">
+      <input type="text" [(ngModel)]="newCommentText" name="comment" placeholder="Escribe un comentario..." autocomplete="off" />
+      <button type="submit" [disabled]="!newCommentText.trim()">Enviar</button>
+    </form>
+  </div>
 </div>

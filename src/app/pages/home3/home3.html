@@ -61,22 +61,25 @@
 
 		<!-- placeholder panels -->
 		<section class="panel" *ngIf="activeSection !== 'dashboard'">
-			<button class="back" (click)="backToDashboard()">← Volver</button>
+			<button class="back back-btn" (click)="backToDashboard()" aria-label="Volver al panel">
+				<svg viewBox="0 0 24 24" class="back-svg" aria-hidden="true">
+					<path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+				</svg>
+				<span class="back-text">Volver</span>
+			</button>
 			<div *ngIf="activeSection === 'create'">
 				<h2>Crear curso</h2>
 				<p>Formulario de creación (placeholder). Aquí puedes diseñar el flujo de creación de curso.</p>
 			</div>
 			<div *ngIf="activeSection === 'stats'">
-				<h2>Estadísticas</h2>
-				<p>Gráficas y métricas (placeholder).</p>
+				<app-statistics></app-statistics>
 			</div>
 			<div *ngIf="activeSection === 'profile'">
 				<h2>Perfil de creador</h2>
 				<p>Formulario de perfil (placeholder).</p>
 			</div>
 			<div *ngIf="activeSection === 'reels'">
-				<h2>Crear Reels</h2>
-				<p>Editor de reels (placeholder).</p>
+				<app-create-reels></app-create-reels>
 			</div>
 		</section>
 	</main>
