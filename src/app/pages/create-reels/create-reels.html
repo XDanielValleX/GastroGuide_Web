@@ -1,0 +1,53 @@
+<section class="create-reels card">
+	<header class="card-head">
+		<h2><span class="accent-dot" aria-hidden></span>Crear nuevo Reel</h2>
+		<p class="muted">Sube un video o pega una URL. El reel se agregará al feed inmediatamente.</p>
+	</header>
+
+	<div class="alert-wrapper">
+		<div class="alert" *ngIf="alertVisible" [class.success]="alertType === 'success'" [class.error]="alertType === 'error'" role="alert">
+			<span class="msg">{{ alertMessage }}</span>
+			<button class="close" aria-label="Cerrar alerta" (click)="dismissAlert()">×</button>
+		</div>
+	</div>
+
+	<form class="grid-form" (submit)="create(); $event.preventDefault()">
+		<div class="form-column">
+			<label>Título</label>
+			<input type="text" [(ngModel)]="title" name="title" placeholder="Título llamativo" />
+
+			<label>Autor (opcional)</label>
+			<input type="text" [(ngModel)]="author" name="author" placeholder="Tu nombre o usuario" />
+
+			<label>Video (archivo)</label>
+			<input type="file" accept="video/*" (change)="onFileSelected($event)" />
+			<div class="file-info" *ngIf="fileName">Archivo: <strong>{{ fileName }}</strong></div>
+			<div class="chip-row">
+				<div class="chip orange">Formato MP4</div>
+				<div class="chip pink">Privado</div>
+				<div class="chip neutral">Sin etiquetas</div>
+			</div>
+
+			<label>o Video (URL)</label>
+			<input type="text" [(ngModel)]="src" name="src" placeholder="https://... (opcional)" />
+
+			<div class="actions">
+				<button type="submit" class="btn primary">Publicar Reel</button>
+				<button type="button" class="btn ghost" (click)="title=''; author=''; src=''; fileName=''">Cancelar</button>
+			</div>
+		</div>
+
+		<aside class="preview-column">
+			<div class="preview-box" *ngIf="src; else emptyPreview">
+				<video [src]="src" controls muted playsinline></video>
+				<div class="preview-overlay">
+					<div class="tag">Preview</div>
+					<div class="tag">HD</div>
+				</div>
+			</div>
+			<ng-template #emptyPreview>
+				<div class="preview-empty">Vista previa del video aparecerá aquí</div>
+			</ng-template>
+		</aside>
+	</form>
+</section>
