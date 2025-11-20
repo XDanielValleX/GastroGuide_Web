@@ -31,10 +31,10 @@ export class Signup {
   const password = (formData.get('password') || '').toString();
   const confirm = (formData.get('confirm') || '').toString();
 
-    if (username.length < 3) {
+    /*if (username.length < 3) {
       this.message = 'El username debe tener al menos 3 caracteres.';
       return;
-    }
+    }*/
 
     if (password !== confirm) {
       this.message = 'Las contraseñas no coinciden.';
@@ -57,7 +57,7 @@ export class Signup {
     this.message = '';
 
     // Enviar el payload incluyendo username (ajustar si backend usa 'name')
-    const payload: any = { email, password, confirmPassword: confirm, username };
+    const payload: any = { email, password, confirmPassword: confirm };
     console.debug('Register payload:', payload);
     this.http.post(`${environment.apiUrl}/api/v1/auth/register`, payload).subscribe({
       next: () => {
