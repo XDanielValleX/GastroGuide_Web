@@ -5,13 +5,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { AlertDialog } from '../../shared/alert/alert';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
   templateUrl: './signup.html',
   styleUrls: ['./signup.css'],
-  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule] // ✅ necesario
+  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule, AlertDialog] // ✅ necesario
 })
 export class Signup {
   message: string = '';
@@ -25,9 +27,21 @@ export class Signup {
     if (!form) return;
 
   const formData = new FormData(form);
+  const username = (formData.get('username') || '').toString().trim();
   const email = (formData.get('email') || '').toString().trim();
   const password = (formData.get('password') || '').toString();
   const confirm = (formData.get('confirm') || '').toString();
+
+    /*if (username.length < 3) {
+      this.message = 'El username debe tener al menos 3 caracteres.';
+      return;
+    }*/
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailPattern.test(email)) {
+      this.message = 'Ingresa un correo válido (ej. usuario@dominio.com).';
+      return;
+    }
 
     if (password !== confirm) {
       this.message = 'Las contraseñas no coinciden.';
@@ -49,12 +63,20 @@ export class Signup {
     this.loading = true;
     this.message = '';
 
-    // Enviar el payload que el backend espera (no enviar 'username' si el backend no lo reconoce)
-    const payload = { email, password, confirmPassword: confirm };
+    // Enviar el payload incluyendo username (ajustar si backend usa 'name')
+    const payload: any = { email, password, confirmPassword: confirm };
     console.debug('Register payload:', payload);
-    this.http.post(`${environment.apiUrl}/api/v1/auth/register`, payload).subscribe({
+    this.http.post(`${environment.apiUrl}/api/v1/auth/register`, payload)
+      .pipe(finalize(() => {
+        this.loading = false;
+      }))
+      .subscribe({
       next: () => {
         this.message = 'Registro exitoso. Redirigiendo al login...';
+        // Persistencia mínima local para que el perfil muestre datos
+        try {
+          localStorage.setItem('user', JSON.stringify({ name: username, email }));
+        } catch {}
         setTimeout(() => this.router.navigate(['/login']), 1000);
       },
       error: (err) => {
@@ -70,9 +92,6 @@ export class Signup {
         } else {
           this.message = 'Error registrando usuario.';
         }
-      },
-      complete: () => {
-        this.loading = false;
       }
     });
   }

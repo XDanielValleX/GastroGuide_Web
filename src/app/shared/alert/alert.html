@@ -1,0 +1,9 @@
+<div class="alert-overlay" *ngIf="visible" (click)="onBackdrop()">
+  <div class="alert-bubble" [ngClass]="[type, closing ? 'closing' : '']" (click)="$event.stopPropagation()" role="alertdialog" aria-live="assertive">
+    <button #closeBtn type="button" class="close" (click)="closeAlert()" aria-label="Cerrar">✕</button>
+    <div class="content">
+      <div class="icon">{{ icon }}</div>
+      <div class="msg">{{ message }}</div>
+    </div>
+  </div>
+</div>

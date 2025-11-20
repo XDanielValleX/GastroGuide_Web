@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./profile.css'],
   imports: [CommonModule, FormsModule, HttpClientModule]
 })
-export class Profile {
+export class Profile implements OnInit {
 
   user = {
     name: "Daniel Valle",
@@ -54,6 +54,23 @@ export class Profile {
 
   constructor(private router: Router, private http: HttpClient) {}
 
+  ngOnInit() {
+    // Cargar datos persistidos (incluida la imagen) si existen
+    try {
+      const cached = localStorage.getItem('user');
+      if (cached) {
+        const cachedUser = JSON.parse(cached);
+        // Merge para no perder propiedades por guardar sólo username/email tras signup
+        this.user = { ...this.user, ...cachedUser };
+        // Si backend guarda 'username' en lugar de 'name'
+        if ((cachedUser as any).username && !cachedUser.name) {
+          this.user.name = (cachedUser as any).username;
+        }
+        this.originalEditable = this.pickEditable();
+      }
+    } catch {}
+  }
+
   activarEdicion() {
     this.modoEdicion = true;
   }
@@ -66,12 +83,14 @@ export class Profile {
     this.http.put(url, payload).subscribe({
       next: () => {
         this.originalEditable = { ...payload };
+        try { localStorage.setItem('user', JSON.stringify({ ...this.user, ...payload })); } catch {}
         this.modoEdicion = false;
         this.showToast('Cambios guardados correctamente');
       },
       error: () => {
         // Simulación si el backend aún no está listo
         this.originalEditable = { ...payload };
+        try { localStorage.setItem('user', JSON.stringify({ ...this.user, ...payload })); } catch {}
         this.modoEdicion = false;
         this.showToast('Guardado local simulado. Configura el endpoint cuando esté listo.');
       }
@@ -80,6 +99,10 @@ export class Profile {
 
   irAlInicio() {
     this.router.navigateByUrl('/home2');
+  }
+
+  irACambiarPassword() {
+    this.router.navigateByUrl('/password-chg');
   }
 
   // --- selector de imagen ---
@@ -94,6 +117,8 @@ export class Profile {
     const reader = new FileReader();
     reader.onload = () => {
       this.user.image = reader.result as string;
+      // Al cambiar imagen, habilitar botón Guardar
+      this.runValidation();
     };
     reader.readAsDataURL(file);
   }
@@ -108,8 +133,8 @@ export class Profile {
   }
 
   private pickEditable() {
-    const { name, bio, birthDate, phone, gender, address } = this.user as any;
-    return { name, bio, birthDate, phone, gender, address };
+    const { name, bio, birthDate, phone, gender, address, image } = this.user as any;
+    return { name, bio, birthDate, phone, gender, address, image };
   }
 
   private runValidation() {

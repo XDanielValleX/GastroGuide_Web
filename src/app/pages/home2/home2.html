@@ -18,7 +18,9 @@
       <a routerLink="/home2/comprar" routerLinkActive="active">🛒 Comprar Cursos</a>
       <a routerLink="/home2/crear" routerLinkActive="active">✏️ Crear Recetas</a>
       <a routerLink="/home2/carrito" routerLinkActive="active">🧺 Carrito</a>
-      <button class="logout-btn" (click)="onLogout()">⎋ Cerrar sesión</button>
+      <button class="logout-btn" (click)="onLogout()" [disabled]="loggingOut">
+        {{ loggingOut ? '⏳ Cerrando...' : '⎋ Cerrar sesión' }}
+      </button>
     </nav>
   </aside>
 

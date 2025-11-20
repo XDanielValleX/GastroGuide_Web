@@ -13,7 +13,8 @@
         <h4>• <span>Create Account</span> •</h4>
         <p>Regístrate para empezar a usar <strong>GastroGuide</strong>:</p>
 
-        <p class="form-message">{{message}}</p>
+        <!-- Mensajes -->
+        <app-alert *ngIf="message" [message]="message" type="error" (close)="message=''"></app-alert>
 
         <!-- Username -->
 

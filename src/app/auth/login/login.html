@@ -10,7 +10,7 @@
   </div>
 
 
-  <form class="log-in" (ngSubmit)="onSubmit()" #loginForm="ngForm">
+  <form class="log-in" (ngSubmit)="onSubmit(loginForm)" #loginForm="ngForm">
     <h4>• <span>GastroGuide</span> •</h4>
     <p>¡Bienvenido! Inicia sesión en tu cuenta para ver las nuevas recetas:</p>
 
@@ -38,7 +38,7 @@
         </svg>
       </div>
     </div>
-    <div *ngIf="error" class="error" role="alert" aria-live="assertive">{{ error }}</div>
+    <app-alert *ngIf="error" [message]="error" type="error" (close)="error=null"></app-alert>
 
     <button type="submit" [disabled]="loading">{{ loading ? 'Ingresando...' : 'Log in' }}</button>
     <a routerLink="/password-fg" class="discrete">Forgot password?</a>

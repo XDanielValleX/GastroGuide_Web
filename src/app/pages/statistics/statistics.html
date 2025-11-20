@@ -1,0 +1,50 @@
+<div class="stats-wrapper">
+	<header class="stats-header">
+		<h2>Panel de estadísticas</h2>
+		<p class="muted">Engagement de tus reels (vistas, likes y comentarios). Cursos llegará pronto.</p>
+	</header>
+
+	<section class="stats-cards">
+		<div class="stat-card views">
+			<h3>Vistas</h3>
+			<p class="big">{{ totals.views }}</p>
+			<div class="bar"><span [style.width]="totals.views === 0 ? '4px' : calcWidth(totals.views)" ></span></div>
+		</div>
+		<div class="stat-card likes">
+			<h3>Likes</h3>
+			<p class="big">{{ totals.likes }}</p>
+			<div class="bar"><span [style.width]="totals.likes === 0 ? '4px' : calcWidth(totals.likes)"></span></div>
+		</div>
+		<div class="stat-card comments">
+			<h3>Comentarios</h3>
+			<p class="big">{{ totals.comments }}</p>
+			<div class="bar"><span [style.width]="totals.comments === 0 ? '4px' : calcWidth(totals.comments)"></span></div>
+		</div>
+	</section>
+
+	<section class="top-reels" *ngIf="top.length">
+		<h4>Top Reels</h4>
+		<div class="list">
+			<div class="row" *ngFor="let r of top; let i = index">
+				<div class="rank">#{{ i+1 }}</div>
+				<div class="metrics">
+					<div class="title">Reel {{ r.id }}</div>
+					<div class="tags">
+						<span class="tag">👁 {{ r.views }}</span>
+						<span class="tag">❤️ {{ r.likes }}</span>
+						<span class="tag">💬 {{ r.comments }}</span>
+					</div>
+				</div>
+				<div class="bars">
+					<div class="mini-bar"><span [style.width]="miniWidth(r.views)"></span></div>
+					<div class="mini-bar like"><span [style.width]="miniWidth(r.likes)"></span></div>
+					<div class="mini-bar comment"><span [style.width]="miniWidth(r.comments)"></span></div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<footer class="stats-footer">
+		<small>⚠️ Métricas simuladas en memoria. Se persistirán y ampliarán con cursos más adelante.</small>
+	</footer>
+</div>
