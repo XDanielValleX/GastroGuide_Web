@@ -11,7 +11,7 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./header2.css']
 })
 export class Header2 {
-  @Input() user: { name: string; image: string } | null = null;
+  @Input() user: { name?: string; username?: string; email?: string; image?: string } | null = null;
   @Output() search = new EventEmitter<string>();
   @Output() logout = new EventEmitter<void>();
 

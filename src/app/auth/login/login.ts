@@ -7,6 +7,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AlertDialog } from '../../shared/alert/alert';
 import { finalize } from 'rxjs/operators';
+import { UserSessionService, UserProfile } from '../../shared/user-session.service';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,11 @@ export class Login {
   loading: boolean = false;
   error: string | null = null;
 
-  constructor(private router: Router, private http: HttpClient) { }
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private userSession: UserSessionService
+  ) { }
 
   // ✅ Métodos para los botones de navegación
   onForgotPassword() {
@@ -67,12 +72,22 @@ export class Login {
       next: (resp) => {
         // Intentar extraer el token de forma flexible
         const token = resp?.token || resp?.accessToken || resp?.access_token || resp?.data?.token;
-        if (token) {
-          localStorage.setItem('token', token);
-        } else {
-          // Si no viene token explícito, guardar la respuesta completa (por compatibilidad)
-          localStorage.setItem('auth', JSON.stringify(resp));
-        }
+            if (token) {
+              localStorage.setItem('token', token);
+            } else {
+              // Si no viene token explícito, guardar la respuesta completa (por compatibilidad)
+              localStorage.setItem('auth', JSON.stringify(resp));
+            }
+
+            // Intentar cachear el perfil usando los datos devueltos por el backend
+            const profileFromResponse = this.extractUserProfile(resp);
+            if (profileFromResponse) {
+              this.userSession.persistUser(profileFromResponse);
+            }
+
+            // Refrescar datos del usuario para sincronizar con la API oficial
+            this.userSession.refreshFromApi().subscribe();
+
         // Redirigir a la ruta principal (ajusta según tu app)
         this.router.navigate(['/home2']);
       },
@@ -84,4 +99,26 @@ export class Login {
   }
 
 
+  private extractUserProfile(resp: any): Partial<UserProfile> | null {
+    if (!resp) {
+      return null;
+    }
+
+    const candidate = resp.user || resp.profile || resp.data?.user || resp.data?.profile || resp.data;
+    if (candidate && (candidate.name || candidate.username || candidate.email)) {
+      return {
+        name: candidate.name,
+        username: candidate.username,
+        email: candidate.email,
+        image: candidate.image
+      };
+    }
+
+    // Como último recurso, guardar sólo el correo que acaba de iniciar sesión
+    if (this.email) {
+      return { email: this.email };
+    }
+
+    return null;
+  }
 }

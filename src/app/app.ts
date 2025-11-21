@@ -40,7 +40,9 @@ export class AppComponent {
       this.currentRoute.startsWith('/password-fg') ||
       this.currentRoute.startsWith('/password-chg') ||
       this.currentRoute.startsWith('/reels') ||
-      this.currentRoute.startsWith('/create-course')
+      this.currentRoute.startsWith('/create-course') ||
+      this.currentRoute.startsWith('/profile') ||
+      this.currentRoute.startsWith('/profile-creator')
     );
   }
 }

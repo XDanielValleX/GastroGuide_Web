@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { UserSessionService, UserProfile } from '../../shared/user-session.service';
 
 @Component({
   selector: 'app-profile',
@@ -13,62 +13,33 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./profile.css'],
   imports: [CommonModule, FormsModule, HttpClientModule]
 })
-export class Profile implements OnInit {
+export class Profile implements OnInit, OnDestroy {
 
-  user = {
-    name: "Daniel Valle",
-    email: "usuario@gmail.com",
-    joined: "Enero 2025",
-    role: "Usuario",
-
-    image: "assets/profile.jpg",
-
-    // DATOS NUEVOS DEL HTML VIEJO
-    courses: 12,
-    videos: 45,
-    badges: 8,
-    recipes: 5,
-
-    bio: "Amante de la cocina internacional 🌎✨. Siempre buscando nuevas técnicas y sabores para mejorar mis habilidades culinarias.",
-
-    // Datos personales editables
-    birthDate: "2000-01-01",
-    phone: "+51 999 999 999",
-    gender: "Masculino",
-    address: "Av. Siempre Viva 123",
-
-    achievements: [
-      "🍝 Certificado en Cocina Italiana",
-      "🍰 Curso de Postres completado en 1 semana",
-      "🏅 Insignia de Participación destacada"
-    ]
-  };
+  user: UserProfile = this.baseProfile();
 
   modoEdicion: boolean = false;
   toast: string | null = null;
+  saving = false;
 
   // Estado de validación y comparación
   isValid: boolean = true;
   validation = { birthDate: true, phone: true, name: true };
   private originalEditable = this.pickEditable();
+  private userSub?: Subscription;
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(
+    private router: Router,
+    private userSession: UserSessionService
+  ) {}
 
   ngOnInit() {
-    // Cargar datos persistidos (incluida la imagen) si existen
-    try {
-      const cached = localStorage.getItem('user');
-      if (cached) {
-        const cachedUser = JSON.parse(cached);
-        // Merge para no perder propiedades por guardar sólo username/email tras signup
-        this.user = { ...this.user, ...cachedUser };
-        // Si backend guarda 'username' en lugar de 'name'
-        if ((cachedUser as any).username && !cachedUser.name) {
-          this.user.name = (cachedUser as any).username;
-        }
-        this.originalEditable = this.pickEditable();
-      }
-    } catch {}
+    this.applyProfile(this.userSession.snapshot);
+    this.userSub = this.userSession.user$.subscribe((profile) => this.applyProfile(profile));
+    this.userSession.refreshFromApi().subscribe();
+  }
+
+  ngOnDestroy() {
+    this.userSub?.unsubscribe();
   }
 
   activarEdicion() {
@@ -76,23 +47,22 @@ export class Profile implements OnInit {
   }
 
   guardarCambios() {
-    if (!this.modoEdicion || !this.isValid || !this.hasChanges) return;
+    if (!this.modoEdicion || !this.isValid || !this.hasChanges || this.saving) return;
 
     const payload = this.pickEditable();
-    const url = `${environment.apiUrl}/users/me`;
-    this.http.put(url, payload).subscribe({
-      next: () => {
-        this.originalEditable = { ...payload };
-        try { localStorage.setItem('user', JSON.stringify({ ...this.user, ...payload })); } catch {}
+    this.saving = true;
+    this.userSession.updateProfile(payload).subscribe({
+      next: (updated) => {
+        this.applyProfile(updated);
+        this.originalEditable = this.pickEditable();
         this.modoEdicion = false;
+        this.saving = false;
         this.showToast('Cambios guardados correctamente');
       },
-      error: () => {
-        // Simulación si el backend aún no está listo
-        this.originalEditable = { ...payload };
-        try { localStorage.setItem('user', JSON.stringify({ ...this.user, ...payload })); } catch {}
-        this.modoEdicion = false;
-        this.showToast('Guardado local simulado. Configura el endpoint cuando esté listo.');
+      error: (err) => {
+        this.saving = false;
+        const message = err?.error?.message || err?.message || 'No se pudo guardar los cambios';
+        this.showToast(message);
       }
     });
   }
@@ -133,15 +103,25 @@ export class Profile implements OnInit {
   }
 
   private pickEditable() {
-    const { name, bio, birthDate, phone, gender, address, image } = this.user as any;
-    return { name, bio, birthDate, phone, gender, address, image };
+    const base = this.baseProfile();
+    const { name, bio, birthDate, phone, gender, address, image } = this.user as UserProfile;
+    return {
+      name: name || '',
+      bio: bio || '',
+      birthDate: birthDate || '',
+      phone: phone || '',
+      gender: gender || '',
+      address: address || '',
+      image: image || base.image
+    };
   }
 
   private runValidation() {
-    const d = new Date(this.user.birthDate);
-    this.validation.birthDate = !isNaN(d.getTime());
+    const birthDateValue = this.user.birthDate;
+    const d = birthDateValue ? new Date(birthDateValue) : null;
+    this.validation.birthDate = !birthDateValue || (d !== null && !isNaN(d.getTime()));
     const digits = (this.user.phone || '').replace(/\D/g, '');
-    this.validation.phone = digits.length >= 9;
+    this.validation.phone = digits.length === 0 || digits.length >= 9;
     this.validation.name = (this.user.name || '').trim().length >= 3;
     this.isValid = Object.values(this.validation).every(Boolean);
   }
@@ -149,5 +129,50 @@ export class Profile implements OnInit {
   private showToast(msg: string) {
     this.toast = msg;
     setTimeout(() => (this.toast = null), 2500);
+  }
+
+  private applyProfile(profile: UserProfile | null | undefined) {
+    if (!profile) {
+      this.user = { ...this.baseProfile(), ...this.user };
+      this.originalEditable = this.pickEditable();
+      this.runValidation();
+      return;
+    }
+
+    const base = this.baseProfile();
+    const normalizedName = (profile.name || profile.username || '').trim();
+    const mergedAchievements = Array.isArray(profile.achievements) ? profile.achievements : (this.user.achievements || []);
+
+    this.user = {
+      ...base,
+      ...this.user,
+      ...profile,
+      image: profile.image || this.user.image || base.image,
+      achievements: mergedAchievements
+    };
+    this.user.name = normalizedName || this.user.name || profile.email || '';
+    this.originalEditable = this.pickEditable();
+    this.runValidation();
+  }
+
+  private baseProfile(): UserProfile {
+    return {
+      name: '',
+      username: '',
+      email: '',
+      role: '',
+      image: 'assets/profile.jpg',
+      joined: '',
+      courses: 0,
+      videos: 0,
+      badges: 0,
+      recipes: 0,
+      achievements: [],
+      bio: '',
+      birthDate: '',
+      phone: '',
+      gender: '',
+      address: ''
+    };
   }
 }
