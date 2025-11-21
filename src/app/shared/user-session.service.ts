@@ -1,11 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 export interface UserProfile {
-    id?: string;
+    id?: string | number;
     name?: string;
     username?: string;
     email?: string;
@@ -13,9 +10,14 @@ export interface UserProfile {
     bio?: string;
     birthDate?: string;
     phone?: string;
+    phoneNumber?: string;
+    dateOfBirth?: string;
     gender?: string;
     address?: string;
     role?: string;
+    roles?: string[];
+    active?: boolean;
+    expiresIn?: number;
     joined?: string;
     courses?: number;
     videos?: number;
@@ -28,12 +30,11 @@ export interface UserProfile {
 @Injectable({ providedIn: 'root' })
 export class UserSessionService {
     private readonly storageKey = 'user';
-    private readonly endpoint = `${environment.apiUrl}/api/v1/users/me`;
     private readonly userSubject = new BehaviorSubject<UserProfile | null>(this.restoreCachedUser());
 
     readonly user$ = this.userSubject.asObservable();
 
-    constructor(private http: HttpClient) { }
+    constructor() { }
 
     get snapshot(): UserProfile | null {
         return this.userSubject.value;
@@ -64,36 +65,34 @@ export class UserSessionService {
         return null;
     }
 
-    refreshFromApi(): Observable<UserProfile | null> {
-        const token = this.getToken();
-        if (!token) {
-            return of(this.userSubject.value);
+    ensureProfileLoaded(): Observable<UserProfile | null> {
+        const snapshot = this.userSubject.value;
+        if (snapshot && (snapshot.email || snapshot.id)) {
+            return of(snapshot);
         }
-
-        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        return this.http.get<UserProfile>(this.endpoint, { headers }).pipe(
-            tap((profile) => this.persistUser(profile)),
-            catchError((err) => {
-                console.warn('No se pudo actualizar el perfil desde la API.', err);
-                return of(this.userSubject.value);
-            })
-        );
+        const restored = this.restoreCachedUser();
+        if (restored) {
+            this.userSubject.next(restored);
+        }
+        return of(restored);
     }
 
     updateProfile(patch: Partial<UserProfile>): Observable<UserProfile> {
-        const token = this.getToken();
-        if (!token) {
-            return throwError(() => new Error('No hay token de autenticación. Inicia sesión nuevamente.'));
-        }
-
-        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-        return this.http.put<UserProfile>(this.endpoint, patch, { headers }).pipe(
-            tap((profile) => this.persistUser(profile))
-        );
+        const merged = this.persistUser(patch);
+        return of(merged);
     }
 
     persistUser(partial: Partial<UserProfile>): UserProfile {
-        const merged = { ...(this.userSubject.value || {}), ...partial } as UserProfile;
+        const normalized = this.normalizeIncomingProfile(partial);
+        const merged = { ...(this.userSubject.value || {}), ...normalized } as UserProfile;
+        if (!merged.role) {
+            const fallbackRole = this.extractRoleFromToken();
+            if (fallbackRole) {
+                merged.role = fallbackRole;
+            }
+        } else {
+            merged.role = this.normalizeRole(merged.role) || undefined;
+        }
         this.userSubject.next(merged);
         try {
             localStorage.setItem(this.storageKey, JSON.stringify(merged));
@@ -114,9 +113,100 @@ export class UserSessionService {
     private restoreCachedUser(): UserProfile | null {
         try {
             const cached = localStorage.getItem(this.storageKey);
-            return cached ? (JSON.parse(cached) as UserProfile) : null;
+            if (!cached) {
+                return null;
+            }
+            const parsed = JSON.parse(cached) as UserProfile;
+            const normalized = this.normalizeIncomingProfile(parsed);
+            if (parsed?.role) {
+                normalized.role = this.normalizeRole(parsed.role) || undefined;
+            } else {
+                const role = this.extractRoleFromToken();
+                if (role) {
+                    normalized.role = role;
+                }
+            }
+            return normalized;
         } catch {
             return null;
         }
+    }
+
+    getRole(profile: UserProfile | null = this.userSubject.value): string | null {
+        if (profile?.role) {
+            return this.normalizeRole(profile.role);
+        }
+        if (Array.isArray(profile?.roles) && profile.roles.length) {
+            return this.normalizeRole(profile.roles[0]);
+        }
+        return this.extractRoleFromToken();
+    }
+
+    private extractRoleFromToken(token?: string | null): string | null {
+        const value = token ?? this.getToken();
+        if (!value) {
+            return null;
+        }
+        const payload = this.decodeToken(value);
+        const roleClaim =
+            payload?.role ||
+            payload?.rol ||
+            payload?.authorities?.[0] ||
+            payload?.roles?.[0] ||
+            payload?.claims?.role;
+        if (!roleClaim) {
+            return null;
+        }
+        return this.normalizeRole(roleClaim);
+    }
+
+    private normalizeRole(role?: string | null): string | null {
+        if (!role) {
+            return null;
+        }
+        return role.replace(/^ROLE_/i, '').trim().toUpperCase();
+    }
+
+    private decodeToken(token: string): any | null {
+        try {
+            const [, payload] = token.split('.');
+            if (!payload) {
+                return null;
+            }
+            const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+            if (typeof atob !== 'function') {
+                return null;
+            }
+            const decoded = atob(normalized);
+            return JSON.parse(decoded);
+        } catch {
+            return null;
+        }
+    }
+
+    private normalizeIncomingProfile(profile?: Partial<UserProfile> | null): Partial<UserProfile> {
+        if (!profile) {
+            return {};
+        }
+
+        const normalized: Partial<UserProfile> = { ...profile };
+
+        if (!normalized.phone && typeof normalized.phoneNumber === 'string') {
+            normalized.phone = normalized.phoneNumber;
+        }
+
+        if (!normalized.birthDate && typeof normalized.dateOfBirth === 'string') {
+            normalized.birthDate = normalized.dateOfBirth;
+        }
+
+        if (!normalized.name && normalized.username) {
+            normalized.name = normalized.username;
+        }
+
+        if (!normalized.username && normalized.email) {
+            normalized.username = normalized.email.split('@')[0];
+        }
+
+        return normalized;
     }
 }

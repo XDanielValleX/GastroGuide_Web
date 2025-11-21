@@ -14,6 +14,8 @@ import { Reels } from './pages/reels/reels';
 import { Profile } from './pages/profile/profile';
 import { CreateCourse } from './pages/create-course/create-course';
 import { ProfileC } from './pages/profile-c/profile-c';
+import { AuthGuard } from './shared/auth.guard';
+import { RoleGuard } from './shared/role.guard';
 
 
 export const routes: Routes = [
@@ -23,14 +25,29 @@ export const routes: Routes = [
   { path: 'password-fg', component: PasswordFG },
   { path: 'password-chg/:token', component: PasswordCHG },
   { path: 'password-chg', component: PasswordCHG },
-  { path: 'home2', component: Home2 },
-  { path: 'create-course', component: CreateCourse },
-  { path: 'home3', component: Home3 },
+  { path: 'home2', component: Home2, canActivate: [AuthGuard] },
+  {
+    path: 'create-course',
+    component: CreateCourse,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['CREATOR'] }
+  },
+  {
+    path: 'home3',
+    component: Home3,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['CREATOR'] }
+  },
   { path: 'nosotros', component: About },
   { path: 'blog', component: Blog },
   { path: 'contacto', component: Contact },
   { path: 'courses', component: Courses },
   { path: 'reels', component: Reels },
-  { path: 'profile', component: Profile },
-  { path: 'profile-creator', component: ProfileC }
+  { path: 'profile', component: Profile, canActivate: [AuthGuard] },
+  {
+    path: 'profile-creator',
+    component: ProfileC,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['CREATOR'] }
+  }
 ];
