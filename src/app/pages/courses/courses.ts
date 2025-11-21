@@ -209,8 +209,4 @@ export class Courses {
       // ignore
     }
   }
-
-  goDetail(course: Course) {
-    this.router.navigate(['/courses', course.id], { state: { coverImage: course.image, title: course.title, instructor: course.instructor } });
-  }
 }

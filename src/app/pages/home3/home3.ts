@@ -6,10 +6,6 @@ import { Statistics } from '../statistics/statistics';
 import { CreateReels } from '../create-reels/create-reels';
 import { ProfileC } from '../profile-c/profile-c';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ReelsService } from '../../shared/reels.service';
-import { UsersService } from '../../shared/users.service';
-import { CoursesService } from '../../shared/courses.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home3',
@@ -23,28 +19,13 @@ export class Home3 implements OnInit {
   activeSection: 'dashboard' | 'create' | 'stats' | 'profile' | 'reels' = 'dashboard';
   showHeader: boolean = true;
 
-  coursesCount: number = 0;
-  usersCount: number = 0;
-  reelsCount: number = 0;
-  private subs: Subscription[] = [];
-
-  constructor(private router: Router, private route: ActivatedRoute, private reelsService: ReelsService, private usersService: UsersService, private coursesService: CoursesService) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(map => {
       const noHeader = map.get('noHeader');
       this.showHeader = !(noHeader === '1' || noHeader === 'true');
     });
-    // subscribe to counts
-    this.subs.push(this.reelsService.reels$.subscribe(list => this.reelsCount = Array.isArray(list) ? list.length : 0));
-    this.subs.push(this.usersService.users$.subscribe(list => this.usersCount = Array.isArray(list) ? list.length : 0));
-    this.subs.push(this.coursesService.courses$.subscribe(list => this.coursesCount = Array.isArray(list) ? list.length : 0));
-    // ensure initial refresh for courses
-    try { this.coursesService.refresh(); } catch {}
-  }
-
-  ngOnDestroy(): void {
-    this.subs.forEach(s => s.unsubscribe());
   }
 
   isActive(section: 'dashboard' | 'create' | 'stats' | 'profile' | 'reels') {
@@ -75,16 +56,6 @@ export class Home3 implements OnInit {
       const panel = document.querySelector('.panel-section');
       if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 50);
-  }
-
-  goTo(route: string) {
-    // helper used by clickable grids
-    switch (route) {
-      case 'courses': this.router.navigate(['/courses']); break;
-      case 'signup': this.router.navigate(['/signup']); break;
-      case 'reels': this.router.navigate(['/reels']); break;
-      default: this.router.navigate(['/']);
-    }
   }
 
   backToDashboard() {
