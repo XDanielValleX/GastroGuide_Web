@@ -13,6 +13,7 @@ import { Home3 } from './pages/home3/home3';
 import { Reels } from './pages/reels/reels';
 import { Grids } from './pages/grids/grids';
 import { Profile } from './pages/profile/profile';
+import { CreateCourse } from './pages/create-course/create-course';
 import { ProfileC } from './pages/profile-c/profile-c';
 import { DetailCourses } from './pages/detail-courses/detail-courses';
 
@@ -29,6 +30,8 @@ export const routes: Routes = [
     { path: 'grids', component: Grids },
     { path: 'courses', component: Courses }
   ] },
+  { path: 'home2', component: Home2 },
+  { path: 'create-course', component: CreateCourse },
   { path: 'home3', component: Home3 },
   { path: 'nosotros', component: About },
   { path: 'blog', component: Blog },

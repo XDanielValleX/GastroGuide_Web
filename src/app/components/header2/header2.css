@@ -18,6 +18,9 @@
 .header-nav a.active { background: linear-gradient(90deg, var(--gg-primary), var(--gg-secondary), var(--gg-accent)); color: #07202a; box-shadow: 0 10px 30px rgba(0,0,0,0.18); border-color: rgba(255,255,255,0.06); }
 .profile-actions { display:flex; gap:.75rem; align-items:center; justify-self:end; margin-left:8px; z-index:10; }
 .profile-quick { display:flex; gap:.6rem; align-items:center; }
+.profile-link { background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; padding: .35rem .75rem; color: rgba(255,255,255,0.95); box-shadow: 0 6px 18px rgba(0,0,0,0.08); cursor:pointer; transition: all .18s ease; }
+.profile-link:hover { background: rgba(255,255,255,0.10); color: var(--gg-accent); transform: translateY(-2px); }
+.profile-link:focus-visible { outline: 3px solid rgba(255,255,255,0.12); outline-offset: 3px; }
 .mini-avatar { width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.08); }
 .mini-name { font-weight:600; color:rgba(255,255,255,0.92); }
 .btn.ghost { background:transparent; border:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.92); padding:.45rem .6rem; border-radius:10px; }

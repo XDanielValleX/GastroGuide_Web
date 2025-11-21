@@ -19,10 +19,10 @@
 		</div>
 
 		<div class="profile-actions">
-			<div class="profile-quick">
+			<button class="profile-quick profile-link" type="button" routerLink="/profile" aria-label="Ver perfil">
 				<img *ngIf="user?.image" [src]="user?.image" alt="Avatar" class="mini-avatar" />
-				<span class="mini-name">{{ user?.name }}</span>
-			</div>
+				<span class="mini-name">{{ user?.username || user?.name || user?.email || 'Mi perfil' }}</span>
+			</button>
 			<button class="btn logout" (click)="onLogoutClick()" aria-label="Cerrar sesión">Cerrar sesión</button>
 		</div>
 	</div>

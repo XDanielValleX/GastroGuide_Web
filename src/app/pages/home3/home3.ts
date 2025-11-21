@@ -52,13 +52,13 @@ export class Home3 implements OnInit {
   }
 
   open(section: Home3['activeSection']) {
+    if (section === 'create') {
+      this.router.navigate(['/create-course'], { queryParams: { from: 'home3' } });
+      return;
+    }
     this.activeSection = section;
     // For now navigate to dedicated routes for each action if available
     switch (section) {
-      case 'create':
-        // if you have a create-course route, uncomment
-        // this.router.navigate(['/courses/create']);
-        break;
       case 'stats':
         // this.router.navigate(['/creator/stats']);
         break;
@@ -69,6 +69,7 @@ export class Home3 implements OnInit {
         // this.router.navigate(['/creator/reels']);
         break;
     }
+
     // Smooth scroll panel into view after state change
     setTimeout(() => {
       const panel = document.querySelector('.panel-section');

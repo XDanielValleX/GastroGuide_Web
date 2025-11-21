@@ -15,7 +15,7 @@
       <div class="actions">
         <button class="btn secondary" (click)="irAlInicio()">↩️ Ir a inicio</button>
         <button class="btn" (click)="activarEdicion()" *ngIf="!modoEdicion">✏️ Editar datos</button>
-        <button class="btn success" *ngIf="modoEdicion" (click)="guardarCambios()" [disabled]="!hasChanges || !isValid">💾 Guardar</button>
+        <button class="btn success" *ngIf="modoEdicion" (click)="guardarCambios()" [disabled]="!hasChanges || !isValid || saving">💾 Guardar</button>
         <button class="btn warning" *ngIf="modoEdicion" (click)="irACambiarPassword()">🔐 Cambiar contraseña</button>
       </div>
 

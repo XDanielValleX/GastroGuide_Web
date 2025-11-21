@@ -1,30 +1,52 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Router } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { Footer2 } from '../../components/footer2/footer2';
 import { Header2 } from '../../components/header2/header2';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { Subscription } from 'rxjs';
+import { UserSessionService, UserProfile } from '../../shared/user-session.service';
+
+interface HeaderUser {
+  name?: string;
+  username?: string;
+  email?: string;
+  image: string;
+}
 
 @Component({
   selector: 'app-home2',
   standalone: true,
   templateUrl: './home2.html',
   styleUrls: ['./home2.css'],
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, HttpClientModule, Footer2, Header2]
+  imports: [CommonModule, RouterOutlet, FormsModule, HttpClientModule, Footer2, Header2]
 })
-export class Home2 {
+export class Home2 implements OnInit, OnDestroy {
   searchQuery = '';
-  user: { name: string; image: string } = { name: 'Daniel Valle', image: 'assets/profile.jpg' };
+  private readonly defaultUser: HeaderUser = { name: '', username: '', email: '', image: 'assets/profile.jpg' };
+  user: HeaderUser = { ...this.defaultUser };
   loggingOut = false;
+  private userSub?: Subscription;
 
-  constructor(private router: Router, private http: HttpClient) {
-    try {
-      const cached = localStorage.getItem('user');
-      if (cached) this.user = JSON.parse(cached);
-    } catch {}
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private userSession: UserSessionService
+  ) {
+    this.user = this.mapUser(this.userSession.snapshot);
+  }
+
+  ngOnInit() {
+    this.userSub = this.userSession.user$.subscribe((profile) => {
+      this.user = this.mapUser(profile);
+    });
+    this.userSession.refreshFromApi().subscribe();
+  }
+
+  ngOnDestroy() {
+    this.userSub?.unsubscribe();
   }
 
   onSearch(query?: string) {
@@ -39,7 +61,7 @@ export class Home2 {
     if (this.loggingOut) return;
     this.loggingOut = true;
 
-    const token = this.getStoredToken();
+    const token = this.userSession.getToken();
     if (!token) {
       this.finishLogout();
       return;
@@ -56,29 +78,22 @@ export class Home2 {
     });
   }
 
-  private getStoredToken(): string | null {
-    const token = localStorage.getItem('token');
-    if (token) return token;
-    const auth = localStorage.getItem('auth');
-    if (auth) {
-      try {
-        const parsed = JSON.parse(auth);
-        return parsed?.token || parsed?.accessToken || parsed?.access_token || parsed?.data?.token || null;
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  }
-
   private finishLogout() {
-    try {
-      localStorage.removeItem('token');
-      localStorage.removeItem('auth');
-      localStorage.removeItem('user');
-      sessionStorage.clear();
-    } catch {}
+    this.userSession.clearSession();
     this.loggingOut = false;
     this.router.navigateByUrl('/login');
+  }
+
+  private mapUser(profile: UserProfile | null | undefined): HeaderUser {
+    if (!profile) {
+      return { ...this.defaultUser };
+    }
+    const displayName = profile.name || profile.username || this.defaultUser.name;
+    return {
+      name: displayName,
+      username: profile.username,
+      email: profile.email,
+      image: profile.image || this.defaultUser.image
+    };
   }
 }
