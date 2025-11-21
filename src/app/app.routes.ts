@@ -12,6 +12,7 @@ import { Home2 } from './pages/home2/home2';
 import { Home3 } from './pages/home3/home3';
 import { Reels } from './pages/reels/reels';
 import { Profile } from './pages/profile/profile';
+import { CreateCourse } from './pages/create-course/create-course';
 import { ProfileC } from './pages/profile-c/profile-c';
 
 
@@ -23,6 +24,7 @@ export const routes: Routes = [
   { path: 'password-chg/:token', component: PasswordCHG },
   { path: 'password-chg', component: PasswordCHG },
   { path: 'home2', component: Home2 },
+  { path: 'create-course', component: CreateCourse },
   { path: 'home3', component: Home3 },
   { path: 'nosotros', component: About },
   { path: 'blog', component: Blog },
