@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 })
 export class Header2 {
   @Input() user: { name?: string; username?: string; email?: string; image?: string } | null = null;
+  @Input() showCreate = false;
   @Output() search = new EventEmitter<string>();
   @Output() logout = new EventEmitter<void>();
 

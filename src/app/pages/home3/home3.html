@@ -1,5 +1,11 @@
 <div class="creator-dashboard">
 	<div class="dashboard-inner">
+		<div class="dash-toolbar">
+			<button class="btn outline back-home-btn" (click)="goBackToHome2()" aria-label="Regresar a la vista anterior">
+				<span class="back-home-icon" aria-hidden="true">&larr;</span>
+				<span>Volver</span>
+			</button>
+		</div>
 		<header class="dash-hero" *ngIf="showHeader">
 			<div class="hero-text">
 				<h1>Panel de Creador</h1>

@@ -74,19 +74,17 @@ export class Login {
         const token = resp?.token || resp?.accessToken || resp?.access_token || resp?.data?.token;
             if (token) {
               localStorage.setItem('token', token);
-            } else {
-              // Si no viene token explícito, guardar la respuesta completa (por compatibilidad)
-              localStorage.setItem('auth', JSON.stringify(resp));
             }
 
-            // Intentar cachear el perfil usando los datos devueltos por el backend
-            const profileFromResponse = this.extractUserProfile(resp);
+            try {
+              localStorage.setItem('auth', JSON.stringify(resp));
+            } catch { }
+
+            // Cachear el perfil usando únicamente los datos devueltos por el login
+            const profileFromResponse = this.buildProfileFromResponse(resp);
             if (profileFromResponse) {
               this.userSession.persistUser(profileFromResponse);
             }
-
-            // Refrescar datos del usuario para sincronizar con la API oficial
-            this.userSession.refreshFromApi().subscribe();
 
         // Redirigir a la ruta principal (ajusta según tu app)
         this.router.navigate(['/home2']);
@@ -98,27 +96,35 @@ export class Login {
     });
   }
 
-
-  private extractUserProfile(resp: any): Partial<UserProfile> | null {
+  private buildProfileFromResponse(resp: any): Partial<UserProfile> | null {
     if (!resp) {
       return null;
     }
 
-    const candidate = resp.user || resp.profile || resp.data?.user || resp.data?.profile || resp.data;
-    if (candidate && (candidate.name || candidate.username || candidate.email)) {
-      return {
-        name: candidate.name,
-        username: candidate.username,
-        email: candidate.email,
-        image: candidate.image
-      };
+    const candidate = resp.user || resp.profile || resp.data?.user || resp.data?.profile || resp.data || resp;
+    const profile: Partial<UserProfile> = {
+      id: candidate?.id ?? resp.id,
+      name: candidate?.name ?? resp.name,
+      username: candidate?.username ?? resp.username,
+      email: candidate?.email ?? resp.email ?? this.email,
+      image: candidate?.image ?? resp.image,
+      phoneNumber: candidate?.phoneNumber ?? resp.phoneNumber,
+      phone: candidate?.phone ?? resp.phone,
+      dateOfBirth: candidate?.dateOfBirth ?? resp.dateOfBirth,
+      birthDate: candidate?.birthDate ?? resp.birthDate,
+      active: candidate?.active ?? resp.active,
+      expiresIn: resp.expiresIn ?? candidate?.expiresIn
+    };
+
+    if (!profile.username && profile.email) {
+      profile.username = profile.email.split('@')[0];
     }
 
-    // Como último recurso, guardar sólo el correo que acaba de iniciar sesión
-    if (this.email) {
-      return { email: this.email };
+    if (!profile.name && (profile.username || profile.email)) {
+      profile.name = profile.username || profile.email;
     }
 
-    return null;
+    const hasIdentity = profile.email || profile.username || profile.id;
+    return hasIdentity ? profile : null;
   }
 }

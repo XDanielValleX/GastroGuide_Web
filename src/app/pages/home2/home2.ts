@@ -27,6 +27,7 @@ export class Home2 implements OnInit, OnDestroy {
   searchQuery = '';
   private readonly defaultUser: HeaderUser = { name: '', username: '', email: '', image: 'assets/profile.jpg' };
   user: HeaderUser = { ...this.defaultUser };
+  canCreate = false;
   loggingOut = false;
   private userSub?: Subscription;
 
@@ -35,14 +36,16 @@ export class Home2 implements OnInit, OnDestroy {
     private http: HttpClient,
     private userSession: UserSessionService
   ) {
-    this.user = this.mapUser(this.userSession.snapshot);
+    const snapshot = this.userSession.snapshot;
+    this.user = this.mapUser(snapshot);
+    this.updateCapabilities(snapshot);
   }
 
   ngOnInit() {
     this.userSub = this.userSession.user$.subscribe((profile) => {
       this.user = this.mapUser(profile);
+      this.updateCapabilities(profile);
     });
-    this.userSession.refreshFromApi().subscribe();
   }
 
   ngOnDestroy() {
@@ -93,7 +96,26 @@ export class Home2 implements OnInit, OnDestroy {
       name: displayName,
       username: profile.username,
       email: profile.email,
-      image: profile.image || this.defaultUser.image
+      image: this.resolveAvatar(profile.image)
     };
+  }
+
+  private updateCapabilities(profile: UserProfile | null | undefined) {
+    const role = this.userSession.getRole(profile ?? null);
+    this.canCreate = role === 'CREATOR';
+  }
+
+  private resolveAvatar(path?: string | null): string {
+    const fallback = this.defaultUser.image;
+    if (!path) {
+      return fallback;
+    }
+    if (/^(data:|https?:|blob:|assets\/)/i.test(path)) {
+      return path;
+    }
+    if (path.startsWith('/')) {
+      return `${environment.apiUrl}${path}`;
+    }
+    return `${environment.apiUrl}/${path}`;
   }
 }

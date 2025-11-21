@@ -54,7 +54,7 @@ export class Signup {
       return;
     }
 
-    const pwdPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&].*$/;
+    const pwdPattern = /^(?=.*[a-zñ])(?=.*[A-ZÑ])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-zÑñ\d@$!%*?&.]{8,100}$/;
     if (!pwdPattern.test(password)) {
       this.message = 'La contraseña debe incluir mayúscula, minúscula, número y un caracter especial.';
       return;

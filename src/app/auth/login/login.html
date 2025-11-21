@@ -15,7 +15,8 @@
     <p>¡Bienvenido! Inicia sesión en tu cuenta para ver las nuevas recetas:</p>
 
     <div class="floating-label">
-      <input type="email" id="email" name="email" placeholder="email" required autocomplete="email" [(ngModel)]="email">
+      <input type="text" id="email" name="email" placeholder="email" required autocomplete="email" inputmode="email"
+        pattern="^[A-Za-z0-9._%+-ñÑ]+@[A-Za-z0-9.-ñÑ]+\.[A-Za-z]{2,}$" [(ngModel)]="email">
       <label for="email">Email:</label>
       <div class="icon">
         <svg viewBox="0 0 100 100">

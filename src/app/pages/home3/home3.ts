@@ -61,4 +61,8 @@ export class Home3 implements OnInit {
   backToDashboard() {
     this.activeSection = 'dashboard';
   }
+
+  goBackToHome2() {
+    this.router.navigate(['/home2']);
+  }
 }

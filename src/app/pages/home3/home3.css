@@ -20,6 +20,38 @@
 	gap: 1.5rem;
 }
 
+.dash-toolbar {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.btn.back-home-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: .45rem;
+	background: var(--gg-tertiary);
+	border: 1px solid var(--gg-border);
+	color: var(--gg-text);
+	box-shadow: 0 6px 18px -10px rgba(0,0,0,.08);
+}
+
+.btn.back-home-btn .back-home-icon {
+	width: 20px;
+	height: 20px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: var(--gg-quaternary);
+	font-size: .85rem;
+}
+
+.btn.back-home-btn:hover {
+	background: var(--gg-quaternary);
+	box-shadow: 0 10px 28px -12px rgba(0,0,0,.12);
+}
+
 /* Hero */
 .dash-hero {
 	display: grid;
