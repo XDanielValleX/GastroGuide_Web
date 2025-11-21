@@ -5,7 +5,8 @@
 				<div class="avatar-wrapper" [class.has-avatar]="data.avatarUrl">
 					<img *ngIf="data.avatarUrl" [src]="data.avatarUrl" alt="Avatar creador" />
 					<div *ngIf="!data.avatarUrl" class="avatar-placeholder">👤</div>
-					<button type="button" class="avatar-edit-btn" (click)="toggleAvatarEdit()" aria-label="Editar imagen de perfil">
+					<button type="button" class="avatar-edit-btn" (click)="toggleAvatarEdit()"
+						aria-label="Editar imagen de perfil">
 						<span *ngIf="!editingAvatar">Editar foto</span>
 						<span *ngIf="editingAvatar">Cancelar</span>
 					</button>
@@ -14,7 +15,8 @@
 							<input type="file" accept="image/*" (change)="onAvatarSelected($event)" />
 							<span>Subir imagen</span>
 						</label>
-						<button type="button" class="btn tiny alert" (click)="removeAvatar()" *ngIf="data.avatarUrl">Quitar</button>
+						<button type="button" class="btn tiny alert" (click)="removeAvatar()"
+							*ngIf="data.avatarUrl">Quitar</button>
 					</div>
 				</div>
 			</div>
@@ -25,7 +27,8 @@
 						<input [(ngModel)]="tempName" placeholder="Nombre" />
 						<input [(ngModel)]="tempUsername" placeholder="Usuario" />
 					</div>
-					<button class="edit-info-btn" type="button" (click)="toggleInfoEdit()" aria-label="Editar información">
+					<button class="edit-info-btn" type="button" (click)="toggleInfoEdit()"
+						aria-label="Editar información">
 						<span *ngIf="!editingInfo">Editar</span>
 						<span *ngIf="editingInfo">Cerrar</span>
 					</button>
@@ -41,10 +44,12 @@
 					</div>
 					<div *ngIf="editingInfo" class="cat-edit">
 						<div class="cat-current">
-							<span *ngFor="let c of tempCategories" class="cat-pill editable" (click)="removeCategory(c)" title="Quitar">{{ c }} ×</span>
+							<span *ngFor="let c of tempCategories" class="cat-pill editable" (click)="removeCategory(c)"
+								title="Quitar">{{ c }} ×</span>
 						</div>
 						<div class="cat-add">
-							<input [(ngModel)]="newCategory" placeholder="Nueva categoría" (keyup.enter)="addCategory()" />
+							<input [(ngModel)]="newCategory" placeholder="Nueva categoría"
+								(keyup.enter)="addCategory()" />
 							<button type="button" class="btn tiny secondary" (click)="addCategory()">Agregar</button>
 						</div>
 					</div>
