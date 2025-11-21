@@ -14,6 +14,7 @@ import { Reels } from './pages/reels/reels';
 import { Grids } from './pages/grids/grids';
 import { Profile } from './pages/profile/profile';
 import { ProfileC } from './pages/profile-c/profile-c';
+import { DetailCourses } from './pages/detail-courses/detail-courses';
 
 
 export const routes: Routes = [
@@ -33,6 +34,8 @@ export const routes: Routes = [
   { path: 'blog', component: Blog },
   { path: 'contacto', component: Contact },
   { path: 'courses', component: Courses },
+  { path: 'courses/:id', component: DetailCourses },
+  { path: 'detail-courses', component: DetailCourses },
   { path: 'reels', component: Reels },
   { path: 'profile', component: Profile },
   { path: 'profile-creator', component: ProfileC }
