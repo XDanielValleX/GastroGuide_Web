@@ -1,126 +1,135 @@
 <div class="creator-dashboard">
-  <div class="dashboard-inner">
-  <header class="dash-hero" *ngIf="showHeader">
-    <div class="hero-text">
-      <h1>Panel de Creador</h1>
-      <p class="subtitle">Gestiona cursos, analiza tus métricas y potencia tu marca culinaria desde un solo lugar.</p>
-      <div class="hero-actions">
-        <button class="btn primary" (click)="open('create')">Nuevo curso</button>
-        <button class="btn outline" (click)="open('reels')">Crear reels</button>
-        <button class="btn ghost" (click)="open('stats')">Ver estadísticas</button>
-      </div>
-    </div>
-    <div class="hero-side">
-      <div class="metrics-grid" *ngIf="activeSection === 'dashboard'">
-        <div class="metric-card" aria-label="Cursos publicados">
-          <span class="metric-label">Cursos</span>
-          <span class="metric-value">12</span>
-        </div>
-        <div class="metric-card" aria-label="Reels creados">
-          <span class="metric-label">Reels</span>
-          <span class="metric-value">34</span>
-        </div>
-        <div class="metric-card" aria-label="Engagement promedio">
-          <span class="metric-label">Engagement</span>
-          <span class="metric-value">68%</span>
-        </div>
-        <div class="metric-card" aria-label="Ingresos estimados">
-          <span class="metric-label">Ingresos</span>
-          <span class="metric-value">$1.2K</span>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main class="dash-main">
-		<section class="menu-layout" *ngIf="activeSection === 'dashboard'">
-			<nav class="menu" aria-label="Menú principal del panel">
-				<ul>
-					<li class="menu-item" role="button" tabindex="0" data-type="create" (click)="open('create')" [class.active]="isActive('create')">
-						<div class="mi-icon icon-course" aria-hidden="true">🎓</div>
-						<div class="mi-body">
-							<h4>Crear cursos</h4>
-							<p class="muted">Publica lecciones, materiales y precios.</p>
-						</div>
-						<div class="mi-action"><button class="btn tiny primary" aria-label="Comenzar a crear curso">Comenzar</button></div>
-					</li>
-					<li class="menu-item" role="button" tabindex="0" data-type="stats" (click)="open('stats')" [class.active]="isActive('stats')">
-						<div class="mi-icon icon-stats" aria-hidden="true">📊</div>
-						<div class="mi-body">
-							<h4>Estadísticas</h4>
-							<p class="muted">Ingresos y rendimiento.</p>
-						</div>
-						<div class="mi-action"><button class="btn tiny secondary" aria-label="Revisar estadísticas">Revisar</button></div>
-					</li>
-					<li class="menu-item" role="button" tabindex="0" data-type="profile" (click)="open('profile')" [class.active]="isActive('profile')">
-						<div class="mi-icon icon-profile" aria-hidden="true">👤</div>
-						<div class="mi-body">
-							<h4>Perfil</h4>
-							<p class="muted">Biografía y enlaces.</p>
-						</div>
-						<div class="mi-action"><button class="btn tiny secondary" aria-label="Editar perfil">Editar</button></div>
-					</li>
-					<li class="menu-item" role="button" tabindex="0" data-type="reels" (click)="open('reels')" [class.active]="isActive('reels')">
-						<div class="mi-icon icon-reels" aria-hidden="true">🎬</div>
-						<div class="mi-body">
-							<h4>Reels</h4>
-							<p class="muted">Clips promocionales.</p>
-						</div>
-						<div class="mi-action"><button class="btn tiny primary" aria-label="Crear nuevo reel">Nuevo</button></div>
-					</li>
-					</ul>
-				</nav>
-			<div class="menu-preview">
-				<h3>Bienvenido</h3>
-				<p class="muted">Selecciona una opción del menú para comenzar. El contenido se cargará aquí sin salir del panel.</p>
-				<div class="preview-cards">
-					<div class="preview-card">
-						<h5>Cursos activos</h5>
-						<p class="pc-number">12</p>
-						<span class="pc-foot">Último: hace 3 días</span>
+	<div class="dashboard-inner">
+		<header class="dash-hero" *ngIf="showHeader">
+			<div class="hero-text">
+				<h1>Panel de Creador</h1>
+				<p class="subtitle">Gestiona cursos, analiza tus métricas y potencia tu marca culinaria desde un solo
+					lugar.</p>
+				<div class="hero-actions">
+					<button class="btn primary" (click)="open('create')">Nuevo curso</button>
+					<button class="btn outline" (click)="open('reels')">Crear reels</button>
+					<button class="btn ghost" (click)="open('stats')">Ver estadísticas</button>
+				</div>
+			</div>
+			<div class="hero-side">
+				<div class="metrics-grid" *ngIf="activeSection === 'dashboard'">
+					<div class="metric-card" aria-label="Cursos publicados">
+						<span class="metric-label">Cursos</span>
+						<span class="metric-value">12</span>
 					</div>
-					<div class="preview-card">
-						<h5>Reels publicados</h5>
-						<p class="pc-number">34</p>
-						<span class="pc-foot">+2 esta semana</span>
+					<div class="metric-card" aria-label="Reels creados">
+						<span class="metric-label">Reels</span>
+						<span class="metric-value">34</span>
 					</div>
-					<div class="preview-card">
-						<h5>Engagement medio</h5>
-						<p class="pc-number">68%</p>
-						<span class="pc-foot">Estable</span>
+					<div class="metric-card" aria-label="Engagement promedio">
+						<span class="metric-label">Engagement</span>
+						<span class="metric-value">68%</span>
 					</div>
-					<div class="preview-card accent">
-						<h5>Ingresos</h5>
-						<p class="pc-number">$1.2K</p>
-						<span class="pc-foot">Mes actual</span>
+					<div class="metric-card" aria-label="Ingresos estimados">
+						<span class="metric-label">Ingresos</span>
+						<span class="metric-value">$1.2K</span>
 					</div>
 				</div>
-				<img src="/assets/images/creator-illustration.svg" alt="Ilustración" onerror="this.style.display='none'" />
 			</div>
-		</section>
+		</header>
 
-		<!-- placeholder panels -->
-		<section class="panel" *ngIf="activeSection !== 'dashboard'">
-			<button class="back back-btn" (click)="backToDashboard()" aria-label="Volver al panel">
-				<svg viewBox="0 0 24 24" class="back-svg" aria-hidden="true">
-					<path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-				</svg>
-				<span class="back-text">Volver</span>
-			</button>
-			<div *ngIf="activeSection === 'create'">
-				<h2>Crear curso</h2>
-				<p>Formulario de creación (placeholder). Aquí puedes diseñar el flujo de creación de curso.</p>
-			</div>
-			<div *ngIf="activeSection === 'stats'">
-				<app-statistics></app-statistics>
-			</div>
-			<div *ngIf="activeSection === 'profile'">
-				<app-profile-c></app-profile-c>
-			</div>
-			<div *ngIf="activeSection === 'reels'">
-				<app-create-reels></app-create-reels>
-			</div>
-		</section>
-	</main>
+		<main class="dash-main">
+			<section class="menu-layout" *ngIf="activeSection === 'dashboard'">
+				<nav class="menu" aria-label="Menú principal del panel">
+					<ul>
+						<li class="menu-item" role="button" tabindex="0" data-type="create" (click)="open('create')"
+							[class.active]="isActive('create')">
+							<div class="mi-icon icon-course" aria-hidden="true">🎓</div>
+							<div class="mi-body">
+								<h4>Crear cursos</h4>
+								<p class="muted">Publica lecciones, materiales y precios.</p>
+							</div>
+							<div class="mi-action"><button class="btn tiny primary"
+									aria-label="Comenzar a crear curso">Comenzar</button></div>
+						</li>
+						<li class="menu-item" role="button" tabindex="0" data-type="stats" (click)="open('stats')"
+							[class.active]="isActive('stats')">
+							<div class="mi-icon icon-stats" aria-hidden="true">📊</div>
+							<div class="mi-body">
+								<h4>Estadísticas</h4>
+								<p class="muted">Ingresos y rendimiento.</p>
+							</div>
+							<div class="mi-action"><button class="btn tiny secondary"
+									aria-label="Revisar estadísticas">Revisar</button></div>
+						</li>
+						<li class="menu-item" role="button" tabindex="0" data-type="profile" (click)="open('profile')"
+							[class.active]="isActive('profile')">
+							<div class="mi-icon icon-profile" aria-hidden="true">👤</div>
+							<div class="mi-body">
+								<h4>Perfil</h4>
+								<p class="muted">Biografía y enlaces.</p>
+							</div>
+							<div class="mi-action"><button class="btn tiny secondary"
+									aria-label="Editar perfil">Editar</button></div>
+						</li>
+						<li class="menu-item" role="button" tabindex="0" data-type="reels" (click)="open('reels')"
+							[class.active]="isActive('reels')">
+							<div class="mi-icon icon-reels" aria-hidden="true">🎬</div>
+							<div class="mi-body">
+								<h4>Reels</h4>
+								<p class="muted">Clips promocionales.</p>
+							</div>
+							<div class="mi-action"><button class="btn tiny primary"
+									aria-label="Crear nuevo reel">Nuevo</button></div>
+						</li>
+					</ul>
+				</nav>
+				<div class="menu-preview">
+					<h3>Bienvenido</h3>
+					<p class="muted">Selecciona una opción del menú para comenzar. El contenido se cargará aquí sin
+						salir del panel.</p>
+					<div class="preview-cards">
+						<div class="preview-card">
+							<h5>Cursos activos</h5>
+							<p class="pc-number">12</p>
+							<span class="pc-foot">Último: hace 3 días</span>
+						</div>
+						<div class="preview-card">
+							<h5>Reels publicados</h5>
+							<p class="pc-number">34</p>
+							<span class="pc-foot">+2 esta semana</span>
+						</div>
+						<div class="preview-card">
+							<h5>Engagement medio</h5>
+							<p class="pc-number">68%</p>
+							<span class="pc-foot">Estable</span>
+						</div>
+						<div class="preview-card accent">
+							<h5>Ingresos</h5>
+							<p class="pc-number">$1.2K</p>
+							<span class="pc-foot">Mes actual</span>
+						</div>
+					</div>
+					<img src="/assets/images/creator-illustration.svg" alt="Ilustración"
+						onerror="this.style.display='none'" />
+				</div>
+			</section>
+
+			<!-- placeholder panels -->
+			<section class="panel" *ngIf="activeSection !== 'dashboard'">
+				<button class="back back-btn" (click)="backToDashboard()" aria-label="Volver al panel">
+					<svg viewBox="0 0 24 24" class="back-svg" aria-hidden="true">
+						<path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2"
+							stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+					<span class="back-text">Volver</span>
+				</button>
+
+				<div *ngIf="activeSection === 'stats'">
+					<app-statistics></app-statistics>
+				</div>
+				<div *ngIf="activeSection === 'profile'">
+					<app-profile-c></app-profile-c>
+				</div>
+				<div *ngIf="activeSection === 'reels'">
+					<app-create-reels></app-create-reels>
+				</div>
+			</section>
+		</main>
 	</div>
 </div>

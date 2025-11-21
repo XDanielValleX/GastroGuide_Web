@@ -13,7 +13,7 @@ import { environment } from '../../../environments/environment';
   standalone: true,
   templateUrl: './home2.html',
   styleUrls: ['./home2.css'],
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, HttpClientModule, Footer2, Header2]
+  imports: [CommonModule, RouterOutlet, FormsModule, HttpClientModule, Footer2, Header2]
 })
 export class Home2 {
   searchQuery = '';
