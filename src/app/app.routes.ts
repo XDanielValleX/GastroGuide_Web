@@ -11,6 +11,7 @@ import { Home } from './pages/home/home';
 import { Home2 } from './pages/home2/home2';
 import { Home3 } from './pages/home3/home3';
 import { Reels } from './pages/reels/reels';
+import { Grids } from './pages/grids/grids';
 import { Profile } from './pages/profile/profile';
 import { ProfileC } from './pages/profile-c/profile-c';
 
@@ -22,7 +23,11 @@ export const routes: Routes = [
   { path: 'password-fg', component: PasswordFG },
   { path: 'password-chg/:token', component: PasswordCHG },
   { path: 'password-chg', component: PasswordCHG },
-  { path: 'home2', component: Home2 },
+  { path: 'home2', component: Home2, children: [
+    { path: '', redirectTo: 'grids', pathMatch: 'full' },
+    { path: 'grids', component: Grids },
+    { path: 'courses', component: Courses }
+  ] },
   { path: 'home3', component: Home3 },
   { path: 'nosotros', component: About },
   { path: 'blog', component: Blog },
