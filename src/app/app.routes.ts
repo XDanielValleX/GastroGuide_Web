@@ -11,11 +11,11 @@ import { Home } from './pages/home/home';
 import { Home2 } from './pages/home2/home2';
 import { Home3 } from './pages/home3/home3';
 import { Reels } from './pages/reels/reels';
-import { Grids } from './pages/grids/grids';
 import { Profile } from './pages/profile/profile';
 import { CreateCourse } from './pages/create-course/create-course';
 import { ProfileC } from './pages/profile-c/profile-c';
-import { DetailCourses } from './pages/detail-courses/detail-courses';
+import { AuthGuard } from './shared/auth.guard';
+import { RoleGuard } from './shared/role.guard';
 
 
 export const routes: Routes = [
@@ -42,9 +42,12 @@ export const routes: Routes = [
   { path: 'contacto', component: Contact },
   // rutas fuera de home2 siguen disponibles
   { path: 'courses', component: Courses },
-  { path: 'courses/:id', component: DetailCourses },
-  { path: 'detail-courses', component: DetailCourses },
   { path: 'reels', component: Reels },
-  { path: 'profile', component: Profile },
-  { path: 'profile-creator', component: ProfileC }
+  { path: 'profile', component: Profile, canActivate: [AuthGuard] },
+  {
+    path: 'profile-creator',
+    component: ProfileC,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['CREATOR'] }
+  }
 ];

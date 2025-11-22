@@ -5,8 +5,7 @@
 
 	<div class="header-inner">
 		<nav class="header-nav" aria-label="Navegación principal">
-			<a routerLink="/home2/courses">Cursos</a>
-			<a routerLink="/reels" routerLinkActive="active">Reels</a>
+			<a routerLink="/courses" routerLinkActive="active">Cursos</a>
 			<a routerLink="/home2/recetas" routerLinkActive="active">Recetas</a>
 			<a routerLink="/home2/carrito" routerLinkActive="active">Carrito</a>
 		</nav>
@@ -19,6 +18,15 @@
 		</div>
 
 		<div class="profile-actions">
+			<button
+				class="btn cta-create"
+				type="button"
+				routerLink="/home3"
+				aria-label="Ir a Home3 para crear contenido"
+				*ngIf="showCreate"
+			>
+				Crear
+			</button>
 			<button class="profile-quick profile-link" type="button" routerLink="/profile" aria-label="Ver perfil">
 				<img *ngIf="user?.image" [src]="user?.image" alt="Avatar" class="mini-avatar" />
 				<span class="mini-name">{{ user?.username || user?.name || user?.email || 'Mi perfil' }}</span>

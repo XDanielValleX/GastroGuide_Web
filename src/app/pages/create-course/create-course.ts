@@ -1,17 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { UserSessionService, UserProfile } from '../../shared/user-session.service';
 
 type Level = 'BEGINNER'|'INTERMEDIATE'|'ADVANCED'|'EXPERT';
 type ContentType = 'VIDEO'|'TEXT'|'AUDIO'|'DOCUMENT'|'INTERACTIVE';
 
 interface CreateCourseDto {
   id?: string;
-  creatorId?: string;
+  creatorId?: string | number;
   title: string;
   description: string;
   image?: string;
@@ -59,7 +60,7 @@ interface LessonDraft extends Omit<LessonDto, 'moduleId'> {
   styleUrls: ['./create-course.css'],
   imports: [CommonModule, FormsModule, HttpClientModule]
 })
-export class CreateCourse implements OnInit {
+export class CreateCourse implements OnInit, OnDestroy {
 
   // wizard step
   step = 1;
@@ -105,8 +106,15 @@ export class CreateCourse implements OnInit {
   savedCourses: any[] = [];
 
   returnUrl = '/home3';
+  currentUser: UserProfile | null = null;
+  private userSub?: Subscription;
 
-  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private route: ActivatedRoute,
+    private userSession: UserSessionService
+  ) {}
 
   ngOnInit(): void {
     const from = this.route.snapshot.queryParamMap.get('from');
@@ -118,7 +126,28 @@ export class CreateCourse implements OnInit {
       this.returnUrl = `/${from}`;
     }
 
-    this.loadSavedCourses();
+    this.userSub = this.userSession.user$.subscribe((profile) => {
+      this.applyCurrentUser(profile);
+    });
+
+    this.userSession.ensureProfileLoaded().subscribe({
+      next: (profile) => {
+        this.applyCurrentUser(profile);
+        if (profile?.id !== undefined && profile?.id !== null) {
+          this.loadSavedCourses();
+        } else {
+          this.resetSavedCourses();
+        }
+      },
+      error: () => {
+        this.showToast('No se pudo cargar tu sesión. Inicia sesión nuevamente.');
+        this.resetSavedCourses();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.userSub?.unsubscribe();
   }
 
   // image file selector preview
@@ -233,10 +262,15 @@ export class CreateCourse implements OnInit {
     this.course.tags = this.tagsInput ? this.tagsInput.split(',').map((t: string) => t.trim()).filter(Boolean) : [];
     this.savingCourse = true;
     try {
+      const creatorId = this.getCurrentUserId();
+      if (!creatorId) {
+        this.showToast('Debes iniciar sesión para crear un curso.');
+        return;
+      }
       this.showToast('Guardando información del curso...');
       const imageValue = await this.ensureImageIsStored();
       const payload: CreateCourseDto = {
-        creatorId: 'current-user-id',
+        creatorId,
         title: this.course.title,
         description: this.course.description,
         image: imageValue,
@@ -253,9 +287,10 @@ export class CreateCourse implements OnInit {
       if (!createdCourseId) {
         throw new Error('El backend no devolvió un identificador de curso');
       }
-      this.createdCourseId = createdCourseId;
+      this.createdCourseId = String(createdCourseId);
       this.course.status = status;
-      this.course.id = createdCourseId;
+      this.course.id = this.createdCourseId;
+      this.course.creatorId = creatorId;
       await this.refreshSavedSnapshot(createdCourseId);
       this.showToast(status === 'PUBLISHED' ? 'Curso publicado' : 'Curso guardado');
     } catch (err: any) {
@@ -292,7 +327,7 @@ export class CreateCourse implements OnInit {
         if (!createdModuleId) {
           throw new Error('El backend no devolvió un identificador de módulo');
         }
-        moduleDraft.id = createdModuleId;
+        moduleDraft.id = String(createdModuleId);
       }
       await this.refreshSavedSnapshot(this.createdCourseId);
       this.showToast('Módulos guardados');
@@ -345,7 +380,7 @@ export class CreateCourse implements OnInit {
         if (!createdLessonId) {
           throw new Error('El backend no devolvió un identificador de lección');
         }
-        lesson.id = createdLessonId;
+        lesson.id = String(createdLessonId);
       }
       await this.refreshSavedSnapshot(this.createdCourseId);
       this.showToast('Lecciones guardadas');
@@ -358,6 +393,11 @@ export class CreateCourse implements OnInit {
   }
 
   async publishCourse() {
+    const creatorId = this.getCurrentUserId();
+    if (!creatorId) {
+      this.showToast('Debes iniciar sesión para publicar un curso.');
+      return;
+    }
     try {
       this.publishing = true;
       if (!this.createdCourseId) {
@@ -381,11 +421,20 @@ export class CreateCourse implements OnInit {
   async loadSavedCourses(targetCourseId?: string) {
     this.loadingSavedCourses = true;
     try {
+      const ownerId = this.getCurrentUserId();
+      if (!ownerId) {
+        this.resetSavedCourses();
+        return;
+      }
       const resp: any = await firstValueFrom(this.http.get(`${environment.apiUrl}/api/v1/courses/all`));
-      this.savedCourses = Array.isArray(resp) ? resp : (resp?.data || []);
+      const allCourses = Array.isArray(resp) ? resp : (resp?.data || []);
+      this.savedCourses = allCourses.filter((course: any) => this.belongsToCurrentUser(course));
+
       const selectedId = targetCourseId || this.createdCourseId;
       if (selectedId) {
-        this.savedCourseSnapshot = this.savedCourses.find((c:any) => c.id === selectedId) || null;
+        const match = this.savedCourses.find((c: any) => String(c.id) === String(selectedId));
+        this.savedCourseSnapshot = match || null;
+        this.createdCourseId = match ? String(match.id) : this.createdCourseId;
       } else {
         this.savedCourseSnapshot = null;
       }
@@ -407,14 +456,18 @@ export class CreateCourse implements OnInit {
 
   selectSavedCourse(courseId: string) {
     if (!courseId) { return; }
-    const selected = this.savedCourses.find((c:any) => c.id === courseId);
+    const selected = this.savedCourses.find((c:any) => String(c.id) === String(courseId));
     if (!selected) { return; }
-    this.createdCourseId = selected.id;
+    if (!this.belongsToCurrentUser(selected)) {
+      this.showToast('No tienes permiso para editar este curso.');
+      return;
+    }
+    this.createdCourseId = String(selected.id);
     this.savedCourseSnapshot = selected;
 
     this.course = {
       id: selected.id,
-      creatorId: selected.creatorId,
+      creatorId: selected.creatorId ?? this.getCurrentUserId() ?? undefined,
       title: selected.title,
       description: selected.description,
       image: selected.image,
@@ -479,5 +532,45 @@ export class CreateCourse implements OnInit {
   showToast(msg:string) {
     this.toast = msg;
     setTimeout(()=> this.toast = null, 3500);
+  }
+
+  goToLogin() {
+    this.router.navigate(['/login'], { queryParams: { redirectTo: 'create-course' } });
+  }
+
+  private applyCurrentUser(profile: UserProfile | null | undefined) {
+    this.currentUser = profile ?? null;
+    if (this.currentUser?.id !== undefined && this.currentUser?.id !== null) {
+      this.course.creatorId = String(this.currentUser.id);
+    } else {
+      this.course.creatorId = undefined;
+    }
+  }
+
+  private resetSavedCourses() {
+    this.savedCourses = [];
+    this.savedCourseSnapshot = null;
+    this.createdCourseId = null;
+    this.previewImage = null;
+    this.uploadedImagePath = null;
+  }
+
+  private getCurrentUserId(): string | null {
+    if (this.currentUser?.id === undefined || this.currentUser?.id === null) {
+      return null;
+    }
+    return String(this.currentUser.id);
+  }
+
+  private belongsToCurrentUser(course: any): boolean {
+    const ownerId = this.getCurrentUserId();
+    if (!ownerId) {
+      return false;
+    }
+    const courseOwner = course?.creatorId ?? course?.creator?.id ?? course?.userId;
+    if (courseOwner === undefined || courseOwner === null) {
+      return false;
+    }
+    return String(courseOwner) === ownerId;
   }
 }

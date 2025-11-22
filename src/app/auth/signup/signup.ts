@@ -6,7 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AlertDialog } from '../../shared/alert/alert';
-import { UsersService } from '../../shared/users.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -20,7 +19,7 @@ export class Signup {
   message: string = '';
   loading: boolean = false;
 
-  constructor(private http: HttpClient, private router: Router, private usersService: UsersService) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   onSubmit(event: Event) {
     event.preventDefault();
@@ -55,7 +54,7 @@ export class Signup {
       return;
     }
 
-    const pwdPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&].*$/;
+    const pwdPattern = /^(?=.*[a-zñ])(?=.*[A-ZÑ])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-zÑñ\d@$!%*?&.]{8,100}$/;
     if (!pwdPattern.test(password)) {
       this.message = 'La contraseña debe incluir mayúscula, minúscula, número y un caracter especial.';
       return;
@@ -77,8 +76,6 @@ export class Signup {
         // Persistencia mínima local para que el perfil muestre datos
         try {
           localStorage.setItem('user', JSON.stringify({ name: username, email }));
-          // also register in the local UsersService so dashboards and counts update in-app
-          this.usersService.addUser({ name: username, email, createdAt: new Date().toISOString() });
         } catch {}
         setTimeout(() => this.router.navigate(['/login']), 1000);
       },

@@ -32,18 +32,19 @@
 
         <div class="create-content">
             <div class="create-main">
+                <ng-container *ngIf="currentUser; else loginRequired">
 
         <!-- Step 1: Información general -->
         <form *ngIf="step===1" class="course-form" (ngSubmit)="nextStep()">
             <div class="form-row">
                 <label>Título</label>
-                <input type="text" [(ngModel)]="course.title" name="title" required minlength="3" />
+                <input type="text" [(ngModel)]="course.title" name="title" required minlength="3" aria-label="Título del curso" />
             </div>
 
             <div class="form-row">
                 <label>Descripción</label>
                 <textarea [(ngModel)]="course.description" name="description" rows="4" minlength="10"
-                    required></textarea>
+                    required aria-label="Descripción del curso"></textarea>
             </div>
 
             <div class="form-grid-3">
@@ -70,14 +71,14 @@
 
             <div class="form-row">
                 <label>Precio con descuento (opcional)</label>
-                <input type="number" [(ngModel)]="course.discountPrice" name="discountPrice" min="0" step="0.01" />
+                <input type="number" [(ngModel)]="course.discountPrice" name="discountPrice" min="0" step="0.01" aria-label="Precio con descuento" />
             </div>
 
             <div class="form-row">
                 <label>Imagen del curso (URL o subir)</label>
                 <div class="image-row">
                     <input type="text" [(ngModel)]="course.image" name="imageUrl" placeholder="https://..." />
-                    <input type="file" accept="image/*" (change)="onImageFile($event)" />
+                    <input type="file" accept="image/*" (change)="onImageFile($event)" aria-label="Subir imagen del curso" />
                 </div>
                 <div class="image-preview" *ngIf="course.image || previewImage">
                     <img [src]="previewImage || course.image" alt="preview" />
@@ -227,7 +228,7 @@
                     <input [(ngModel)]="newLesson.title" placeholder="Título lección" />
                     <textarea [(ngModel)]="newLesson.description" placeholder="Descripción"></textarea>
                     <div class="mini-row">
-                        <select [(ngModel)]="newLesson.contentType">
+                        <select [(ngModel)]="newLesson.contentType" aria-label="Tipo de contenido de la lección">
                             <option value="VIDEO">VIDEO</option>
                             <option value="TEXT">TEXT</option>
                             <option value="AUDIO">AUDIO</option>
@@ -243,7 +244,7 @@
                         <button class="btn" type="button" (click)="addLessonToModule()">
                             {{ editingLesson ? 'Guardar cambios' : '+ Agregar lección (al módulo seleccionado)' }}</button>
                         <button class="btn secondary" type="button" *ngIf="editingLesson" (click)="cancelLessonEdit()">Cancelar</button>
-                        <select [(ngModel)]="lessonModuleIndex">
+                        <select [(ngModel)]="lessonModuleIndex" aria-label="Módulo destino para la nueva lección">
                             <option *ngFor="let m of modules; let idx=index" [value]="idx">{{idx+1}} - {{m.title ||
                                 'Módulo ' + (idx+1)}}
                             </option>
@@ -276,11 +277,20 @@
             </div>
         </div>
 
+                </ng-container>
+                <ng-template #loginRequired>
+                    <div class="info warning login-required">
+                        <h3>Inicia sesión para crear cursos</h3>
+                        <p>Necesitas una sesión activa para registrar cursos, módulos y lecciones.</p>
+                        <button class="btn" type="button" (click)="goToLogin()">Ir a iniciar sesión</button>
+                    </div>
+                </ng-template>
+
         <!-- Toast simple -->
         <div class="toast" *ngIf="toast">{{ toast }}</div>
 
             </div>
-            <aside class="saved-sidebar">
+            <aside class="saved-sidebar" *ngIf="currentUser">
                 <div class="saved-card">
                     <div class="saved-card-header">
                         <h3>Guardado reciente</h3>
