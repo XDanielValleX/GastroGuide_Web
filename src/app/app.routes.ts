@@ -11,12 +11,14 @@ import { Home } from './pages/home/home';
 import { Home2 } from './pages/home2/home2';
 import { Home3 } from './pages/home3/home3';
 import { Reels } from './pages/reels/reels';
+import { Grids } from './pages/grids/grids';
 import { Profile } from './pages/profile/profile';
 import { CreateCourse } from './pages/create-course/create-course';
 import { ProfileC } from './pages/profile-c/profile-c';
 import { AuthGuard } from './shared/auth.guard';
 import { RoleGuard } from './shared/role.guard';
 import { SwitchToCreator } from './pages/switch-to-creator/switch-to-creator';
+import { DetailCourses } from './pages/detail-courses/detail-courses';
 
 
 export const routes: Routes = [
@@ -26,7 +28,11 @@ export const routes: Routes = [
   { path: 'password-fg', component: PasswordFG },
   { path: 'password-chg/:token', component: PasswordCHG },
   { path: 'password-chg', component: PasswordCHG },
-  { path: 'home2', component: Home2, canActivate: [AuthGuard] },
+  { path: 'home2', component: Home2, children: [
+    { path: '', redirectTo: 'grids', pathMatch: 'full' },
+    { path: 'grids', component: Grids },
+    { path: 'courses', component: Courses }
+  ],canActivate: [AuthGuard] },
   {
     path: 'create-course',
     component: CreateCourse,
@@ -43,6 +49,8 @@ export const routes: Routes = [
   { path: 'blog', component: Blog },
   { path: 'contacto', component: Contact },
   { path: 'courses', component: Courses },
+  { path: 'courses/:id', component: DetailCourses },
+  { path: 'detail-courses', component: DetailCourses },
   { path: 'reels', component: Reels },
   { path: 'profile', component: Profile, canActivate: [AuthGuard] },
   {

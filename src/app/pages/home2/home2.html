@@ -12,23 +12,7 @@
   <!-- MAIN CONTENT -->
   <section class="main-section">
     <div class="content">
-      <div class="content-head">
-        <h1 class="title">Cursos Destacados y Populares</h1>
-      </div>
-
-      <div class="featured-grid raised">
-        <div class="course-card" *ngFor="let i of [1,2,3,4,5,6]">
-          <div class="media-wrap">
-            <img src="https://images.unsplash.com/photo-1604909053190-3e6a2ce9b4de?auto=format&fit=crop&w=800&q=80" alt="Curso {{ i }}" />
-          </div>
-          <div class="info">
-            <h3 class="course-title">Curso Especial {{ i }}</h3>
-            <p class="course-desc">Aprende nuevas técnicas con nuestros chefs profesionales.</p>
-            <button class="btn primary" aria-label="Ver curso {{ i }}">Ver Curso</button>
-          </div>
-        </div>
-      </div>
-
+      <!-- router-outlet acts as the container: Courses will render here when /home2/courses is active -->
       <router-outlet></router-outlet>
     </div>
   </section>

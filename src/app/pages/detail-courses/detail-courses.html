@@ -1,0 +1,66 @@
+<div class="course-detail" *ngIf="!loading && course; else detailLoading">
+  <!-- Hero / Title Block -->
+  <header class="hero">
+    <h1 class="title">{{ course.title }}</h1>
+    <p class="subtitle">{{ course.description || 'Descripción no disponible.' }}</p>
+    <p class="author">Creado por <span class="author-link">{{ course.instructor }}</span></p>
+    <div class="meta-row">
+      <div class="meta-item" title="Última actualización"><span class="icon">🕒</span> Última actualización: {{ formatDate(course.publishedAt) || '—' }}</div>
+      <div class="meta-item" title="Idioma"><span class="icon">🌐</span> {{ course.language || 'ES' }}</div>
+    </div>
+  </header>
+
+  <!-- Body layout -->
+  <div class="body-layout">
+    <!-- Main content column -->
+    <div class="main-col">
+      <div class="objective" *ngIf="course.objective">
+        <h3>Objetivo del curso</h3>
+        <p>{{ course.objective }}</p>
+      </div>
+      <div class="modules" *ngIf="course.modules?.length">
+        <h3 class="modules-title">Contenido del curso</h3>
+        <div class="module" *ngFor="let m of course.modules | slice:0:1">
+          <button class="module-header" (click)="toggleModule(m)" [class.open]="isExpanded(m)">
+            <span class="mod-title">{{ m.title }}</span>
+            <span class="chevron">{{ isExpanded(m) ? '▾' : '▸' }}</span>
+          </button>
+          <div class="lessons" *ngIf="isExpanded(m)">
+            <div class="lesson" *ngFor="let l of m.lessons">
+              <div class="lesson-title">{{ l.title }}</div>
+              <div class="lesson-content">{{ l.content }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Purchase / side column -->
+    <aside class="purchase">
+      <div class="video-preview" *ngIf="course.coverImage">
+        <img class="preview-img" [src]="course.coverImage" [alt]="course.title" (error)="onImgError($event)" />
+      </div>
+      <div class="price-block" *ngIf="course">
+        <div class="price-row">
+          <span class="current">{{ course.discountPrice != null ? ('$'+course.discountPrice) : ('$'+course.price) }}</span>
+          <span class="old" *ngIf="course.discountPrice != null">{{ '$'+course.price }}</span>
+        </div>
+        <div class="discount" *ngIf="course.discountPrice != null">{{ (((course.price || 0) - (course.discountPrice || 0)) / (course.price || 1) * 100) | number:'1.0-0' }} % de descuento</div>
+      </div>
+      <div class="purchase-actions">
+        <button class="btn primary">Añadir a la cesta</button>
+        <button class="btn secondary">Comprar ahora</button>
+      </div>
+      <div class="plan-card premium side">
+        <div class="plan-icon">⚙️</div>
+        <div class="plan-content">
+          <div class="plan-name">Premium</div>
+          <p class="plan-text">Accede a más de 30.100 cursos con valoraciones excelentes.</p>
+          <button class="inline-link" type="button">Ver planes y precios</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+<ng-template #detailLoading>
+  <div class="course-detail"><p *ngIf="loading">Cargando curso...</p><p *ngIf="error">{{ error }}</p></div>
+</ng-template>

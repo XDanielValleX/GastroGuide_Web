@@ -18,6 +18,10 @@ export class Home3 implements OnInit {
   // UI state
   activeSection: 'dashboard' | 'create' | 'stats' | 'profile' | 'reels' = 'dashboard';
   showHeader: boolean = true;
+  // Dashboard preview counters (evitan error de propiedades inexistentes en la plantilla)
+  coursesCount: number = 0;
+  reelsCount: number = 0;
+  usersCount: number = 0;
 
   constructor(private router: Router, private route: ActivatedRoute) {}
 
@@ -64,5 +68,22 @@ export class Home3 implements OnInit {
 
   goBackToHome2() {
     this.router.navigate(['/home2']);
+  }
+
+  // Navegación rápida desde las tarjetas de vista previa
+  goTo(dest: 'courses' | 'reels' | 'signup') {
+    switch (dest) {
+      case 'courses':
+        this.router.navigate(['/courses']);
+        break;
+      case 'reels':
+        // Si queremos mantenernos dentro del panel, podemos activar sección reels
+        // this.open('reels');
+        this.router.navigate(['/reels']);
+        break;
+      case 'signup':
+        this.router.navigate(['/signup']);
+        break;
+    }
   }
 }
