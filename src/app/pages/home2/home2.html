@@ -1,6 +1,12 @@
 <div class="home2-shell">
   <!-- HEADER (migrated sidebar into header2 component) -->
-  <app-header2 [user]="user" [showCreate]="canCreate" (search)="onSearch($event)" (logout)="onLogout()"></app-header2>
+  <app-header2
+    [user]="user"
+    [showCreate]="canCreate"
+    [profileRoute]="profileRoute"
+    (search)="onSearch($event)"
+    (logout)="onLogout()"
+  ></app-header2>
   <div class="dashboard-container">
 
   <!-- MAIN CONTENT -->

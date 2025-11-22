@@ -6,7 +6,7 @@
 
     <!-- HEADER -->
     <div class="profile-header">
-      <img [src]="user.image" alt="Foto de perfil" id="preview" class="profile-photo">
+      <img [src]="user.image" alt="Foto de perfil" id="preview" class="profile-photo" (error)="handleImageError($event)">
       <h2>{{ user.name }}</h2>
       <p class="email">{{ user.email }}</p>
       <p class="role">{{ user.role }}</p>
@@ -19,9 +19,9 @@
         <button class="btn warning" *ngIf="modoEdicion" (click)="irACambiarPassword()">🔐 Cambiar contraseña</button>
       </div>
 
-      <!-- Botón editar foto + input oculto -->
-      <button class="edit-btn" *ngIf="modoEdicion" (click)="openSelector()">Editar foto</button>
-      <input type="file" hidden id="fileInput" accept="image/*" (change)="changeImage($event)">
+      <p class="avatar-hint" *ngIf="modoEdicion">
+        La carga de foto se encuentra deshabilitada temporalmente. Mantendremos tu avatar por defecto.
+      </p>
     </div>
 
     <!-- DATOS PERSONALES EDITABLES -->

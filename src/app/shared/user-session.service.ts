@@ -7,6 +7,7 @@ export interface UserProfile {
     username?: string;
     email?: string;
     image?: string;
+    avatar?: string;
     bio?: string;
     birthDate?: string;
     phone?: string;
@@ -85,13 +86,35 @@ export class UserSessionService {
     persistUser(partial: Partial<UserProfile>): UserProfile {
         const normalized = this.normalizeIncomingProfile(partial);
         const merged = { ...(this.userSubject.value || {}), ...normalized } as UserProfile;
-        if (!merged.role) {
-            const fallbackRole = this.extractRoleFromToken();
-            if (fallbackRole) {
-                merged.role = fallbackRole;
+        if (merged.avatar && !merged.image) {
+            merged.image = merged.avatar;
+        } else if (merged.image && !merged.avatar) {
+            merged.avatar = merged.image;
+        }
+        const tokenRole = this.extractRoleFromToken();
+        if (tokenRole) {
+            merged.role = tokenRole;
+            if (Array.isArray(merged.roles)) {
+                const normalizedRoles = merged.roles
+                    .map((r) => this.normalizeRole(r || '') || (typeof r === 'string' ? r.toUpperCase() : ''))
+                    .filter((r): r is string => !!r);
+                if (!normalizedRoles.includes(tokenRole)) {
+                    normalizedRoles.push(tokenRole);
+                }
+                merged.roles = normalizedRoles;
+            } else {
+                merged.roles = [tokenRole];
             }
-        } else {
+        } else if (merged.role) {
             merged.role = this.normalizeRole(merged.role) || undefined;
+        } else if (Array.isArray(merged.roles) && merged.roles.length) {
+            const normalizedRoles = merged.roles
+                .map((r) => this.normalizeRole(r || '') || (typeof r === 'string' ? r.toUpperCase() : ''))
+                .filter((r): r is string => !!r);
+            if (normalizedRoles.length) {
+                merged.roles = normalizedRoles;
+                merged.role = normalizedRoles[0];
+            }
         }
         this.userSubject.next(merged);
         try {
@@ -133,13 +156,25 @@ export class UserSessionService {
     }
 
     getRole(profile: UserProfile | null = this.userSubject.value): string | null {
-        if (profile?.role) {
-            return this.normalizeRole(profile.role);
+        const normalizedProfileRole = profile?.role ? this.normalizeRole(profile.role) : null;
+        const normalizedArrayRole = Array.isArray(profile?.roles) && profile.roles.length
+            ? this.normalizeRole(profile.roles[0])
+            : null;
+        const tokenRole = this.extractRoleFromToken();
+
+        if (tokenRole && tokenRole !== normalizedProfileRole) {
+            return tokenRole;
         }
-        if (Array.isArray(profile?.roles) && profile.roles.length) {
-            return this.normalizeRole(profile.roles[0]);
+        if (normalizedProfileRole) {
+            return normalizedProfileRole;
         }
-        return this.extractRoleFromToken();
+        if (tokenRole && tokenRole !== normalizedArrayRole) {
+            return tokenRole;
+        }
+        if (normalizedArrayRole) {
+            return normalizedArrayRole;
+        }
+        return tokenRole;
     }
 
     private extractRoleFromToken(token?: string | null): string | null {
@@ -190,6 +225,18 @@ export class UserSessionService {
         }
 
         const normalized: Partial<UserProfile> = { ...profile };
+
+        if (normalized.avatar && !normalized.image) {
+            normalized.image = normalized.avatar;
+        } else if (normalized.image && !normalized.avatar) {
+            normalized.avatar = normalized.image;
+        }
+
+        if (Array.isArray(normalized.roles)) {
+            normalized.roles = normalized.roles
+                .map((role) => this.normalizeRole(role || '') || (typeof role === 'string' ? role.toUpperCase() : ''))
+                .filter((role): role is string => !!role);
+        }
 
         if (!normalized.phone && typeof normalized.phoneNumber === 'string') {
             normalized.phone = normalized.phoneNumber;

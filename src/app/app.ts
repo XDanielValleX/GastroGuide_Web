@@ -42,7 +42,8 @@ export class AppComponent {
       this.currentRoute.startsWith('/reels') ||
       this.currentRoute.startsWith('/create-course') ||
       this.currentRoute.startsWith('/profile') ||
-      this.currentRoute.startsWith('/profile-creator')
+      this.currentRoute.startsWith('/profile-creator') ||
+      this.currentRoute.startsWith('/profile-c')
     );
   }
 }

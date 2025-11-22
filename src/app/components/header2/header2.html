@@ -28,8 +28,8 @@
 			>
 				Crear
 			</button>
-			<button class="profile-quick profile-link" type="button" routerLink="/profile" aria-label="Ver perfil">
-				<img *ngIf="user?.image" [src]="user?.image" alt="Avatar" class="mini-avatar" />
+			<button class="profile-quick profile-link" type="button" [routerLink]="profileRoute" aria-label="Ver perfil">
+				<img *ngIf="user?.image" [src]="user?.image" alt="Avatar" class="mini-avatar" (error)="onAvatarError($event)" />
 				<span class="mini-name">{{ user?.username || user?.name || user?.email || 'Mi perfil' }}</span>
 			</button>
 			<button class="btn logout" (click)="onLogoutClick()" aria-label="Cerrar sesión">Cerrar sesión</button>

@@ -102,16 +102,23 @@ export class Login {
     }
 
     const candidate = resp.user || resp.profile || resp.data?.user || resp.data?.profile || resp.data || resp;
+    const avatarValue = candidate?.avatar ?? resp?.avatar;
+    const imageValue = candidate?.image ?? resp?.image ?? avatarValue;
+    const roleValue = candidate?.role ?? resp?.role;
+    const rolesValue = candidate?.roles ?? resp?.roles;
     const profile: Partial<UserProfile> = {
       id: candidate?.id ?? resp.id,
       name: candidate?.name ?? resp.name,
       username: candidate?.username ?? resp.username,
       email: candidate?.email ?? resp.email ?? this.email,
-      image: candidate?.image ?? resp.image,
+      image: imageValue,
+      avatar: avatarValue ?? imageValue,
       phoneNumber: candidate?.phoneNumber ?? resp.phoneNumber,
       phone: candidate?.phone ?? resp.phone,
       dateOfBirth: candidate?.dateOfBirth ?? resp.dateOfBirth,
       birthDate: candidate?.birthDate ?? resp.birthDate,
+      role: typeof roleValue === 'string' ? roleValue : undefined,
+      roles: Array.isArray(rolesValue) ? rolesValue : undefined,
       active: candidate?.active ?? resp.active,
       expiresIn: resp.expiresIn ?? candidate?.expiresIn
     };
