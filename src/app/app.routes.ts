@@ -16,6 +16,7 @@ import { CreateCourse } from './pages/create-course/create-course';
 import { ProfileC } from './pages/profile-c/profile-c';
 import { AuthGuard } from './shared/auth.guard';
 import { RoleGuard } from './shared/role.guard';
+import { SwitchToCreator } from './pages/switch-to-creator/switch-to-creator';
 
 
 export const routes: Routes = [
@@ -49,5 +50,12 @@ export const routes: Routes = [
     component: ProfileC,
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['CREATOR'] }
-  }
+  },
+  {
+    path: 'profile-c',
+    component: ProfileC,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['CREATOR'] }
+  },
+  { path: 'switch-to-creator', component: SwitchToCreator }
 ];

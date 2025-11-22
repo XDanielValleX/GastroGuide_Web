@@ -1,6 +1,8 @@
 /* Layout base */
 .creator-profile { padding: clamp(1rem, 3vw, 2rem); display: flex; justify-content: center; }
-.profile-card { width:100%; max-width:1100px; background: var(--gg-tertiary); border:1px solid var(--gg-quaternary); border-radius: 28px; padding: clamp(1.25rem,2.5vw,2.5rem); box-shadow: 0 8px 24px -6px rgba(0,0,0,.12); display:flex; flex-direction:column; gap:1.75rem; }
+.profile-card { width:100%; max-width:1100px; background: var(--gg-tertiary); border:1px solid var(--gg-quaternary); border-radius: 28px; padding: clamp(1.25rem,2.5vw,2.5rem); box-shadow: 0 8px 24px -6px rgba(0,0,0,.12); display:flex; flex-direction:column; gap:1.25rem; }
+.back-link { align-self:flex-start; background:none; border:none; color: var(--gg-primary); font-weight:600; display:inline-flex; align-items:center; gap:.35rem; cursor:pointer; font-size:.9rem; padding:.2rem 0; }
+.back-link:hover { color: var(--gg-secondary); }
 .pc-header { display:flex; gap:2rem; flex-wrap:wrap; }
 
 /* Avatar */

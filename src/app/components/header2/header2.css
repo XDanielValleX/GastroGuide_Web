@@ -3,14 +3,17 @@
 .brand { position:absolute; left:8px; top:50%; transform:translateY(-50%); z-index:12; }
 .brand .brand-link { font-weight:900; font-size:1.45rem; color:var(--gg-tertiary); text-decoration:none; display:inline-flex; align-items:center; gap:.35rem; letter-spacing:0.6px; }
 .brand .brand-link span { color:var(--gg-accent); font-weight:900; font-size:1.05em; }
-.search-wrap { display:flex; justify-content:center; }
+.search-wrap { display:flex; justify-content:center; align-items:center; gap:.6rem; flex-wrap:wrap; }
 .search-box { display:flex; gap:.5rem; width:100%; max-width:360px; background: transparent; padding:.2rem; border-radius:999px; border:1px solid rgba(255,255,255,0.12); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
 .search-box input { flex:1; padding:.5rem .75rem; border-radius:999px; border:none; background:transparent; color:var(--gg-tertiary); font-weight:600; }
 .search-box input::placeholder { color: rgba(255,255,255,0.72); }
 .search-box .btn.search { background: transparent; color: rgba(255,255,255,0.95); border: 1px solid rgba(255,255,255,0.12); padding:.4rem .8rem; border-radius:999px; font-weight:700; box-shadow: none; transition: all .18s ease; }
+.search-wrap .btn.request { background: linear-gradient(90deg, var(--gg-accent), var(--gg-secondary)); color:#07202a; border:none; padding:.45rem 1.1rem; border-radius:999px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; box-shadow:0 10px 20px rgba(0,0,0,0.18); transition:transform .18s ease, box-shadow .18s ease; white-space:nowrap; }
 .search-box:hover { box-shadow: 0 10px 26px rgba(0,0,0,0.10); }
 .search-box .btn.search:hover { background: linear-gradient(90deg, var(--gg-success), var(--gg-accent)); color:#07202a; transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,0.12); }
+.search-wrap .btn.request:hover { transform:translateY(-2px); box-shadow:0 14px 26px rgba(0,0,0,0.22); }
 .search-box .btn.search:focus-visible { outline: 3px solid rgba(255,255,255,0.12); outline-offset: 3px; }
+.search-wrap .btn.request:focus-visible { outline:3px solid rgba(255,255,255,0.22); outline-offset:3px; }
 .header-nav { display:flex; gap:1.2rem; align-items:center; justify-self:start; }
 .header-nav a { color: rgba(255,255,255,0.95); text-decoration:none; padding: .45rem .85rem; border-radius: 999px; font-weight:700; background: transparent; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 6px 18px rgba(0,0,0,0.08); transition: all .18s ease; white-space:nowrap; }
 .header-nav a:hover { background: rgba(255,255,255,0.10); color: var(--gg-accent); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,0.12); }

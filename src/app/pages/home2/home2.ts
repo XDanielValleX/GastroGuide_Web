@@ -25,9 +25,10 @@ interface HeaderUser {
 })
 export class Home2 implements OnInit, OnDestroy {
   searchQuery = '';
-  private readonly defaultUser: HeaderUser = { name: '', username: '', email: '', image: 'assets/profile.jpg' };
+  private readonly defaultUser: HeaderUser = { name: '', username: '', email: '', image: 'assets/profile.svg' };
   user: HeaderUser = { ...this.defaultUser };
   canCreate = false;
+  profileRoute = '/profile';
   loggingOut = false;
   private userSub?: Subscription;
 
@@ -39,12 +40,14 @@ export class Home2 implements OnInit, OnDestroy {
     const snapshot = this.userSession.snapshot;
     this.user = this.mapUser(snapshot);
     this.updateCapabilities(snapshot);
+    this.profileRoute = this.canCreate ? '/profile-c' : '/profile';
   }
 
   ngOnInit() {
     this.userSub = this.userSession.user$.subscribe((profile) => {
       this.user = this.mapUser(profile);
       this.updateCapabilities(profile);
+      this.profileRoute = this.canCreate ? '/profile-c' : '/profile';
     });
   }
 
@@ -92,17 +95,27 @@ export class Home2 implements OnInit, OnDestroy {
       return { ...this.defaultUser };
     }
     const displayName = profile.name || profile.username || this.defaultUser.name;
+    const avatarPath = profile.image || profile.avatar;
     return {
       name: displayName,
       username: profile.username,
       email: profile.email,
-      image: this.resolveAvatar(profile.image)
+      image: this.resolveAvatar(avatarPath)
     };
   }
 
   private updateCapabilities(profile: UserProfile | null | undefined) {
-    const role = this.userSession.getRole(profile ?? null);
-    this.canCreate = role === 'CREATOR';
+    const primaryRole = this.userSession.getRole(profile ?? null);
+    const arrayRoles = Array.isArray(profile?.roles) ? profile?.roles : [];
+    const directRole = typeof profile?.role === 'string' ? profile.role : '';
+
+    const hasCreatorRole = (value?: string | null) =>
+      typeof value === 'string' && value.toUpperCase().includes('CREATOR');
+
+    this.canCreate =
+      primaryRole === 'CREATOR' ||
+      hasCreatorRole(directRole) ||
+      arrayRoles.some((r) => hasCreatorRole(r));
   }
 
   private resolveAvatar(path?: string | null): string {

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -108,6 +108,8 @@ export class CreateCourse implements OnInit, OnDestroy {
   returnUrl = '/home3';
   currentUser: UserProfile | null = null;
   private userSub?: Subscription;
+  private readonly MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB
+  private readonly AUTH_TOKEN_ERROR = 'AUTH_TOKEN_MISSING';
 
   constructor(
     private http: HttpClient,
@@ -154,6 +156,10 @@ export class CreateCourse implements OnInit, OnDestroy {
   onImageFile(e: any) {
     const f = e.target.files?.[0];
     if (!f) return;
+    if (!this.validateImageFileSize(f)) {
+      e.target.value = '';
+      return;
+    }
     this.selectedImageFile = f;
     this.uploadedImagePath = null;
     const reader = new FileReader();
@@ -249,28 +255,31 @@ export class CreateCourse implements OnInit, OnDestroy {
   }
   countLessons() { return this.modules.reduce((acc,m:any)=>acc + (m.lessons?.length||0), 0); }
 
-  async saveCourseInfo(status: 'DRAFT' | 'PUBLISHED' = 'DRAFT') {
-    if (this.savingCourse) { return; }
-    if (this.createdCourseId && status === 'DRAFT') {
-      this.showToast('El curso ya fue guardado. Continúa con los módulos.');
-      return;
-    }
+  async saveCourseInfo(status: 'DRAFT' | 'PUBLISHED' = 'DRAFT'): Promise<boolean> {
+    if (this.savingCourse) { return false; }
     if (!this.course.title || this.course.title.length < 3 || !this.course.description || this.course.description.length < 10) {
       this.showToast('Completa título y descripción (mínimo 10 caracteres).');
-      return;
+      return false;
+    }
+    const creatorId = this.getCurrentUserId();
+    if (!creatorId) {
+      this.showToast('Debes iniciar sesión para crear un curso.');
+      return false;
+    }
+    const creatorPayloadId = this.castBackendId(creatorId);
+    if (creatorPayloadId === undefined) {
+      this.showToast('No se pudo determinar tu identificador de usuario.');
+      return false;
     }
     this.course.tags = this.tagsInput ? this.tagsInput.split(',').map((t: string) => t.trim()).filter(Boolean) : [];
+    let success = false;
     this.savingCourse = true;
     try {
-      const creatorId = this.getCurrentUserId();
-      if (!creatorId) {
-        this.showToast('Debes iniciar sesión para crear un curso.');
-        return;
-      }
-      this.showToast('Guardando información del curso...');
+      this.showToast(status === 'PUBLISHED' ? 'Publicando curso...' : 'Guardando información del curso...');
       const imageValue = await this.ensureImageIsStored();
       const payload: CreateCourseDto = {
-        creatorId,
+        id: this.createdCourseId ?? undefined,
+        creatorId: creatorPayloadId,
         title: this.course.title,
         description: this.course.description,
         image: imageValue,
@@ -282,7 +291,7 @@ export class CreateCourse implements OnInit, OnDestroy {
         tags: this.course.tags || []
       };
 
-      const courseResp: any = await firstValueFrom(this.http.post(`${environment.apiUrl}/api/v1/courses/add`, payload));
+      const courseResp: any = await this.authorizedPost(`${environment.apiUrl}/api/v1/courses/add`, payload);
       const createdCourseId = courseResp?.id || courseResp?.data?.id;
       if (!createdCourseId) {
         throw new Error('El backend no devolvió un identificador de curso');
@@ -293,36 +302,44 @@ export class CreateCourse implements OnInit, OnDestroy {
       this.course.creatorId = creatorId;
       await this.refreshSavedSnapshot(createdCourseId);
       this.showToast(status === 'PUBLISHED' ? 'Curso publicado' : 'Curso guardado');
+      success = true;
     } catch (err: any) {
-      console.error('saveCourseInfo error', err);
-      this.showToast('Error guardando curso: ' + (err?.message || 'server error'));
+      if (this.isMissingAuthTokenError(err)) {
+        this.showToast('Tu sesión expiró. Inicia sesión nuevamente.');
+      } else {
+        console.error('saveCourseInfo error', err);
+        this.showToast('Error guardando curso: ' + (err?.message || 'server error'));
+      }
     } finally {
       this.savingCourse = false;
     }
+    return success;
   }
 
-  async saveModules() {
-    if (this.savingModules) { return; }
+  async saveModules(): Promise<boolean> {
+    if (this.savingModules) { return false; }
     if (!this.createdCourseId) {
       this.showToast('Guarda primero la información del curso.');
-      return;
+      return false;
     }
     const pending = this.modules.filter((m) => !m.id);
     if (!pending.length) {
       this.showToast('No hay módulos nuevos por guardar');
-      return;
+      return true;
     }
+    const backendCourseId = this.castBackendId(this.createdCourseId) ?? this.createdCourseId;
+    let success = false;
     this.savingModules = true;
     try {
       for (const moduleDraft of pending) {
         const modulePayload: CreateModuleDto = {
-          course: this.createdCourseId,
+          course: backendCourseId,
           title: moduleDraft.title,
           description: moduleDraft.description,
           estimatedDuration: moduleDraft.estimatedDuration || 0,
           locked: !!moduleDraft.locked
         };
-        const modResp: any = await firstValueFrom(this.http.post(`${environment.apiUrl}/api/v1/modules/add`, modulePayload));
+        const modResp: any = await this.authorizedPost(`${environment.apiUrl}/api/v1/modules/add`, modulePayload);
         const createdModuleId = modResp?.id || modResp?.data?.id;
         if (!createdModuleId) {
           throw new Error('El backend no devolvió un identificador de módulo');
@@ -331,24 +348,30 @@ export class CreateCourse implements OnInit, OnDestroy {
       }
       await this.refreshSavedSnapshot(this.createdCourseId);
       this.showToast('Módulos guardados');
+      success = true;
     } catch (err: any) {
-      console.error('saveModules error', err);
-      this.showToast('Error guardando módulos: ' + (err?.message || 'server error'));
+      if (this.isMissingAuthTokenError(err)) {
+        this.showToast('Tu sesión expiró. Inicia sesión nuevamente.');
+      } else {
+        console.error('saveModules error', err);
+        this.showToast('Error guardando módulos: ' + (err?.message || 'server error'));
+      }
     } finally {
       this.savingModules = false;
     }
+    return success;
   }
 
-  async saveLessons() {
-    if (this.savingLessons) { return; }
+  async saveLessons(): Promise<boolean> {
+    if (this.savingLessons) { return false; }
     if (!this.createdCourseId) {
       this.showToast('Primero guarda el curso y los módulos.');
-      return;
+      return false;
     }
     const modulesWithoutId = this.modules.filter((m) => !m.id);
     if (modulesWithoutId.length) {
       this.showToast('Guarda los módulos antes de las lecciones.');
-      return;
+      return false;
     }
     const pendingLessons: { module: ModuleDraft; lesson: LessonDraft }[] = [];
     this.modules.forEach((module) => {
@@ -360,14 +383,15 @@ export class CreateCourse implements OnInit, OnDestroy {
     });
     if (!pendingLessons.length) {
       this.showToast('No hay lecciones nuevas por guardar');
-      return;
+      return true;
     }
+    let success = false;
     this.savingLessons = true;
     try {
       for (const { module, lesson } of pendingLessons) {
         if (!module.id) { continue; }
         const lessonPayload: LessonDto = {
-          moduleId: module.id,
+          moduleId: this.castBackendId(module.id) ?? module.id,
           title: lesson.title,
           description: lesson.description,
           duration: lesson.duration || 0,
@@ -375,7 +399,7 @@ export class CreateCourse implements OnInit, OnDestroy {
           contentUrl: lesson.contentUrl || '',
           isFree: !!lesson.isFree
         };
-        const lessonResp: any = await firstValueFrom(this.http.post(`${environment.apiUrl}/api/v1/lessons/add`, lessonPayload));
+        const lessonResp: any = await this.authorizedPost(`${environment.apiUrl}/api/v1/lessons/add`, lessonPayload);
         const createdLessonId = lessonResp?.id || lessonResp?.data?.id;
         if (!createdLessonId) {
           throw new Error('El backend no devolvió un identificador de lección');
@@ -384,12 +408,18 @@ export class CreateCourse implements OnInit, OnDestroy {
       }
       await this.refreshSavedSnapshot(this.createdCourseId);
       this.showToast('Lecciones guardadas');
+      success = true;
     } catch (err: any) {
-      console.error('saveLessons error', err);
-      this.showToast('Error guardando lecciones: ' + (err?.message || 'server error'));
+      if (this.isMissingAuthTokenError(err)) {
+        this.showToast('Tu sesión expiró. Inicia sesión nuevamente.');
+      } else {
+        console.error('saveLessons error', err);
+        this.showToast('Error guardando lecciones: ' + (err?.message || 'server error'));
+      }
     } finally {
       this.savingLessons = false;
     }
+    return success;
   }
 
   async publishCourse() {
@@ -401,14 +431,25 @@ export class CreateCourse implements OnInit, OnDestroy {
     try {
       this.publishing = true;
       if (!this.createdCourseId) {
-        await this.saveCourseInfo();
+        const initialSaved = await this.saveCourseInfo();
+        if (!initialSaved) {
+          this.showToast('Guarda la información básica antes de publicar.');
+          return;
+        }
       }
-      await this.saveModules();
-      await this.saveLessons();
-      if (!this.createdCourseId) {
-        throw new Error('No se pudo guardar el curso');
+      const modulesSaved = await this.saveModules();
+      if (!modulesSaved) {
+        return;
       }
-      this.showToast('Curso guardado. Revisa el panel lateral para ver la información publicada.');
+      const lessonsSaved = await this.saveLessons();
+      if (!lessonsSaved) {
+        return;
+      }
+      const published = await this.saveCourseInfo('PUBLISHED');
+      if (!published) {
+        return;
+      }
+      this.showToast('Curso guardado y publicado correctamente.');
       this.router.navigate([this.returnUrl]);
     } catch (err:any) {
       console.error('publishCourse error', err);
@@ -426,7 +467,19 @@ export class CreateCourse implements OnInit, OnDestroy {
         this.resetSavedCourses();
         return;
       }
-      const resp: any = await firstValueFrom(this.http.get(`${environment.apiUrl}/api/v1/courses/all`));
+      const token = this.userSession.getToken();
+      if (!token) {
+        this.showToast('Inicia sesión para sincronizar tus cursos guardados.');
+        this.resetSavedCourses();
+        return;
+      }
+      const role = (this.userSession.getRole(this.currentUser) || '').toUpperCase();
+      if (role !== 'CREATOR') {
+        this.showToast('Activa tu perfil de creador para gestionar cursos.');
+        this.resetSavedCourses();
+        return;
+      }
+      const resp: any = await this.authorizedGet(`${environment.apiUrl}/api/v1/courses/all`);
       const allCourses = Array.isArray(resp) ? resp : (resp?.data || []);
       this.savedCourses = allCourses.filter((course: any) => this.belongsToCurrentUser(course));
 
@@ -442,9 +495,16 @@ export class CreateCourse implements OnInit, OnDestroy {
         this.previewImage = this.savedCourseSnapshot.image;
         this.uploadedImagePath = this.savedCourseSnapshot.image;
       }
-    } catch (err) {
-      console.error('loadSavedCourses error', err);
-      this.showToast('No se pudieron cargar los cursos guardados');
+    } catch (err: any) {
+      if (this.isMissingAuthTokenError(err)) {
+        this.showToast('Tu sesión expiró. Inicia sesión nuevamente.');
+        this.resetSavedCourses();
+      } else if (err?.status === 403) {
+        this.showToast('Tu sesión no tiene permisos para cargar cursos guardados. Vuelve a iniciar sesión si ya eres creador.');
+      } else {
+        console.error('loadSavedCourses error', err);
+        this.showToast('No se pudieron cargar los cursos guardados');
+      }
     } finally {
       this.loadingSavedCourses = false;
     }
@@ -512,9 +572,13 @@ export class CreateCourse implements OnInit, OnDestroy {
       if (this.uploadedImagePath) {
         return this.uploadedImagePath;
       }
+      if (!this.validateImageFileSize(this.selectedImageFile)) {
+        this.selectedImageFile = null;
+        return undefined;
+      }
       const formData = new FormData();
       formData.append('file', this.selectedImageFile);
-      const uploadResp: any = await firstValueFrom(this.http.post(`${environment.apiUrl}/api/v1/files/upload`, formData));
+      const uploadResp: any = await this.authorizedPost(`${environment.apiUrl}/api/v1/files/upload`, formData);
       const storedPath = uploadResp?.url || uploadResp?.path || uploadResp?.data?.url || uploadResp?.data?.path;
       if (!storedPath) {
         throw new Error('El backend no devolvió la ruta del archivo subido');
@@ -540,11 +604,8 @@ export class CreateCourse implements OnInit, OnDestroy {
 
   private applyCurrentUser(profile: UserProfile | null | undefined) {
     this.currentUser = profile ?? null;
-    if (this.currentUser?.id !== undefined && this.currentUser?.id !== null) {
-      this.course.creatorId = String(this.currentUser.id);
-    } else {
-      this.course.creatorId = undefined;
-    }
+    const resolvedId = this.resolveProfileId(this.currentUser);
+    this.course.creatorId = resolvedId ?? undefined;
   }
 
   private resetSavedCourses() {
@@ -556,10 +617,7 @@ export class CreateCourse implements OnInit, OnDestroy {
   }
 
   private getCurrentUserId(): string | null {
-    if (this.currentUser?.id === undefined || this.currentUser?.id === null) {
-      return null;
-    }
-    return String(this.currentUser.id);
+    return this.resolveProfileId(this.currentUser);
   }
 
   private belongsToCurrentUser(course: any): boolean {
@@ -567,10 +625,83 @@ export class CreateCourse implements OnInit, OnDestroy {
     if (!ownerId) {
       return false;
     }
-    const courseOwner = course?.creatorId ?? course?.creator?.id ?? course?.userId;
+    const courseOwner =
+      course?.creatorId ??
+      course?.creator?.id ??
+      course?.creator?.userId ??
+      course?.userId ??
+      course?.user?.id;
     if (courseOwner === undefined || courseOwner === null) {
       return false;
     }
     return String(courseOwner) === ownerId;
+  }
+
+  private resolveProfileId(profile?: UserProfile | null): string | null {
+    if (!profile) {
+      return null;
+    }
+    const candidate =
+      profile.id ??
+      (profile as any)?.userId ??
+      (profile as any)?.user?.id ??
+      (profile as any)?.user?.userId ??
+      (profile as any)?.data?.id ??
+      (profile as any)?.data?.userId;
+    if (candidate === undefined || candidate === null) {
+      return null;
+    }
+    const normalized = String(candidate).trim();
+    return normalized || null;
+  }
+
+  private async authorizedGet<T>(url: string, params?: Record<string, any>): Promise<T> {
+    const headers = this.requireAuthHeaders();
+    const options: { headers: HttpHeaders; params?: Record<string, any> } = { headers };
+    if (params) {
+      options.params = params;
+    }
+    return firstValueFrom(this.http.get<T>(url, options));
+  }
+
+  private async authorizedPost<T>(url: string, body: any, params?: Record<string, any>): Promise<T> {
+    const headers = this.requireAuthHeaders();
+    const options: { headers: HttpHeaders; params?: Record<string, any> } = { headers };
+    if (params) {
+      options.params = params;
+    }
+    return firstValueFrom(this.http.post<T>(url, body, options));
+  }
+
+  private requireAuthHeaders(): HttpHeaders {
+    const token = this.userSession.getToken();
+    if (!token) {
+      throw new Error(this.AUTH_TOKEN_ERROR);
+    }
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
+  }
+
+  private isMissingAuthTokenError(err: any): boolean {
+    return !!err && typeof err === 'object' && 'message' in err && err.message === this.AUTH_TOKEN_ERROR;
+  }
+
+  private validateImageFileSize(file: File): boolean {
+    if (file.size <= this.MAX_IMAGE_SIZE_BYTES) {
+      return true;
+    }
+    const limitMb = Math.round((this.MAX_IMAGE_SIZE_BYTES / (1024 * 1024)) * 10) / 10;
+    this.showToast(`La imagen supera el límite de ${limitMb} MB permitido.`);
+    return false;
+  }
+
+  private castBackendId(value: string | number | null | undefined): string | number | undefined {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+    const normalized = String(value).trim();
+    if (!normalized) {
+      return undefined;
+    }
+    return /^\d+$/.test(normalized) ? Number(normalized) : normalized;
   }
 }
