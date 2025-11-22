@@ -32,7 +32,7 @@
 
 		<!-- grid -->
 		<div class="grid" *ngIf="!loading && filteredCourses.length">
-			<div class="card" *ngFor="let course of pagedCourses">
+			<div class="card" *ngFor="let course of pagedCourses" (click)="goDetail(course)" title="Ver detalle del curso">
 				<div class="card-media">
 					<img [src]="course.image || '/assets/images/placeholder-course.png'" [alt]="course.title" (error)="onImgError($event)" />
 				</div>

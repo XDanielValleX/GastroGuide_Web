@@ -13,7 +13,7 @@
             <ul>
                 <li><a routerLink="#" routerLinkActive="active">Blog</a></li>
                 <li><a routerLink="/courses" routerLinkActive="active">Cursos</a></li>
-                <li><a href="#about-us">Acerca de Nosotros</a></li>
+                <li><a routerLink="/detail-courses" routerLinkActive="active">Acerca de Nosotros</a></li>
                 <li><a href="#">Contacto</a></li>
             </ul>
         </div>
@@ -21,9 +21,9 @@
         <div class="footer-column support">
             <h3>Soporte</h3>
             <ul>
-                <li><a routerLink="" routerLinkActive="active">Reels</a></li>
-                <li><a routerLink="" routerLinkActive="active">Política de Privacidad</a></li>
-                <li><a routerLink="" routerLinkActive="active">Términos de Servicio</a></li>
+                <li><a routerLink="#" routerLinkActive="active">Reels</a></li>
+                <li><a [routerLink]="['/home3']" [queryParams]="{ noHeader: '1' }">Política de Privacidad</a></li>
+                <li><a [routerLink]="['/home2']" [queryParams]="{ noHeader: '1' }">Términos de Servicio</a></li>
             </ul>
         </div>
 

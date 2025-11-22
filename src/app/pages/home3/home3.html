@@ -110,9 +110,38 @@
 							<p class="pc-number">$1.2K</p>
 							<span class="pc-foot">Mes actual</span>
 						</div>
+						<div class="mi-action"><button class="btn tiny primary" aria-label="Crear nuevo reel">Nuevo</button></div>
+					</li>
+					</ul>
+				</nav>
+			<div class="menu-preview">
+				<h3>Bienvenido</h3>
+				<p class="muted">Selecciona una opción del menú para comenzar. El contenido se cargará aquí sin salir del panel.</p>
+				<div class="preview-cards">
+					<div class="preview-card clickable" role="button" (click)="goTo('courses')">
+						<h5>Cursos disponibles</h5>
+						<p class="pc-number">{{ coursesCount }}</p>
+						<span class="pc-foot">Ir a Cursos</span>
+					</div>
+					<div class="preview-card clickable" role="button" (click)="goTo('reels')">
+						<h5>Reels publicados</h5>
+						<p class="pc-number">{{ reelsCount }}</p>
+						<span class="pc-foot">Ir a Reels</span>
+					</div>
+					<div class="preview-card clickable" role="button" (click)="goTo('signup')">
+						<h5>Usuarios registrados</h5>
+						<p class="pc-number">{{ usersCount }}</p>
+						<span class="pc-foot">Ver registro</span>
+					</div>
+					<div class="preview-card accent">
+						<h5>Engagement medio</h5>
+						<p class="pc-number">68%</p>
+						<span class="pc-foot">Estable</span>
+					</div>
 					</div>
 					<img src="/assets/images/creator-illustration.svg" alt="Ilustración"
 						onerror="this.style.display='none'" />
+
 				</div>
 			</section>
 
