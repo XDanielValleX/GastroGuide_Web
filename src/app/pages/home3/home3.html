@@ -43,81 +43,65 @@
 			<section class="menu-layout" *ngIf="activeSection === 'dashboard'">
 				<nav class="menu" aria-label="Menú principal del panel">
 					<ul>
-						<li class="menu-item" role="button" tabindex="0" data-type="create" (click)="open('create')"
-							[class.active]="isActive('create')">
+						<li class="menu-item" role="button" tabindex="0" data-type="create" (click)="open('create')" [class.active]="isActive('create')">
 							<div class="mi-icon icon-course" aria-hidden="true">🎓</div>
 							<div class="mi-body">
 								<h4>Crear cursos</h4>
 								<p class="muted">Publica lecciones, materiales y precios.</p>
 							</div>
-							<div class="mi-action"><button class="btn tiny primary"
-									aria-label="Comenzar a crear curso">Comenzar</button></div>
+							<div class="mi-action"><button class="btn tiny primary" aria-label="Comenzar a crear curso">Comenzar</button></div>
 						</li>
-						<li class="menu-item" role="button" tabindex="0" data-type="stats" (click)="open('stats')"
-							[class.active]="isActive('stats')">
+						<li class="menu-item" role="button" tabindex="0" data-type="stats" (click)="open('stats')" [class.active]="isActive('stats')">
 							<div class="mi-icon icon-stats" aria-hidden="true">📊</div>
 							<div class="mi-body">
 								<h4>Estadísticas</h4>
 								<p class="muted">Ingresos y rendimiento.</p>
 							</div>
-							<div class="mi-action"><button class="btn tiny secondary"
-									aria-label="Revisar estadísticas">Revisar</button></div>
+							<div class="mi-action"><button class="btn tiny secondary" aria-label="Revisar estadísticas">Revisar</button></div>
 						</li>
-						<li class="menu-item" role="button" tabindex="0" data-type="profile" (click)="open('profile')"
-							[class.active]="isActive('profile')">
+						<li class="menu-item" role="button" tabindex="0" data-type="profile" (click)="open('profile')" [class.active]="isActive('profile')">
 							<div class="mi-icon icon-profile" aria-hidden="true">👤</div>
 							<div class="mi-body">
 								<h4>Perfil</h4>
 								<p class="muted">Biografía y enlaces.</p>
 							</div>
-							<div class="mi-action"><button class="btn tiny secondary"
-									aria-label="Editar perfil">Editar</button></div>
+							<div class="mi-action"><button class="btn tiny secondary" aria-label="Editar perfil">Editar</button></div>
 						</li>
-						<li class="menu-item" role="button" tabindex="0" data-type="reels" (click)="open('reels')"
-							[class.active]="isActive('reels')">
+						<li class="menu-item" role="button" tabindex="0" data-type="reels" (click)="open('reels')" [class.active]="isActive('reels')">
 							<div class="mi-icon icon-reels" aria-hidden="true">🎬</div>
 							<div class="mi-body">
 								<h4>Reels</h4>
 								<p class="muted">Clips promocionales.</p>
 							</div>
-							<div class="mi-action"><button class="btn tiny primary"
-									aria-label="Crear nuevo reel">Nuevo</button></div>
+							<div class="mi-action"><button class="btn tiny primary" aria-label="Crear nuevo reel">Nuevo</button></div>
 						</li>
 					</ul>
 				</nav>
 				<div class="menu-preview">
 					<h3>Bienvenido</h3>
-					<p class="muted">Selecciona una opción del menú para comenzar. El contenido se cargará aquí sin
-						salir del panel.</p>
+					<p class="muted">Selecciona una opción del menú para comenzar. El contenido se cargará aquí sin salir del panel.</p>
 					<div class="preview-cards">
-						<div class="preview-card">
-							<h5>Cursos activos</h5>
-							<p class="pc-number">12</p>
-							<span class="pc-foot">Último: hace 3 días</span>
+						<div class="preview-card clickable" role="button" (click)="goTo('courses')">
+							<h5>Cursos disponibles</h5>
+							<p class="pc-number">{{ coursesCount }}</p>
+							<span class="pc-foot">Ir a Cursos</span>
 						</div>
-						<div class="preview-card">
+						<div class="preview-card clickable" role="button" (click)="goTo('reels')">
 							<h5>Reels publicados</h5>
-							<p class="pc-number">34</p>
-							<span class="pc-foot">+2 esta semana</span>
+							<p class="pc-number">{{ reelsCount }}</p>
+							<span class="pc-foot">Ir a Reels</span>
 						</div>
-						<div class="preview-card">
-							<h5>Engagement medio</h5>
-							<p class="pc-number">68%</p>
-							<span class="pc-foot">Estable</span>
-						</div>
-						<div class="preview-card accent">
-							<h5>Ingresos</h5>
-							<p class="pc-number">$1.2K</p>
-							<span class="pc-foot">Mes actual</span>
+						<div class="preview-card clickable" role="button" (click)="goTo('signup')">
+							<h5>Usuarios registrados</h5>
+							<p class="pc-number">{{ usersCount }}</p>
+							<span class="pc-foot">Ver registro</span>
 						</div>
 					</div>
-					<img src="/assets/images/creator-illustration.svg" alt="Ilustración"
-						onerror="this.style.display='none'" />
 				</div>
 			</section>
 
 			<!-- placeholder panels -->
-			<section class="panel" *ngIf="activeSection !== 'dashboard'">
+			<section class="panel-section" *ngIf="activeSection !== 'dashboard'">
 				<button class="back back-btn" (click)="backToDashboard()" aria-label="Volver al panel">
 					<svg viewBox="0 0 24 24" class="back-svg" aria-hidden="true">
 						<path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2"
