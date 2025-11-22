@@ -211,6 +211,8 @@ export class Courses {
   }
 
   goDetail(course: Course) {
-    this.router.navigate(['/courses', course.id], { state: { coverImage: course.image, title: course.title, instructor: course.instructor } });
+    const inHome2 = this.router.url.startsWith('/home2');
+    const target = inHome2 ? ['/home2/courses', course.id] : ['/courses', course.id];
+    this.router.navigate(target, { state: { coverImage: course.image, title: course.title, instructor: course.instructor } });
   }
 }

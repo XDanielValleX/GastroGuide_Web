@@ -25,17 +25,22 @@ export const routes: Routes = [
   { path: 'password-fg', component: PasswordFG },
   { path: 'password-chg/:token', component: PasswordCHG },
   { path: 'password-chg', component: PasswordCHG },
-  { path: 'home2', component: Home2, children: [
-    { path: '', redirectTo: 'grids', pathMatch: 'full' },
-    { path: 'grids', component: Grids },
-    { path: 'courses', component: Courses }
-  ] },
-  { path: 'home2', component: Home2 },
+  {
+    path: 'home2',
+    component: Home2,
+    children: [
+      { path: '', redirectTo: 'grids', pathMatch: 'full' },
+      { path: 'grids', component: Grids },
+      { path: 'courses/:id', component: DetailCourses }, // detalle embebido dentro de home2
+      { path: 'courses', component: Courses }
+    ]
+  },
   { path: 'create-course', component: CreateCourse },
   { path: 'home3', component: Home3 },
   { path: 'nosotros', component: About },
   { path: 'blog', component: Blog },
   { path: 'contacto', component: Contact },
+  // rutas fuera de home2 siguen disponibles
   { path: 'courses', component: Courses },
   { path: 'courses/:id', component: DetailCourses },
   { path: 'detail-courses', component: DetailCourses },
