@@ -19,13 +19,14 @@ export class SwitchToCreator {
   constructor(private http: HttpClient, private userSession: UserSessionService) {}
 
   promote() {
-    if (!this.email) {
+    const rawEmail = (this.email || '').trim().toLowerCase();
+    if (!rawEmail) {
       this.message = 'Por favor ingresa un correo válido';
       return;
     }
 
     const url = `${environment.apiUrl}/api/v1/auth/promote-to-creator`;
-    this.http.post(url, { email: this.email })
+    this.http.post(url, { email: rawEmail })
       .subscribe({
         next: (res: any) => {
           this.message = `✅ El usuario ${res.username} ahora es CREATOR`;
@@ -33,7 +34,8 @@ export class SwitchToCreator {
         },
         error: (err) => {
           console.error(err);
-          this.message = '❌ No se pudo promover al usuario';
+          const detail = err?.error?.message || err?.message || 'No se pudo promover al usuario';
+          this.message = `❌ ${detail}`;
         }
       });
   }
