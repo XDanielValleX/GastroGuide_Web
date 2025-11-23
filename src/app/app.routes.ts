@@ -21,6 +21,7 @@ import { SwitchToCreator } from './pages/switch-to-creator/switch-to-creator';
 import { DetailCourses } from './pages/detail-courses/detail-courses';
 
 
+
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'login', component: Login },

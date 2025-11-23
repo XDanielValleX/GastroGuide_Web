@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AlertDialog } from '../../shared/alert/alert';
@@ -19,19 +19,35 @@ import { finalize } from 'rxjs/operators';
 export class Signup {
   message: string = '';
   loading: boolean = false;
+  username: string = '';
+  email: string = '';
+  password: string = '';
+  confirmPassword: string = '';
 
   constructor(private http: HttpClient, private router: Router, private usersService: UsersService) {}
 
-  onSubmit(event: Event) {
-    event.preventDefault();
-    const form = event.target as HTMLFormElement;
-    if (!form) return;
+  goHome() {
+    this.router.navigate(['/']);
+  }
 
-  const formData = new FormData(form);
-  const username = (formData.get('username') || '').toString().trim();
-  const email = (formData.get('email') || '').toString().trim();
-  const password = (formData.get('password') || '').toString();
-  const confirm = (formData.get('confirm') || '').toString();
+  onSubmit(form: NgForm) {
+    if (!form) {
+      return;
+    }
+
+    this.message = '';
+    if (form.invalid) {
+      this.message = 'Por favor completa todos los campos.';
+      return;
+    }
+
+    const username = (this.username || '').trim();
+    const email = (this.email || '').trim();
+    const password = this.password || '';
+    const confirm = this.confirmPassword || '';
+
+    this.username = username;
+    this.email = email;
 
     if (username.length < 3) {
       this.message = 'El username debe tener al menos 3 caracteres.';
@@ -80,6 +96,11 @@ export class Signup {
           // also register in the local UsersService so dashboards and counts update in-app
           this.usersService.addUser({ name: username, email, createdAt: new Date().toISOString() });
         } catch {}
+        form.resetForm();
+        this.username = '';
+        this.email = '';
+        this.password = '';
+        this.confirmPassword = '';
         setTimeout(() => this.router.navigate(['/login']), 1000);
       },
       error: (err) => {

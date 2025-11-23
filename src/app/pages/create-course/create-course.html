@@ -78,8 +78,12 @@
                 <label>Imagen del curso (URL o subir)</label>
                 <div class="image-row">
                     <input type="text" [(ngModel)]="course.image" name="imageUrl" placeholder="https://..." />
-                    <input type="file" accept="image/*" (change)="onImageFile($event)" aria-label="Subir imagen del curso" />
+                    <input type="file" accept="image/*" (change)="onImageFile($event)" aria-label="Subir imagen del curso"
+                        [disabled]="disableFileUpload" title="La carga local estará disponible pronto" />
                 </div>
+                <p class="upload-disabled" *ngIf="disableFileUpload">
+                    La opción de subir archivo está deshabilitada temporalmente. Usa una URL pública de imagen por ahora.
+                </p>
                 <div class="image-preview" *ngIf="course.image || previewImage">
                     <img [src]="previewImage || course.image" alt="preview" />
                 </div>

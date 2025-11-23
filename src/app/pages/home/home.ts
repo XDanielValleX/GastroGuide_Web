@@ -97,8 +97,4 @@ export class Home {
             });
         }
     }
-
-    switchToCreator(): void {
-        this.router.navigate(['/switch-to-creator']);
-    }
 }

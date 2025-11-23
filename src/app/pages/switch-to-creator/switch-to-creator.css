@@ -130,6 +130,8 @@ form p {
     transition: all 0.3s ease;
     padding-left: 44px;
     color: rgba(0, 0, 0, 0.7);
+    font-size: 12.5px;
+    font-weight: 400;
 }
 
 .floating-label .icon {
@@ -154,12 +156,12 @@ form p {
     padding: 28px 0 12px 0;
 }
 
-.floating-label input:not(:placeholder-shown) + label {
+.floating-label input:not(:placeholder-shown)+label {
     transform: translateY(-10px);
     opacity: 0.7;
 }
 
-.floating-label input:valid:not(:placeholder-shown) + label + .icon svg {
+.floating-label input:valid:not(:placeholder-shown)+label+.icon svg {
     opacity: 1;
     fill: #EF6C00;
 }
@@ -221,9 +223,11 @@ button:active {
     0% {
         transform: rotate(0deg) translate(0, 0);
     }
+
     50% {
         transform: rotate(180deg) translate(20px, -20px);
     }
+
     100% {
         transform: rotate(360deg) translate(0, 0);
     }
@@ -233,10 +237,35 @@ button:active {
     0% {
         transform: rotate(0deg) translate(0, 0) scale(1);
     }
+
     50% {
         transform: rotate(-180deg) translate(-25px, 25px) scale(1.1);
     }
+
     100% {
         transform: rotate(-360deg) translate(0, 0) scale(1);
     }
+}
+
+.switch-to-creator-btn {
+    cursor: pointer;
+    transition: transform .25s ease;
+}
+
+.switch-to-creator-btn:hover svg {
+    transform: scale(1.15);
+}
+
+.switch-to-creator-btn:active svg {
+    transform: scale(0.92);
+}
+
+.switch-to-creator-btn svg {
+    position: relative;
+    z-index: 1;
+    height: 40px;
+    width: auto;
+    margin: 20px;
+    fill: #ffffff;
+    transition: transform .25s ease;
 }
