@@ -101,6 +101,7 @@
                 <button type="button" class="btn secondary" (click)="cancel()">Cancelar</button>
                 <button type="submit" class="btn">Siguiente</button>
             </div>
+               <button *ngIf="createdCourseId" (click)="goToDetail(createdCourseId)">Ver detalle</button>
         </form>
 
         <!-- Step 2: Módulos -->
