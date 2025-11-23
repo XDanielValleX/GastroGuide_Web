@@ -1,13 +1,12 @@
-import { Component } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { finalize } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AlertDialog } from '../../shared/alert/alert';
 import { UsersService } from '../../shared/users.service';
-import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-signup',
@@ -17,6 +16,7 @@ import { finalize } from 'rxjs/operators';
   imports: [CommonModule, FormsModule, RouterModule, HttpClientModule, AlertDialog] // ✅ necesario
 })
 export class Signup {
+  selectedRole: 'STUDENT' | 'CREATOR' = 'STUDENT';
   message: string = '';
   loading: boolean = false;
   username: string = '';
@@ -25,6 +25,10 @@ export class Signup {
   confirmPassword: string = '';
 
   constructor(private http: HttpClient, private router: Router, private usersService: UsersService) {}
+
+  selectRole(role: 'STUDENT' | 'CREATOR') {
+    this.selectedRole = role;
+  }
 
   goHome() {
     this.router.navigate(['/']);
@@ -80,21 +84,21 @@ export class Signup {
     this.loading = true;
     this.message = '';
 
-    // Enviar el payload incluyendo username (ajustar si backend usa 'name')
-    const payload: any = { username, email, password, confirmPassword: confirm };
-    console.debug('Register payload:', payload);
-    this.http.post(`${environment.apiUrl}/api/v1/auth/register`, payload)
+  // Enviar el payload incluyendo username y rol
+  const payload: any = { username, email, password, confirmPassword: confirm, userType: this.selectedRole };
+  console.debug('Register payload:', payload);
+  this.http.post(`${environment.apiUrl}/api/v1/auth/register`, payload)
       .pipe(finalize(() => {
         this.loading = false;
       }))
       .subscribe({
       next: () => {
         this.message = 'Registro exitoso. Redirigiendo al login...';
-        // Persistencia mínima local para que el perfil muestre datos
+        // Persistencia mínima local para que el perfil muestre datos y rol
         try {
-          localStorage.setItem('user', JSON.stringify({ name: username, email }));
+          localStorage.setItem('user', JSON.stringify({ name: username, email, role: this.selectedRole, roles: [this.selectedRole] }));
           // also register in the local UsersService so dashboards and counts update in-app
-          this.usersService.addUser({ name: username, email, createdAt: new Date().toISOString() });
+          this.usersService.addUser({ name: username, email, createdAt: new Date().toISOString(), role: this.selectedRole, roles: [this.selectedRole] });
         } catch {}
         form.resetForm();
         this.username = '';

@@ -10,6 +10,11 @@
     <form class="sign-up" (ngSubmit)="onSubmit(signupForm)" #signupForm="ngForm">
         <h4>• <span>Create Account</span> •</h4>
         <p>Regístrate para empezar a usar <strong>GastroGuide</strong>:</p>
+        <div class="role-select">
+            <label>Elige tu rol:</label>
+            <button type="button" [class.selected]="selectedRole==='STUDENT'" (click)="selectRole('STUDENT')">Estudiante</button>
+            <button type="button" [class.selected]="selectedRole==='CREATOR'" (click)="selectRole('CREATOR')">Creador</button>
+        </div>
 
         <!-- Mensajes -->
         <app-alert *ngIf="message" [message]="message" type="error" (close)="message=''"></app-alert>
@@ -73,7 +78,7 @@
         </div>
 
         <button type="submit" [disabled]="loading">{{ loading ? 'Signing up...' : 'Sign up' }}</button>
-        <a routerLink="/login" class="discrete">Already have an account?</a>
+    <a routerLink="/login" class="discrete">Already have an account?</a>
 
     </form>
 </div>

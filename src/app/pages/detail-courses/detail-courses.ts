@@ -1,8 +1,7 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { CoursesService, CourseItem } from '../../shared/courses.service';
 import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
 interface LessonItem {
@@ -20,15 +19,15 @@ interface ModuleItem {
 interface CourseDetail {
   id: string | number;
   title: string;
-  instructor?: string;      // creador
-  description?: string;     // descripción
-  language?: string;        // idioma
-  price?: number;           // precio
-  discountPrice?: number | null;
-  publishedAt?: string | null; // última actualización / fecha
-  coverImage?: string;      // imgPortada
-  objective?: string;       // objetivo
-  modules?: ModuleItem[];   // módulos con lecciones
+  instructor: string;      // creador
+  description: string;     // descripción
+  language: string;        // idioma
+  price: number;           // precio
+  discountPrice: number | null;
+  publishedAt: string | null; // última actualización / fecha
+  coverImage: string;      // imgPortada
+  objective: string;       // objetivo
+  modules: ModuleItem[];   // módulos con lecciones
 }
 
 @Component({
@@ -43,142 +42,121 @@ export class DetailCourses {
   expanded: Set<string | number> = new Set();
   loading = true;
   error: string | null = null;
+  private readonly SAMPLE_PREFIX = 'SAMPLE_';
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router, private coursesSvc: CoursesService) {}
+  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
+    const nav = this.router.getCurrentNavigation();
+    const state = (nav && nav.extras && nav.extras.state) ? nav.extras.state as any : history.state;
+
     if (!id) {
       this.loading = false;
       this.error = 'Curso no especificado';
       return;
     }
-    // Prefill from navigation state for faster image/title display
-    const state: any = (history && history.state) ? history.state : {};
-    if (state.coverImage || state.title) {
+
+    if (state && (state.title || state.coverImage || state.instructor)) {
       this.course = {
-        id,
-        title: state.title || 'Cargando…',
+        id: id,
+        title: state.title || 'Curso',
         instructor: state.instructor || 'Instructor',
-        description: '',
-        language: 'ES',
-        price: 0,
-        discountPrice: null,
-        publishedAt: null,
-        coverImage: state.coverImage,
-        objective: undefined,
+        description: state.description || 'Descripción no disponible.',
+        language: state.language || 'ES',
+        price: typeof state.price === 'number' ? state.price : 0,
+        discountPrice: typeof state.discountPrice === 'number' ? state.discountPrice : null,
+        publishedAt: state.publishedAt || null,
+        coverImage: state.coverImage || state.image || 'creator-illustration.svg',
+        objective: state.objective || 'Aprender habilidades del tema.',
         modules: []
       };
     }
-    // try to locate in service (only has id+title minimal)
-    const sub = this.coursesSvc.courses$.subscribe(list => {
-      const found = list.find(c => String(c.id) === String(id));
-      if (found) {
-        // fetch extended data (simulate, since API shape unknown). We'll call API single endpoint; fallback to sample fields.
-        this.fetchDetail(found.id, found.title);
-      } else if (id === 'sample-preview-1') {
-        this.applySample();
+
+    if (String(id).startsWith(this.SAMPLE_PREFIX) && this.course) {
+      // Inject dummy modules for sample course if empty
+      if (!this.course.modules || !this.course.modules.length) {
+        this.course.modules = [
+          { id: 'mod-1', title: 'Introducción', lessons: [
+            { id: 'l-1-1', title: 'Bienvenida', content: 'Presentación general del curso.' },
+            { id: 'l-1-2', title: 'Objetivos', content: 'Qué aprenderás y cómo aprovechar el contenido.' }
+          ]},
+          { id: 'mod-2', title: 'Fundamentos', lessons: [
+            { id: 'l-2-1', title: 'Conceptos clave', content: 'Repaso de los pilares básicos.' },
+            { id: 'l-2-2', title: 'Primer ejercicio', content: 'Aplicación práctica inicial.' }
+          ]}
+        ];
       }
-    });
-    setTimeout(() => sub.unsubscribe(), 4000); // auto-unsubscribe after initial attempts
-    // attempt direct fetch (will enrich prefilled course)
+      this.loading = false;
+      return;
+    }
+
     this.fetchDetail(id, this.course?.title || 'Curso');
   }
 
   fetchDetail(id: string | number, titleFallback: string) {
     const url = `${environment.apiUrl}/api/v1/courses/${id}`;
     this.http.get<any>(url).subscribe({
-      next: (resp) => {
-        const c = resp?.data || resp?.course || resp;
-        if (!c || typeof c !== 'object') { this.applySample(titleFallback); return; }
-        this.course = {
-          id: c.id ?? c._id ?? id,
-          title: c.title || c.name || titleFallback,
-          instructor: c.instructor || c.author || c.teacher || 'Instructor desconocido',
-            description: c.description || c.summary || '',
-          language: c.language || c.lang || 'ES',
-          price: c.price ?? c.cost ?? 0,
-          discountPrice: c.discountPrice ?? c.offerPrice ?? null,
-          publishedAt: c.publishedAt || c.updatedAt || c.createdAt || null,
-          coverImage: c.coverImage || c.image || c.thumbnail || this.course?.coverImage || '/assets/images/placeholder-course.png',
-          objective: c.objective || c.goal || c.meta?.objective || 'Aprender habilidades clave del tema.',
-          modules: Array.isArray(c.modules) ? c.modules.map((m: any, i: number) => ({
-            id: m.id ?? m._id ?? m.moduleId ?? `mod-${i+1}`,
-            title: m.title || m.name || `Módulo ${i+1}`,
-            lessons: Array.isArray(m.lessons) ? m.lessons.map((l: any, j: number) => ({
-              id: l.id ?? l._id ?? l.lessonId ?? `l-${i+1}-${j+1}`,
-              title: l.title || l.name || `Lección ${j+1}`,
-              content: l.content || l.body || l.text || 'Contenido no disponible.'
-            })) : []
-          })) : this.sampleModules()
-        };
-        // limitar a un solo módulo
-        if (this.course.modules && this.course.modules.length > 1) {
-          this.course.modules = [this.course.modules[0]];
+      next: (c) => {
+        if (!c) {
+          this.error = 'Curso no encontrado';
+          this.loading = false;
+          return;
         }
+        let instructorName = 'Instructor';
+        if (c.creator && typeof c.creator === 'object') {
+          instructorName = c.creator.name || c.creator.username || (c.creator.firstName && c.creator.lastName ? `${c.creator.firstName} ${c.creator.lastName}` : c.creator.firstName) || 'Instructor';
+        } else if (typeof c.creator === 'string' && c.creator.trim()) {
+          instructorName = c.creator;
+        } else if (c.creatorId) {
+          instructorName = `Instructor ${c.creatorId}`;
+        }
+        const publishDate = c.publicationDate || c.creationDate || new Date().toISOString();
+        let objectiveText = 'Aprender habilidades del tema.';
+        if (Array.isArray(c.objectives) && c.objectives.length) objectiveText = c.objectives.join('. ');
+        else if (typeof c.objective === 'string' && c.objective.trim()) objectiveText = c.objective;
+        else if (c.description) objectiveText = c.description;
+        const backendCourse: CourseDetail = {
+          id: c.id || id,
+          title: c.title || titleFallback,
+          instructor: instructorName,
+          description: c.description || '',
+          language: c.language || 'ES',
+          price: typeof c.price === 'number' ? c.price : 0,
+          discountPrice: typeof c.discountPrice === 'number' ? c.discountPrice : null,
+          publishedAt: publishDate,
+          coverImage: c.image || this.course?.coverImage || 'creator-illustration.svg',
+          objective: objectiveText,
+          modules: Array.isArray(c.modules) ? c.modules.map((m: any, i: number) => ({
+            id: m.id || `mod-${i+1}`,
+            title: m.title || `Módulo ${i+1}`,
+            lessons: Array.isArray(m.lessons) ? m.lessons.map((l: any, j: number) => ({
+              id: l.id || `l-${i+1}-${j+1}`,
+              title: l.title || `Lección ${j+1}`,
+              content: l.description || l.contentUrl || 'Contenido no disponible.'
+            })) : []
+          })) : []
+        };
+        this.course = this.course ? { ...this.course, ...backendCourse } : backendCourse;
         this.loading = false;
+        this.error = null;
       },
       error: () => {
-        // fallback to sample
-        if (String(id) === 'sample-preview-1') this.applySample(); else this.applySample(titleFallback);
+        if (this.course) {
+          // keep prefilled data
+          this.loading = false;
+          this.error = null;
+        } else {
+          this.error = 'No se pudo cargar la información del curso';
+          this.loading = false;
+        }
       }
     });
-  }
-
-  applySample(title?: string) {
-    this.course = {
-      id: 'sample-preview-1',
-      title: title || 'Curso: Técnicas esenciales de cocina moderna',
-      instructor: 'Chef Maria López',
-      description: 'Aprende técnicas profesionales de cocina, desde corte hasta presentación y emplatado moderno.',
-      language: 'ES',
-      price: 49.99,
-      discountPrice: 29.99,
-      publishedAt: new Date().toISOString(),
-      coverImage: '/assets/images/creator-illustration.svg',
-      objective: 'Dominar técnicas básicas y modernas de cocina profesional.',
-      modules: this.sampleModules()
-    };
-    // limitar a un solo módulo
-    if (this.course.modules && this.course.modules.length > 1) {
-      this.course.modules = [this.course.modules[0]];
-    }
-    this.loading = false;
-    this.error = null;
   }
 
   formatDate(d: string | null | undefined) {
     if (!d) return '';
     try { return new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }); } catch { return d as string; }
-  }
-
-  sampleModules(): ModuleItem[] {
-    return [
-      {
-        id: 'mod-1',
-        title: 'Fundamentos y Herramientas',
-        lessons: [
-          { id: 'l-1-1', title: 'Introducción a la cocina profesional', content: 'Visión general de estaciones, mise en place y organización.' },
-          { id: 'l-1-2', title: 'Herramientas esenciales', content: 'Cuchillos, utensilios clave y su mantenimiento básico.' }
-        ]
-      },
-      {
-        id: 'mod-2',
-        title: 'Técnicas de Corte',
-        lessons: [
-          { id: 'l-2-1', title: 'Corte en juliana', content: 'Pasos y práctica segura para lograr tiras uniformes.' },
-          { id: 'l-2-2', title: 'Brunoise y mirepoix', content: 'Cubos pequeños y mezcla tradicional para bases aromáticas.' }
-        ]
-      },
-      {
-        id: 'mod-3',
-        title: 'Cocciones y Presentación',
-        lessons: [
-          { id: 'l-3-1', title: 'Sellado y control de temperatura', content: 'Cómo lograr Maillard ideal y jugosidad interna.' },
-          { id: 'l-3-2', title: 'Emplatado moderno', content: 'Balance visual, color y texturas en presentación.' }
-        ]
-      }
-    ];
   }
 
   toggleModule(module: ModuleItem) {
@@ -190,6 +168,6 @@ export class DetailCourses {
   }
 
   onImgError(event: any) {
-    try { (event.target as HTMLImageElement).src = '/assets/images/placeholder-course.png'; } catch {}
+    try { (event.target as HTMLImageElement).src = 'creator-illustration.svg'; } catch {}
   }
 }

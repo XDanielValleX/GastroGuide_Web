@@ -45,6 +45,32 @@ export class Courses {
     this.fetchCourses();
   }
 
+  private SAMPLE_COURSE: Course = {
+    id: 'SAMPLE_TEST',
+    title: 'Curso de Demostración Completo',
+    instructor: 'Chef Demo',
+    description: 'Un curso de prueba con descripción extensa para verificar renderizado. Incluye módulos y lecciones en detalle en la vista de curso individual.',
+    image: 'https://via.placeholder.com/640x360.png?text=Demo+Course',
+    price: 49.99,
+    discountPrice: 19.99,
+    language: 'ES',
+    publishedAt: new Date().toISOString()
+  };
+
+  addSampleCourse(force: boolean = false) {
+    const exists = this.courses.some(c => String(c.id) === String(this.SAMPLE_COURSE.id));
+    if (exists && !force) {
+      return; // evitar duplicados
+    }
+    if (!exists) {
+      this.courses.push({ ...this.SAMPLE_COURSE });
+    } else if (force) {
+      // reemplazar contenido (por si queremos actualizar datos)
+      this.courses = this.courses.map(c => String(c.id) === String(this.SAMPLE_COURSE.id) ? { ...this.SAMPLE_COURSE } : c);
+    }
+    this.applyFilters();
+  }
+
   fetchCourses() {
     this.loading = true;
     this.error = null;
@@ -54,58 +80,43 @@ export class Courses {
         // accept different shapes: resp.data || resp.courses || resp
         const list = resp?.data || resp?.courses || resp || [];
         // normalize to Course[]
-        this.courses = Array.isArray(list) ? list.map((c: any) => ({
-          id: c.id ?? c._id ?? c.courseId,
-          title: c.title || c.name || 'Curso sin título',
-          instructor: c.instructor || c.author || c.teacher || 'Staff',
-          description: c.description || c.summary || '',
-          image: c.image || c.thumbnail || '/assets/images/placeholder-course.png',
-          price: c.price ?? c.cost ?? 0,
-          discountPrice: c.discountPrice ?? c.offerPrice ?? null,
-          language: c.language || c.lang || 'ES',
-          publishedAt: c.publishedAt || c.createdAt || c.date || null
-        })) : [];
+        this.courses = Array.isArray(list) ? list.map((c: any) => {
+          // Extraer el nombre del creador desde diferentes estructuras
+          let instructorName = 'Instructor';
+          if (c.creator && typeof c.creator === 'object') {
+            instructorName = c.creator.name || c.creator.username ||
+                           (c.creator.firstName && c.creator.lastName ? `${c.creator.firstName} ${c.creator.lastName}` : c.creator.firstName) ||
+                           'Instructor';
+          } else if (typeof c.creator === 'string' && c.creator.trim()) {
+            instructorName = c.creator;
+          } else {
+            instructorName = c.instructor || c.author || c.teacher || c.creatorName || 'Instructor';
+          }
 
-        // add a preloaded sample card at the top for visual preview (only if not present)
-        const sampleId = 'sample-preview-1';
-        const exists = this.courses.some((x: any) => x.id === sampleId);
-        if (!exists) {
-          this.courses.unshift({
-            id: sampleId,
-            title: 'Curso: Técnicas esenciales de cocina moderna',
-            instructor: 'Chef Maria López',
-            description: 'Aprende técnicas profesionales de cocina, desde corte hasta presentación y emplatado moderno.',
-            image: '/assets/images/creator-illustration.svg',
-            price: 49.99,
-            discountPrice: 29.99,
-            language: 'ES',
-            publishedAt: new Date().toISOString()
-          } as any);
-        }
+          return {
+            id: c.id ?? c._id ?? c.courseId,
+            title: c.title || c.name || 'Curso sin título',
+            instructor: instructorName,
+            description: c.description || c.summary || '',
+            image: c.image || c.coverImage || c.thumbnail || c.imgPortada || '/assets/images/placeholder-course.png',
+            price: Number(c.price ?? c.cost ?? 0),
+            discountPrice: c.discountPrice !== undefined && c.discountPrice !== null ? Number(c.discountPrice) : (c.offerPrice !== undefined ? Number(c.offerPrice) : null),
+            language: c.language || c.lang || 'ES',
+            publishedAt: c.publishedAt || c.createdAt || c.date || null
+          };
+        }) : [];
+
         this.applyFilters();
+        // Inyectar curso de prueba si no viene del backend
+        this.addSampleCourse(false);
         this.loading = false;
       },
       error: (err) => {
         console.error('Error loading courses', err);
         this.error = err?.error?.message || err?.message || 'Error cargando cursos';
-        // ensure the sample preview card still appears when the API fails
-        const sampleId = 'sample-preview-1';
-        const exists = this.courses.some((x: any) => x.id === sampleId);
-        if (!exists) {
-          this.courses.unshift({
-            id: sampleId,
-            title: 'Curso: Técnicas esenciales de cocina moderna',
-            instructor: 'Chef Maria López',
-            description: 'Aprende técnicas profesionales de cocina, desde corte hasta presentación y emplatado moderno.',
-            image: '/jhon.jpeg',
-            price: 49.99,
-            discountPrice: 29.99,
-            language: 'ES',
-            publishedAt: new Date().toISOString()
-          } as any);
-        }
-        this.applyFilters();
         this.loading = false;
+        // Incluso en error, permitir ver el curso de prueba
+        this.addSampleCourse(false);
       }
     });
   }
@@ -211,6 +222,21 @@ export class Courses {
   }
 
   goDetail(course: Course) {
-    this.router.navigate(['/courses', course.id], { state: { coverImage: course.image, title: course.title, instructor: course.instructor } });
+    // Detectar si estamos dentro de /home2 para usar ruta anidada y mantener layout
+    const insideHome2 = this.router.url.startsWith('/home2');
+    const base = insideHome2 ? '/home2/courses' : '/courses';
+    this.router.navigate([base, course.id], { state: {
+      id: course.id,
+      title: course.title,
+      instructor: course.instructor,
+      description: course.description,
+      language: course.language,
+      price: course.price,
+      discountPrice: course.discountPrice,
+      publishedAt: course.publishedAt,
+      coverImage: course.image,
+      image: course.image,
+      objective: course.description // usar descripción como objetivo inicial
+    } });
   }
 }
