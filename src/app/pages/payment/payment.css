@@ -1,0 +1,133 @@
+.payment-container {
+  display: flex;
+  gap: 30px;
+  padding: 30px;
+  background: #f8f7f2;
+  min-height: 100vh;
+}
+
+/* =============================
+   COLUMNA IZQUIERDA (factura)
+   ============================= */
+.billing-section {
+  flex: 2;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.billing-section h2 {
+  color: #EF6C00;
+  margin-bottom: 10px;
+}
+
+.billing-section label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.billing-section input,
+.billing-section select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #EC9706;
+  border-radius: 10px;
+  margin-top: 5px;
+}
+
+.card-box {
+  margin-top: 15px;
+  padding: 15px;
+  border: 2px solid #FB8C00;
+  border-radius: 12px;
+  background: #FFF7E8;
+}
+
+.row {
+  display: flex;
+  gap: 15px;
+}
+
+.save-card {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* =============================
+   OTROS MÉTODOS
+   ============================= */
+.other-methods .method {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #F57C00;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+.method:hover {
+  background: #EF6C00;
+}
+
+/* =============================
+   COLUMNA DERECHA (resumen)
+   ============================= */
+.summary-section {
+  flex: 1;
+}
+
+.summary-box {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.summary-box .price-line {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.discount {
+  color: red;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  color: #EF6C00;
+  margin-top: 20px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.pay-btn {
+  width: 100%;
+  background: #EF6C00;
+  padding: 15px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 25px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.pay-btn:hover {
+  background: #D65F00;
+}
+
+.refund {
+  margin-top: 15px;
+  color: #666;
+  font-size: 14px;
+}

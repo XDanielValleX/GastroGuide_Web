@@ -1,0 +1,73 @@
+
+<div class="payment-container">
+  <div class="billing-section">
+    <h2>🧾 Dirección de facturación</h2>
+
+    <label>Pais</label>
+    <select>
+      <option>Colombia</option>
+      <option>Perú</option>
+      <option>Chile</option>
+      <option>Argentina</option>
+    </select>
+
+    <h2>💳 Método de pago</h2>
+
+    <div class="card-box">
+      <label>Número de tarjeta</label>
+      <input type="text" placeholder="1234 5678 9012 3456">
+
+      <div class="row">
+        <div>
+          <label>Fecha de vencimiento</label>
+          <input type="text" placeholder="MM/AA">
+        </div>
+        <div>
+          <label>CVC/CVV</label>
+          <input type="text" placeholder="CVC">
+        </div>
+      </div>
+
+      <label>Nombre en la tarjeta</label>
+      <input type="text" placeholder="Nombre">
+
+      <div class="save-card">
+        <input type="checkbox">
+        <span>Guardar esta tarjeta para compras futuras</span>
+      </div>
+    </div>
+
+    <h3>Otros métodos</h3>
+    <div class="other-methods">
+      <button class="method">Google Pay</button>
+      <button class="method">PayPal</button>
+      <button class="method">Mercado Pago</button>
+    </div>
+  </div>
+
+  <div class="summary-section">
+    <h2>🛒 Resumen del pedido</h2>
+
+    <div class="summary-box">
+      <p class="price-line">
+        Precio original: <span>$178.900</span>
+      </p>
+
+      <p class="price-line">
+        Descuento (80%): <span class="discount">- $144.000</span>
+      </p>
+
+      <h3 class="total">
+        Total: <span>$34.900 COP</span>
+      </h3>
+
+      <button class="pay-btn">
+        Pagar $34.900 COP
+      </button>
+
+      <p class="refund">
+        Garantía de reembolso por 30 días ✔
+      </p>
+    </div>
+  </div>
+</div>
