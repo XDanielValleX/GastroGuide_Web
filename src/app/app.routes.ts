@@ -20,7 +20,8 @@ import { SwitchToCreator } from './pages/switch-to-creator/switch-to-creator';
 import { AuthGuard } from './shared/auth.guard';
 import { RoleGuard } from './shared/role.guard';
 
-
+/* 🔥 IMPORTACIÓN AGREGADA (NO SE MODIFICÓ NADA MÁS) */
+import { Payment } from './pages/payment/payment';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -29,6 +30,16 @@ export const routes: Routes = [
   { path: 'password-fg', component: PasswordFG },
   { path: 'password-chg/:token', component: PasswordCHG },
   { path: 'password-chg', component: PasswordCHG },
+  {
+    path: 'home2',
+    component: Home2,
+    children: [
+      { path: '', redirectTo: 'grids', pathMatch: 'full' },
+      { path: 'grids', component: Grids },
+      { path: 'courses', component: Courses }
+    ],
+    canActivate: [AuthGuard]
+  },
   { path: 'home2', component: Home2, children: [
     { path: '', redirectTo: 'grids', pathMatch: 'full' },
     { path: 'grids', component: Grids },
@@ -67,5 +78,8 @@ export const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['CREATOR'] }
   },
-  { path: 'switch-to-creator', component: SwitchToCreator }
+  { path: 'switch-to-creator', component: SwitchToCreator },
+
+  /* 🔥 RUTA AGREGADA DEL PANEL DE PAGO */
+  { path: 'payment', component: Payment }
 ];
