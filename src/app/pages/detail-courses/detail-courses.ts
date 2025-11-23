@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { CoursesService, CourseItem } from '../../shared/courses.service';
 import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { CoursesService } from '../../shared/courses.service';
 
 interface LessonItem {
   id: string | number;
@@ -20,15 +20,15 @@ interface ModuleItem {
 interface CourseDetail {
   id: string | number;
   title: string;
-  instructor?: string;      // creador
-  description?: string;     // descripción
-  language?: string;        // idioma
-  price?: number;           // precio
-  discountPrice?: number | null;
-  publishedAt?: string | null; // última actualización / fecha
-  coverImage?: string;      // imgPortada
-  objective?: string;       // objetivo
-  modules?: ModuleItem[];   // módulos con lecciones
+  instructor: string;      // creador
+  description: string;     // descripción
+  language: string;        // idioma
+  price: number;           // precio
+  discountPrice: number | null;
+  publishedAt: string | null; // última actualización / fecha
+  coverImage: string;      // imgPortada
+  objective: string;       // objetivo
+  modules: ModuleItem[];   // módulos con lecciones
 }
 
 @Component({
@@ -53,132 +53,156 @@ export class DetailCourses {
       this.error = 'Curso no especificado';
       return;
     }
-    // Prefill from navigation state for faster image/title display
-    const state: any = (history && history.state) ? history.state : {};
-    if (state.coverImage || state.title) {
-      this.course = {
-        id,
-        title: state.title || 'Cargando…',
-        instructor: state.instructor || 'Instructor',
-        description: '',
-        language: 'ES',
-        price: 0,
-        discountPrice: null,
-        publishedAt: null,
-        coverImage: state.coverImage,
-        objective: undefined,
-        modules: []
-      };
-    }
-    // try to locate in service (only has id+title minimal)
-    const sub = this.coursesSvc.courses$.subscribe(list => {
-      const found = list.find(c => String(c.id) === String(id));
-      if (found) {
-        // fetch extended data (simulate, since API shape unknown). We'll call API single endpoint; fallback to sample fields.
-        this.fetchDetail(found.id, found.title);
-      } else if (id === 'sample-preview-1') {
-        this.applySample();
-      }
-    });
-    setTimeout(() => sub.unsubscribe(), 4000); // auto-unsubscribe after initial attempts
-    // attempt direct fetch (will enrich prefilled course)
-    this.fetchDetail(id, this.course?.title || 'Curso');
+    // Cargar directamente desde la API
+    this.fetchDetail(id, 'Curso');
   }
 
   fetchDetail(id: string | number, titleFallback: string) {
-    const url = `${environment.apiUrl}/api/v1/courses/${id}`;
+    // Tu backend no tiene endpoint /courses/:id, así que usamos /courses/all y filtramos
+    const url = `${environment.apiUrl}/api/v1/courses/all`;
+    console.log('🔍 Cargando todos los cursos desde:', url);
+    console.log('🔍 Buscando curso con ID:', id);
+    
     this.http.get<any>(url).subscribe({
       next: (resp) => {
-        const c = resp?.data || resp?.course || resp;
-        if (!c || typeof c !== 'object') { this.applySample(titleFallback); return; }
-        this.course = {
-          id: c.id ?? c._id ?? id,
-          title: c.title || c.name || titleFallback,
-          instructor: c.instructor || c.author || c.teacher || 'Instructor desconocido',
-            description: c.description || c.summary || '',
-          language: c.language || c.lang || 'ES',
-          price: c.price ?? c.cost ?? 0,
-          discountPrice: c.discountPrice ?? c.offerPrice ?? null,
-          publishedAt: c.publishedAt || c.updatedAt || c.createdAt || null,
-          coverImage: c.coverImage || c.image || c.thumbnail || this.course?.coverImage || '/assets/images/placeholder-course.png',
-          objective: c.objective || c.goal || c.meta?.objective || 'Aprender habilidades clave del tema.',
-          modules: Array.isArray(c.modules) ? c.modules.map((m: any, i: number) => ({
-            id: m.id ?? m._id ?? m.moduleId ?? `mod-${i+1}`,
-            title: m.title || m.name || `Módulo ${i+1}`,
-            lessons: Array.isArray(m.lessons) ? m.lessons.map((l: any, j: number) => ({
-              id: l.id ?? l._id ?? l.lessonId ?? `l-${i+1}-${j+1}`,
-              title: l.title || l.name || `Lección ${j+1}`,
-              content: l.content || l.body || l.text || 'Contenido no disponible.'
-            })) : []
-          })) : this.sampleModules()
-        };
-        // limitar a un solo módulo
-        if (this.course.modules && this.course.modules.length > 1) {
-          this.course.modules = [this.course.modules[0]];
+        console.log('📦 RESPUESTA COMPLETA:', resp);
+        
+        // La API devuelve un array de cursos
+        const courses = resp?.data || resp?.courses || resp || [];
+        console.log('📋 Total de cursos:', Array.isArray(courses) ? courses.length : 0);
+        
+        if (!Array.isArray(courses)) {
+          console.error('❌ La respuesta no es un array');
+          this.error = 'No se pudo cargar la información del curso';
+          this.loading = false;
+          return;
         }
+
+        // Buscar el curso por ID
+        const c = courses.find((course: any) => String(course.id) === String(id));
+        
+        console.log('📝 CURSO ENCONTRADO:', c);
+        console.log('🔑 PROPIEDADES DISPONIBLES:', c ? Object.keys(c) : 'No encontrado');
+        console.log('🔑 VALORES COMPLETOS DEL CURSO:', {
+          id: c.id,
+          title: c.title,
+          description: c.description,
+          modules: c.modules,
+          allProps: c
+        });
+        
+        if (!c) {
+          console.error('❌ Curso no encontrado con ID:', id);
+          this.error = 'Curso no encontrado';
+          this.loading = false;
+          return;
+        }
+
+        // Mapear usando los campos EXACTOS que envía create-course
+        // Extraer el instructor/creador
+        let instructorName = 'Instructor';
+        if (c.creator && typeof c.creator === 'object') {
+          instructorName = c.creator.name || c.creator.username || 
+                         (c.creator.firstName && c.creator.lastName ? `${c.creator.firstName} ${c.creator.lastName}` : c.creator.firstName) ||
+                         'Instructor';
+        } else if (typeof c.creator === 'string' && c.creator.trim()) {
+          instructorName = c.creator;
+        } else if (c.creatorId) {
+          instructorName = `Instructor ${c.creatorId}`;
+        }
+
+        // Extraer la fecha de publicación - usar publicationDate del endpoint
+        const publishDate = c.publicationDate || c.creationDate || new Date().toISOString();
+
+        // Extraer objective: puede ser string u array
+        let objectiveText = 'Aprender habilidades del tema.';
+        if (Array.isArray(c.objectives) && c.objectives.length > 0) {
+          objectiveText = c.objectives.join('. ');
+        } else if (typeof c.objective === 'string' && c.objective.trim()) {
+          objectiveText = c.objective;
+        } else if (c.description) {
+          objectiveText = c.description;
+        }
+
+        this.course = {
+          id: c.id || id,
+          title: c.title || titleFallback,
+          instructor: instructorName,
+          description: c.description || '',
+          language: c.language || 'ES',
+          price: typeof c.price === 'number' ? c.price : 0,
+          discountPrice: typeof c.discountPrice === 'number' ? c.discountPrice : null,
+          publishedAt: publishDate,
+          coverImage: c.image || 'creator-illustration.svg',
+          objective: objectiveText,
+          modules: []
+        };
+
+        // Mapear módulos según el esquema del endpoint
+        console.log('🔍 VERIFICANDO MÓDULOS:');
+        console.log('  - c.modules existe?', !!c.modules);
+        console.log('  - c.modules es array?', Array.isArray(c.modules));
+        console.log('  - c.modules.length:', Array.isArray(c.modules) ? c.modules.length : 'N/A');
+        console.log('  - c.modules RAW:', JSON.stringify(c.modules, null, 2));
+        
+        // Mapear módulos si existen
+        if (Array.isArray(c.modules) && c.modules.length > 0) {
+          console.log('📚 Módulos encontrados:', c.modules.length);
+          
+          this.course.modules = c.modules.map((m: any, i: number) => {
+            console.log(`🔍 Módulo ${i+1}:`, m);
+            console.log(`  - title: ${m.title}`);
+            console.log(`  - description: ${m.description}`);
+            console.log(`  - lessons:`, m.lessons);
+            
+            const mappedLessons = Array.isArray(m.lessons) ? m.lessons.map((l: any, j: number) => {
+              console.log(`    📖 Lección ${j+1}:`, l);
+              console.log(`      - title: ${l.title}`);
+              console.log(`      - description: ${l.description}`);
+              
+              return {
+                id: l.id || `l-${i+1}-${j+1}`,
+                title: l.title || `Lección ${j+1}`,
+                content: l.description || l.contentUrl || 'Contenido no disponible.'
+              };
+            }) : [];
+            
+            return {
+              id: m.id || `mod-${i+1}`,
+              title: m.title || `Módulo ${i+1}`,
+              lessons: mappedLessons
+            };
+          });
+          
+          console.log('✅ Módulos mapeados correctamente:', this.course.modules);
+        } else {
+          console.warn('⚠️ c.modules está vacío o es null. El backend no está retornando los módulos.');
+          console.warn('⚠️ Verifica que el backend esté configurado para incluir módulos en /api/v1/courses/all');
+          this.course.modules = [{
+            id: 'mod-default',
+            title: 'Contenido del curso',
+            lessons: [{
+              id: 'l-default',
+              title: 'Material del curso',
+              content: 'Los módulos y lecciones no están disponibles. Verifica la configuración del backend.'
+            }]
+          }];
+        }
+        
         this.loading = false;
+        this.error = null;
       },
-      error: () => {
-        // fallback to sample
-        if (String(id) === 'sample-preview-1') this.applySample(); else this.applySample(titleFallback);
+      error: (err) => {
+        console.error('❌ Error al cargar los cursos:', err);
+        this.error = 'Error al cargar la información del curso. Por favor, intenta de nuevo.';
+        this.loading = false;
       }
     });
-  }
-
-  applySample(title?: string) {
-    this.course = {
-      id: 'sample-preview-1',
-      title: title || 'Curso: Técnicas esenciales de cocina moderna',
-      instructor: 'Chef Maria López',
-      description: 'Aprende técnicas profesionales de cocina, desde corte hasta presentación y emplatado moderno.',
-      language: 'ES',
-      price: 49.99,
-      discountPrice: 29.99,
-      publishedAt: new Date().toISOString(),
-      coverImage: '/assets/images/creator-illustration.svg',
-      objective: 'Dominar técnicas básicas y modernas de cocina profesional.',
-      modules: this.sampleModules()
-    };
-    // limitar a un solo módulo
-    if (this.course.modules && this.course.modules.length > 1) {
-      this.course.modules = [this.course.modules[0]];
-    }
-    this.loading = false;
-    this.error = null;
   }
 
   formatDate(d: string | null | undefined) {
     if (!d) return '';
     try { return new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }); } catch { return d as string; }
-  }
-
-  sampleModules(): ModuleItem[] {
-    return [
-      {
-        id: 'mod-1',
-        title: 'Fundamentos y Herramientas',
-        lessons: [
-          { id: 'l-1-1', title: 'Introducción a la cocina profesional', content: 'Visión general de estaciones, mise en place y organización.' },
-          { id: 'l-1-2', title: 'Herramientas esenciales', content: 'Cuchillos, utensilios clave y su mantenimiento básico.' }
-        ]
-      },
-      {
-        id: 'mod-2',
-        title: 'Técnicas de Corte',
-        lessons: [
-          { id: 'l-2-1', title: 'Corte en juliana', content: 'Pasos y práctica segura para lograr tiras uniformes.' },
-          { id: 'l-2-2', title: 'Brunoise y mirepoix', content: 'Cubos pequeños y mezcla tradicional para bases aromáticas.' }
-        ]
-      },
-      {
-        id: 'mod-3',
-        title: 'Cocciones y Presentación',
-        lessons: [
-          { id: 'l-3-1', title: 'Sellado y control de temperatura', content: 'Cómo lograr Maillard ideal y jugosidad interna.' },
-          { id: 'l-3-2', title: 'Emplatado moderno', content: 'Balance visual, color y texturas en presentación.' }
-        ]
-      }
-    ];
   }
 
   toggleModule(module: ModuleItem) {
@@ -190,6 +214,6 @@ export class DetailCourses {
   }
 
   onImgError(event: any) {
-    try { (event.target as HTMLImageElement).src = '/assets/images/placeholder-course.png'; } catch {}
+    try { (event.target as HTMLImageElement).src = 'creator-illustration.svg'; } catch {}
   }
 }

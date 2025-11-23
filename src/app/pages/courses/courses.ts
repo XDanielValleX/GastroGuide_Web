@@ -54,57 +54,38 @@ export class Courses {
         // accept different shapes: resp.data || resp.courses || resp
         const list = resp?.data || resp?.courses || resp || [];
         // normalize to Course[]
-        this.courses = Array.isArray(list) ? list.map((c: any) => ({
-          id: c.id ?? c._id ?? c.courseId,
-          title: c.title || c.name || 'Curso sin título',
-          instructor: c.instructor || c.author || c.teacher || 'Staff',
-          description: c.description || c.summary || '',
-          image: c.image || c.thumbnail || '/assets/images/placeholder-course.png',
-          price: c.price ?? c.cost ?? 0,
-          discountPrice: c.discountPrice ?? c.offerPrice ?? null,
-          language: c.language || c.lang || 'ES',
-          publishedAt: c.publishedAt || c.createdAt || c.date || null
-        })) : [];
+        this.courses = Array.isArray(list) ? list.map((c: any) => {
+          // Extraer el nombre del creador desde diferentes estructuras
+          let instructorName = 'Instructor';
+          if (c.creator && typeof c.creator === 'object') {
+            instructorName = c.creator.name || c.creator.username || 
+                           (c.creator.firstName && c.creator.lastName ? `${c.creator.firstName} ${c.creator.lastName}` : c.creator.firstName) ||
+                           'Instructor';
+          } else if (typeof c.creator === 'string' && c.creator.trim()) {
+            instructorName = c.creator;
+          } else {
+            instructorName = c.instructor || c.author || c.teacher || c.creatorName || 'Instructor';
+          }
 
-        // add a preloaded sample card at the top for visual preview (only if not present)
-        const sampleId = 'sample-preview-1';
-        const exists = this.courses.some((x: any) => x.id === sampleId);
-        if (!exists) {
-          this.courses.unshift({
-            id: sampleId,
-            title: 'Curso: Técnicas esenciales de cocina moderna',
-            instructor: 'Chef Maria López',
-            description: 'Aprende técnicas profesionales de cocina, desde corte hasta presentación y emplatado moderno.',
-            image: '/assets/images/creator-illustration.svg',
-            price: 49.99,
-            discountPrice: 29.99,
-            language: 'ES',
-            publishedAt: new Date().toISOString()
-          } as any);
-        }
+          return {
+            id: c.id ?? c._id ?? c.courseId,
+            title: c.title || c.name || 'Curso sin título',
+            instructor: instructorName,
+            description: c.description || c.summary || '',
+            image: c.image || c.coverImage || c.thumbnail || c.imgPortada || '/assets/images/placeholder-course.png',
+            price: Number(c.price ?? c.cost ?? 0),
+            discountPrice: c.discountPrice !== undefined && c.discountPrice !== null ? Number(c.discountPrice) : (c.offerPrice !== undefined ? Number(c.offerPrice) : null),
+            language: c.language || c.lang || 'ES',
+            publishedAt: c.publishedAt || c.createdAt || c.date || null
+          };
+        }) : [];
+
         this.applyFilters();
         this.loading = false;
       },
       error: (err) => {
         console.error('Error loading courses', err);
         this.error = err?.error?.message || err?.message || 'Error cargando cursos';
-        // ensure the sample preview card still appears when the API fails
-        const sampleId = 'sample-preview-1';
-        const exists = this.courses.some((x: any) => x.id === sampleId);
-        if (!exists) {
-          this.courses.unshift({
-            id: sampleId,
-            title: 'Curso: Técnicas esenciales de cocina moderna',
-            instructor: 'Chef Maria López',
-            description: 'Aprende técnicas profesionales de cocina, desde corte hasta presentación y emplatado moderno.',
-            image: '/jhon.jpeg',
-            price: 49.99,
-            discountPrice: 29.99,
-            language: 'ES',
-            publishedAt: new Date().toISOString()
-          } as any);
-        }
-        this.applyFilters();
         this.loading = false;
       }
     });
