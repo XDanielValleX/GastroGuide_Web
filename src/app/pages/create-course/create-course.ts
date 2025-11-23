@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { UserSessionService, UserProfile } from '../../shared/user-session.service';
+import { UserProfile, UserSessionService } from '../../shared/user-session.service';
 
 type Level = 'BEGINNER'|'INTERMEDIATE'|'ADVANCED'|'EXPERT';
 type ContentType = 'VIDEO'|'TEXT'|'AUDIO'|'DOCUMENT'|'INTERACTIVE';
@@ -292,7 +292,6 @@ export class CreateCourse implements OnInit, OnDestroy {
         status,
         tags: this.course.tags || []
       };
-
       const courseResp: any = await this.authorizedPost(`${environment.apiUrl}/api/v1/courses/add`, payload);
       const createdCourseId = courseResp?.id || courseResp?.data?.id;
       if (!createdCourseId) {
@@ -463,10 +462,13 @@ export class CreateCourse implements OnInit, OnDestroy {
         return;
       }
       const published = await this.saveCourseInfo('PUBLISHED');
-      if (!published) {
+      if (!published) { return; }
+      this.showToast('Curso guardado y publicado correctamente.');
+      // Navegar directamente a detalle con prefill
+      if (this.createdCourseId) {
+        this.goToDetail(this.createdCourseId);
         return;
       }
-      this.showToast('Curso guardado y publicado correctamente.');
       this.router.navigate([this.returnUrl]);
     } catch (err:any) {
       if (!this.handleUnauthorizedResponse(err)) {
@@ -562,6 +564,36 @@ export class CreateCourse implements OnInit, OnDestroy {
       return;
     }
     this.applySavedCourse(selected, false);
+  }
+
+  // Navega a la vista de detalle pasando estado para render inmediato
+  goToDetail(courseId: string) {
+    const c = this.savedCourseSnapshot || this.course;
+    if (!c || !courseId) { return; }
+    const instructorName = (this.currentUser?.name || this.currentUser?.username || 'Instructor');
+    const state = {
+      id: courseId,
+      title: c.title,
+      instructor: instructorName,
+      description: c.description,
+      language: c.language,
+      price: c.price,
+      discountPrice: c.discountPrice,
+      publishedAt: c.publicationDate || c.creationDate || null,
+      coverImage: c.image,
+      image: c.image,
+      objective: c.description,
+      modules: (c.modules || []).map((m:any,i:number)=>({
+        id: m.id || `mod-${i+1}`,
+        title: m.title || `Módulo ${i+1}`,
+        lessons: (m.lessons || []).map((l:any,j:number)=>({
+          id: l.id || `l-${i+1}-${j+1}`,
+          title: l.title || `Lección ${j+1}`,
+          content: l.description || l.contentUrl || ''
+        }))
+      }))
+    };
+    this.router.navigate(['/courses', courseId], { state });
   }
 
   savedLessonsCount(course: any): number {

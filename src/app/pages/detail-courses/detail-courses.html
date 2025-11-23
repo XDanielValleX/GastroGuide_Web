@@ -19,8 +19,8 @@
         <p>{{ course.objective }}</p>
       </div>
       <div class="modules" *ngIf="course.modules?.length">
-        <h3 class="modules-title">Contenido del curso</h3>
-        <div class="module" *ngFor="let m of course.modules | slice:0:1">
+        <h3 class="modules-title">Contenido del curso ({{ course.modules.length }} módulos)</h3>
+        <div class="module" *ngFor="let m of course.modules">
           <button class="module-header" (click)="toggleModule(m)" [class.open]="isExpanded(m)">
             <span class="mod-title">{{ m.title }}</span>
             <span class="chevron">{{ isExpanded(m) ? '▾' : '▸' }}</span>
@@ -37,7 +37,7 @@
     <!-- Purchase / side column -->
     <aside class="purchase">
       <div class="video-preview" *ngIf="course.coverImage">
-        <img class="preview-img" [src]="course.coverImage" [alt]="course.title" (error)="onImgError($event)" />
+        <img class="preview-img"  [alt]="course.title" (error)="onImgError($event)" />
       </div>
       <div class="price-block" *ngIf="course">
         <div class="price-row">

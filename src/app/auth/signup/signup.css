@@ -1,3 +1,28 @@
+/* Estilos para la selección de rol */
+.role-select {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.role-select label {
+    font-weight: 500;
+    margin-right: 0.5rem;
+}
+.role-select button {
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.role-select button.selected {
+    background: #2e7d32;
+    color: #fff;
+    border: 1px solid #2e7d32;
+}
 :host {
     display: flex;
     align-items: center;
