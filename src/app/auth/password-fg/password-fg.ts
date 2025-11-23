@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AlertDialog } from '../../shared/alert/alert';
@@ -25,6 +25,10 @@ export class PasswordFG implements OnInit, OnDestroy {
 
   constructor(private router: Router, private userSession: UserSessionService) {}
 
+  goHome() {
+    this.router.navigate(['/']);
+  }
+
   ngOnInit() {
     this.profileSub = this.userSession.ensureProfileLoaded().subscribe((profile) => {
       this.resolveSession(profile);
@@ -39,9 +43,13 @@ export class PasswordFG implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
-  submit() {
+  submit(form?: NgForm) {
     this.successMsg = '';
     this.errorMsg = '';
+    if (form && form.invalid) {
+      this.errorMsg = 'Por favor ingresa un correo válido.';
+      return;
+    }
     if (!this.isAuthenticated || !this.loggedEmail) {
       this.errorMsg = 'Debes iniciar sesión para continuar.';
       return;
@@ -51,8 +59,9 @@ export class PasswordFG implements OnInit, OnDestroy {
       return;
     }
 
-    const typedEmail = this.email.trim().toLowerCase();
+    const typedEmail = (this.email || '').trim().toLowerCase();
     const sessionEmail = this.loggedEmail.trim().toLowerCase();
+    this.email = typedEmail;
     if (typedEmail !== sessionEmail) {
       this.errorMsg = 'El correo no coincide con la sesión activa.';
       return;

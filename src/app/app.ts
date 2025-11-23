@@ -43,7 +43,8 @@ export class AppComponent {
       this.currentRoute.startsWith('/create-course') ||
       this.currentRoute.startsWith('/profile') ||
       this.currentRoute.startsWith('/profile-creator') ||
-      this.currentRoute.startsWith('/profile-c')
+      this.currentRoute.startsWith('/profile-c') ||
+      this.currentRoute.startsWith('/switch-to-creator')
     );
   }
 }

@@ -104,10 +104,12 @@ export class CreateCourse implements OnInit, OnDestroy {
   createdCourseId: string | null = null;
   savedCourseSnapshot: any = null;
   savedCourses: any[] = [];
+  readonly disableFileUpload = true; // backend aún no expone /files/upload
 
   returnUrl = '/home3';
   currentUser: UserProfile | null = null;
   private userSub?: Subscription;
+  private redirectingToLogin = false;
   private readonly MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB
   private readonly AUTH_TOKEN_ERROR = 'AUTH_TOKEN_MISSING';
 
@@ -279,7 +281,7 @@ export class CreateCourse implements OnInit, OnDestroy {
       const imageValue = await this.ensureImageIsStored();
       const payload: CreateCourseDto = {
         id: this.createdCourseId ?? undefined,
-        creatorId: creatorPayloadId,
+        creatorId: String(creatorPayloadId),
         title: this.course.title,
         description: this.course.description,
         image: imageValue,
@@ -299,16 +301,25 @@ export class CreateCourse implements OnInit, OnDestroy {
       this.createdCourseId = String(createdCourseId);
       this.course.status = status;
       this.course.id = this.createdCourseId;
-      this.course.creatorId = creatorId;
+      this.course.creatorId = String(creatorPayloadId);
       await this.refreshSavedSnapshot(createdCourseId);
       this.showToast(status === 'PUBLISHED' ? 'Curso publicado' : 'Curso guardado');
       success = true;
     } catch (err: any) {
       if (this.isMissingAuthTokenError(err)) {
         this.showToast('Tu sesión expiró. Inicia sesión nuevamente.');
+        this.redirectToLogin();
+      } else if (this.handleUnauthorizedResponse(err)) {
+        // handled inside helper
       } else {
         console.error('saveCourseInfo error', err);
-        this.showToast('Error guardando curso: ' + (err?.message || 'server error'));
+        const backendMessage =
+          typeof err?.error?.message === 'string'
+            ? err.error.message
+            : typeof err?.message === 'string'
+              ? err.message
+              : null;
+        this.showToast(backendMessage ? `Error guardando curso: ${backendMessage}` : 'Error guardando curso: server error');
       }
     } finally {
       this.savingCourse = false;
@@ -352,6 +363,9 @@ export class CreateCourse implements OnInit, OnDestroy {
     } catch (err: any) {
       if (this.isMissingAuthTokenError(err)) {
         this.showToast('Tu sesión expiró. Inicia sesión nuevamente.');
+        this.redirectToLogin();
+      } else if (this.handleUnauthorizedResponse(err)) {
+        // handled inside helper
       } else {
         console.error('saveModules error', err);
         this.showToast('Error guardando módulos: ' + (err?.message || 'server error'));
@@ -412,6 +426,9 @@ export class CreateCourse implements OnInit, OnDestroy {
     } catch (err: any) {
       if (this.isMissingAuthTokenError(err)) {
         this.showToast('Tu sesión expiró. Inicia sesión nuevamente.');
+        this.redirectToLogin();
+      } else if (this.handleUnauthorizedResponse(err)) {
+        // handled inside helper
       } else {
         console.error('saveLessons error', err);
         this.showToast('Error guardando lecciones: ' + (err?.message || 'server error'));
@@ -452,8 +469,10 @@ export class CreateCourse implements OnInit, OnDestroy {
       this.showToast('Curso guardado y publicado correctamente.');
       this.router.navigate([this.returnUrl]);
     } catch (err:any) {
-      console.error('publishCourse error', err);
-      this.showToast('Error publicando curso: ' + (err?.message || 'server error'));
+      if (!this.handleUnauthorizedResponse(err)) {
+        console.error('publishCourse error', err);
+        this.showToast('Error publicando curso: ' + (err?.message || 'server error'));
+      }
     } finally {
       this.publishing = false;
     }
@@ -474,20 +493,27 @@ export class CreateCourse implements OnInit, OnDestroy {
         return;
       }
       const role = (this.userSession.getRole(this.currentUser) || '').toUpperCase();
-      if (role !== 'CREATOR') {
+      if (!role.includes('CREATOR')) {
         this.showToast('Activa tu perfil de creador para gestionar cursos.');
         this.resetSavedCourses();
         return;
       }
-      const resp: any = await this.authorizedGet(`${environment.apiUrl}/api/v1/courses/all`);
+      // Request server-side filtering when available to avoid fetching unrelated courses.
+      const resp: any = await this.authorizedGet(
+        `${environment.apiUrl}/api/v1/courses/all`,
+        { creatorId: ownerId }
+      );
       const allCourses = Array.isArray(resp) ? resp : (resp?.data || []);
-      this.savedCourses = allCourses.filter((course: any) => this.belongsToCurrentUser(course));
+      this.savedCourses = allCourses.filter((course: any) => this.belongsToCurrentUser(course, ownerId));
 
       const selectedId = targetCourseId || this.createdCourseId;
       if (selectedId) {
         const match = this.savedCourses.find((c: any) => String(c.id) === String(selectedId));
-        this.savedCourseSnapshot = match || null;
-        this.createdCourseId = match ? String(match.id) : this.createdCourseId;
+        if (match) {
+          this.applySavedCourse(match, true);
+        } else {
+          this.savedCourseSnapshot = null;
+        }
       } else {
         this.savedCourseSnapshot = null;
       }
@@ -498,12 +524,25 @@ export class CreateCourse implements OnInit, OnDestroy {
     } catch (err: any) {
       if (this.isMissingAuthTokenError(err)) {
         this.showToast('Tu sesión expiró. Inicia sesión nuevamente.');
+        this.redirectToLogin();
         this.resetSavedCourses();
-      } else if (err?.status === 403) {
-        this.showToast('Tu sesión no tiene permisos para cargar cursos guardados. Vuelve a iniciar sesión si ya eres creador.');
+      } else if (this.isForbiddenError(err)) {
+        this.showToast('Activa tu perfil de creador para gestionar cursos.');
+        this.resetSavedCourses();
+      } else if (this.handleUnauthorizedResponse(err, 'Tu sesión no tiene permisos para cargar cursos guardados. Inicia sesión nuevamente.')) {
+        this.resetSavedCourses();
+      } else if (this.isNoCoursesFoundError(err)) {
+        this.resetSavedCourses();
+        this.showToast('Aún no tienes cursos guardados.');
       } else {
         console.error('loadSavedCourses error', err);
-        this.showToast('No se pudieron cargar los cursos guardados');
+        const backendMessage =
+          typeof err?.error?.message === 'string'
+            ? err.error.message
+            : typeof err?.error === 'string'
+              ? err.error
+              : null;
+        this.showToast(backendMessage ? `No se pudieron cargar los cursos: ${backendMessage}` : 'No se pudieron cargar los cursos guardados');
       }
     } finally {
       this.loadingSavedCourses = false;
@@ -522,44 +561,7 @@ export class CreateCourse implements OnInit, OnDestroy {
       this.showToast('No tienes permiso para editar este curso.');
       return;
     }
-    this.createdCourseId = String(selected.id);
-    this.savedCourseSnapshot = selected;
-
-    this.course = {
-      id: selected.id,
-      creatorId: selected.creatorId ?? this.getCurrentUserId() ?? undefined,
-      title: selected.title,
-      description: selected.description,
-      image: selected.image,
-      level: selected.level as Level,
-      price: Number(selected.price) || 0,
-      discountPrice: Number(selected.discountPrice) || 0,
-      language: selected.language,
-      status: selected.status,
-      tags: selected.tags || []
-    };
-    this.tagsInput = (selected.tags || []).join(', ');
-    this.modules = (selected.modules || []).map((m:any) => ({
-      id: m.id,
-      title: m.title,
-      description: m.description,
-      estimatedDuration: Number(m.estimatedDuration) || 0,
-      locked: m.locked,
-      lessons: (m.lessons || []).map((l:any) => ({
-        id: l.id,
-        title: l.title,
-        description: l.description,
-        duration: Number(l.duration) || 0,
-        contentType: l.contentType,
-        contentUrl: l.contentUrl,
-        isFree: l.isFree
-      }))
-    }));
-    this.lessonModuleIndex = 0;
-    this.previewImage = selected.image;
-    this.selectedImageFile = null;
-    this.uploadedImagePath = selected.image || null;
-    this.showToast('Curso cargado desde guardados');
+    this.applySavedCourse(selected, false);
   }
 
   savedLessonsCount(course: any): number {
@@ -620,9 +622,9 @@ export class CreateCourse implements OnInit, OnDestroy {
     return this.resolveProfileId(this.currentUser);
   }
 
-  private belongsToCurrentUser(course: any): boolean {
-    const ownerId = this.getCurrentUserId();
-    if (!ownerId) {
+  private belongsToCurrentUser(course: any, providedOwnerId?: string | null): boolean {
+    const resolvedOwnerId = (providedOwnerId ?? this.getCurrentUserId())?.trim();
+    if (!resolvedOwnerId) {
       return false;
     }
     const courseOwner =
@@ -634,7 +636,8 @@ export class CreateCourse implements OnInit, OnDestroy {
     if (courseOwner === undefined || courseOwner === null) {
       return false;
     }
-    return String(courseOwner) === ownerId;
+    const normalizedCourseOwner = String(courseOwner).trim();
+    return normalizedCourseOwner ? normalizedCourseOwner === resolvedOwnerId : false;
   }
 
   private resolveProfileId(profile?: UserProfile | null): string | null {
@@ -653,6 +656,30 @@ export class CreateCourse implements OnInit, OnDestroy {
     }
     const normalized = String(candidate).trim();
     return normalized || null;
+  }
+
+  private handleUnauthorizedResponse(err: any, message?: string): boolean {
+    const status = err?.status ?? err?.error?.status;
+    const requiresAuth =
+      status === 401 ||
+      status === 403 ||
+      this.isAuthenticationRequiredError(err);
+    if (requiresAuth) {
+      const finalMessage = message || 'Tu sesión no está autorizada. Inicia sesión nuevamente.';
+      this.showToast(finalMessage);
+      this.redirectToLogin();
+      return true;
+    }
+    return false;
+  }
+
+  private redirectToLogin() {
+    if (this.redirectingToLogin) {
+      return;
+    }
+    this.redirectingToLogin = true;
+    this.userSession.clearSession();
+    this.router.navigate(['/login'], { queryParams: { redirectTo: 'create-course' } });
   }
 
   private async authorizedGet<T>(url: string, params?: Record<string, any>): Promise<T> {
@@ -703,5 +730,72 @@ export class CreateCourse implements OnInit, OnDestroy {
       return undefined;
     }
     return /^\d+$/.test(normalized) ? Number(normalized) : normalized;
+  }
+
+  private isForbiddenError(err: any): boolean {
+    const status = err?.status ?? err?.error?.status;
+    return status === 403;
+  }
+
+  private isNoCoursesFoundError(err: any): boolean {
+    const status = err?.status ?? err?.error?.status;
+    if (status !== 400) {
+      return false;
+    }
+    const message = (err?.error?.message || err?.message || '').toString().toLowerCase();
+    return message.includes('no courses');
+  }
+
+  private isAuthenticationRequiredError(err: any): boolean {
+    const status = err?.status ?? err?.error?.status;
+    if (status !== 400) {
+      // some backends return 400 with InsufficientAuthenticationException details
+      // but still set a descriptive message
+      // we still want to rely on message content to detect these cases
+    }
+    const message = (err?.error?.message || err?.message || '').toString().toLowerCase();
+    return message.includes('full authentication is required');
+  }
+  private applySavedCourse(saved: any, silent: boolean) {
+    this.createdCourseId = String(saved.id);
+    this.savedCourseSnapshot = saved;
+
+    this.course = {
+      id: saved.id,
+      creatorId: saved.creatorId ?? this.getCurrentUserId() ?? undefined,
+      title: saved.title,
+      description: saved.description,
+      image: saved.image,
+      level: saved.level as Level,
+      price: Number(saved.price) || 0,
+      discountPrice: Number(saved.discountPrice) || 0,
+      language: saved.language,
+      status: saved.status,
+      tags: saved.tags || []
+    };
+    this.tagsInput = (saved.tags || []).join(', ');
+    this.modules = (saved.modules || []).map((m:any) => ({
+      id: m.id,
+      title: m.title,
+      description: m.description,
+      estimatedDuration: Number(m.estimatedDuration) || 0,
+      locked: m.locked,
+      lessons: (m.lessons || []).map((l:any) => ({
+        id: l.id,
+        title: l.title,
+        description: l.description,
+        duration: Number(l.duration) || 0,
+        contentType: l.contentType,
+        contentUrl: l.contentUrl,
+        isFree: l.isFree
+      }))
+    }));
+    this.lessonModuleIndex = 0;
+    this.previewImage = saved.image;
+    this.selectedImageFile = null;
+    this.uploadedImagePath = saved.image || null;
+    if (!silent) {
+      this.showToast('Curso cargado desde guardados');
+    }
   }
 }

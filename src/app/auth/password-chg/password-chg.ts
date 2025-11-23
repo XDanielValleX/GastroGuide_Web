@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule, Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -37,9 +37,17 @@ export class PasswordCHG {
     this.location.back();
   }
 
-  submit() {
+  goHome() {
+    this.router.navigate(['/']);
+  }
+
+  submit(form?: NgForm) {
     this.successMsg = '';
     this.errorMsg = '';
+    if (form && form.invalid) {
+      this.errorMsg = 'Completa los campos requeridos.';
+      return;
+    }
     if (!this.token) {
       this.errorMsg = 'Enlace inválido o token ausente.';
       return;
@@ -60,6 +68,9 @@ export class PasswordCHG {
         next: (res) => {
           this.successMsg = res?.message || 'Contraseña actualizada. Puedes iniciar sesión.';
           this.loading = false;
+          form?.resetForm();
+          this.password = '';
+          this.confirmPassword = '';
         },
         error: (err) => {
           this.errorMsg = err?.error?.message || 'No se pudo actualizar la contraseña.';
