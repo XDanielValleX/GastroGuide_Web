@@ -48,7 +48,9 @@
       </div>
       <div class="purchase-actions">
         <button class="btn primary">Añadir a la cesta</button>
-        <button class="btn secondary">Comprar ahora</button>
+        <button class="btn secondary"
+          [routerLink]="currentInHome2() ? ['/home2/payment', course.id] : ['/payment', course.id]"
+          [state]="{ title: course.title, price: course.price, discountPrice: course.discountPrice }">Comprar ahora</button>
       </div>
       <div class="plan-card premium side">
         <div class="plan-icon">⚙️</div>

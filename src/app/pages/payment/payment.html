@@ -45,29 +45,22 @@
     </div>
   </div>
 
-  <div class="summary-section">
+  <div class="summary-section" *ngIf="!loading && course; else loadingSummary">
     <h2>🛒 Resumen del pedido</h2>
-
     <div class="summary-box">
+      <h3 class="course-title">{{ course.title }}</h3>
       <p class="price-line">
-        Precio original: <span>$178.900</span>
+        Precio original: <span>${{ format(course.price) }} COP</span>
       </p>
-
-      <p class="price-line">
-        Descuento (80%): <span class="discount">- $144.000</span>
+      <p class="price-line" *ngIf="discountPercent() != null">
+        Descuento ({{ discountPercent() }}%): <span class="discount">- ${{ format(discountAmount()) }} COP</span>
       </p>
-
-      <h3 class="total">
-        Total: <span>$34.900 COP</span>
-      </h3>
-
-      <button class="pay-btn">
-        Pagar $34.900 COP
-      </button>
-
-      <p class="refund">
-        Garantía de reembolso por 30 días ✔
-      </p>
+      <h3 class="total">Total: <span>${{ format(finalPrice()) }} COP</span></h3>
+      <button class="pay-btn">Pagar ${{ format(finalPrice()) }} COP</button>
+      <p class="refund">Garantía de reembolso por 30 días ✔</p>
     </div>
   </div>
+  <ng-template #loadingSummary>
+    <div class="summary-section"><p>Cargando resumen...</p><p *ngIf="error" class="error">{{ error }}</p></div>
+  </ng-template>
 </div>

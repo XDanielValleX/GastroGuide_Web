@@ -170,4 +170,8 @@ export class DetailCourses {
   onImgError(event: any) {
     try { (event.target as HTMLImageElement).src = 'creator-illustration.svg'; } catch {}
   }
+
+  currentInHome2() {
+    return this.router.url.includes('/home2/');
+  }
 }
