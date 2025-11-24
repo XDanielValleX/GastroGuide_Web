@@ -9,6 +9,7 @@ import { UserProfile, UserSessionService } from '../../shared/user-session.servi
 
 type Level = 'BEGINNER'|'INTERMEDIATE'|'ADVANCED'|'EXPERT';
 type ContentType = 'VIDEO'|'TEXT'|'AUDIO'|'DOCUMENT'|'INTERACTIVE';
+type CourseStatus = 'DRAFT'|'IN_REVIEW'|'SUSPENDED'|'PUBLISHED'|'ARCHIVED';
 
 interface CreateCourseDto {
   id?: string;
@@ -257,7 +258,7 @@ export class CreateCourse implements OnInit, OnDestroy {
   }
   countLessons() { return this.modules.reduce((acc,m:any)=>acc + (m.lessons?.length||0), 0); }
 
-  async saveCourseInfo(status: 'DRAFT' | 'PUBLISHED' = 'DRAFT'): Promise<boolean> {
+  async saveCourseInfo(status: CourseStatus = 'DRAFT'): Promise<boolean> {
     if (this.savingCourse) { return false; }
     if (!this.course.title || this.course.title.length < 3 || !this.course.description || this.course.description.length < 10) {
       this.showToast('Completa título y descripción (mínimo 10 caracteres).');
@@ -301,6 +302,13 @@ export class CreateCourse implements OnInit, OnDestroy {
       this.course.status = status;
       this.course.id = this.createdCourseId;
       this.course.creatorId = String(creatorPayloadId);
+      const localSnapshot = this.buildSavedCourseSnapshot(courseResp, payload, this.createdCourseId);
+      this.savedCourseSnapshot = localSnapshot;
+      this.upsertSavedCourses(localSnapshot);
+      if (localSnapshot?.image) {
+        this.previewImage = localSnapshot.image;
+        this.uploadedImagePath = localSnapshot.image;
+      }
       await this.refreshSavedSnapshot(createdCourseId);
       this.showToast(status === 'PUBLISHED' ? 'Curso publicado' : 'Curso guardado');
       success = true;
@@ -482,23 +490,23 @@ export class CreateCourse implements OnInit, OnDestroy {
 
   async loadSavedCourses(targetCourseId?: string) {
     this.loadingSavedCourses = true;
+    const fallbackSnapshot = this.savedCourseSnapshot ? { ...this.savedCourseSnapshot } : null;
+    const fallbackId = fallbackSnapshot?.id ? String(fallbackSnapshot.id) : null;
     try {
       const ownerId = this.getCurrentUserId();
       if (!ownerId) {
-        this.resetSavedCourses();
+        this.resetSavedCourses(true);
         return;
       }
       const token = this.userSession.getToken();
       if (!token) {
         this.showToast('Inicia sesión para sincronizar tus cursos guardados.');
-        this.resetSavedCourses();
+        this.resetSavedCourses(true);
         return;
       }
       const role = (this.userSession.getRole(this.currentUser) || '').toUpperCase();
       if (!role.includes('CREATOR')) {
         this.showToast('Activa tu perfil de creador para gestionar cursos.');
-        this.resetSavedCourses();
-        return;
       }
       // Request server-side filtering when available to avoid fetching unrelated courses.
       const resp: any = await this.authorizedGet(
@@ -508,18 +516,27 @@ export class CreateCourse implements OnInit, OnDestroy {
       const allCourses = Array.isArray(resp) ? resp : (resp?.data || []);
       this.savedCourses = allCourses.filter((course: any) => this.belongsToCurrentUser(course, ownerId));
 
-      const selectedId = targetCourseId || this.createdCourseId;
+      const selectedId = targetCourseId || this.createdCourseId || fallbackId;
       if (selectedId) {
         const match = this.savedCourses.find((c: any) => String(c.id) === String(selectedId));
         if (match) {
           this.applySavedCourse(match, true);
+        } else if (fallbackId && fallbackId === String(selectedId) && fallbackSnapshot) {
+          this.savedCourseSnapshot = fallbackSnapshot;
         } else {
           this.savedCourseSnapshot = null;
         }
+      } else if (this.savedCourses.length) {
+        this.savedCourseSnapshot = this.savedCourses[0];
       } else {
-        this.savedCourseSnapshot = null;
+        this.savedCourseSnapshot = fallbackSnapshot;
       }
-      if (this.savedCourseSnapshot?.image) {
+
+      const snapshotMatchesEditedCourse =
+        !!this.savedCourseSnapshot &&
+        !!this.createdCourseId &&
+        String(this.savedCourseSnapshot.id) === String(this.createdCourseId);
+      if (snapshotMatchesEditedCourse && this.savedCourseSnapshot.image) {
         this.previewImage = this.savedCourseSnapshot.image;
         this.uploadedImagePath = this.savedCourseSnapshot.image;
       }
@@ -527,14 +544,14 @@ export class CreateCourse implements OnInit, OnDestroy {
       if (this.isMissingAuthTokenError(err)) {
         this.showToast('Tu sesión expiró. Inicia sesión nuevamente.');
         this.redirectToLogin();
-        this.resetSavedCourses();
+        this.resetSavedCourses(true);
       } else if (this.isForbiddenError(err)) {
         this.showToast('Activa tu perfil de creador para gestionar cursos.');
-        this.resetSavedCourses();
+        this.resetSavedCourses(true);
       } else if (this.handleUnauthorizedResponse(err, 'Tu sesión no tiene permisos para cargar cursos guardados. Inicia sesión nuevamente.')) {
-        this.resetSavedCourses();
+        this.resetSavedCourses(true);
       } else if (this.isNoCoursesFoundError(err)) {
-        this.resetSavedCourses();
+        this.resetSavedCourses(true);
         this.showToast('Aún no tienes cursos guardados.');
       } else {
         console.error('loadSavedCourses error', err);
@@ -642,12 +659,14 @@ export class CreateCourse implements OnInit, OnDestroy {
     this.course.creatorId = resolvedId ?? undefined;
   }
 
-  private resetSavedCourses() {
+  private resetSavedCourses(preserveLocal = false) {
     this.savedCourses = [];
-    this.savedCourseSnapshot = null;
-    this.createdCourseId = null;
-    this.previewImage = null;
-    this.uploadedImagePath = null;
+    if (!preserveLocal) {
+      this.savedCourseSnapshot = null;
+      this.createdCourseId = null;
+      this.previewImage = null;
+      this.uploadedImagePath = null;
+    }
   }
 
   private getCurrentUserId(): string | null {
@@ -656,20 +675,79 @@ export class CreateCourse implements OnInit, OnDestroy {
 
   private belongsToCurrentUser(course: any, providedOwnerId?: string | null): boolean {
     const resolvedOwnerId = (providedOwnerId ?? this.getCurrentUserId())?.trim();
+    const ownerMatches = this.compareIds(resolvedOwnerId, course);
+    if (ownerMatches) {
+      return true;
+    }
+    return this.matchCreatorIdentity(course?.creator);
+  }
+
+  private compareIds(resolvedOwnerId: string | null | undefined, course: any): boolean {
     if (!resolvedOwnerId) {
       return false;
     }
-    const courseOwner =
-      course?.creatorId ??
-      course?.creator?.id ??
-      course?.creator?.userId ??
-      course?.userId ??
-      course?.user?.id;
-    if (courseOwner === undefined || courseOwner === null) {
+    const normalizedOwner = String(resolvedOwnerId).trim();
+    if (!normalizedOwner) {
       return false;
     }
-    const normalizedCourseOwner = String(courseOwner).trim();
-    return normalizedCourseOwner ? normalizedCourseOwner === resolvedOwnerId : false;
+    const candidateIds = [
+      course?.creatorId,
+      course?.creator?.id,
+      course?.creator?.userId,
+      course?.creator?.user?.id,
+      course?.creator?.user?.userId,
+      course?.userId,
+      course?.user?.id
+    ];
+    return candidateIds.some((candidate) => {
+      if (candidate === undefined || candidate === null) {
+        return false;
+      }
+      const normalizedCandidate = String(candidate).trim();
+      return normalizedCandidate ? normalizedCandidate === normalizedOwner : false;
+    });
+  }
+
+  private matchCreatorIdentity(creator: any): boolean {
+    if (!creator || !this.currentUser) {
+      return false;
+    }
+    const candidateValues = [
+      creator?.username,
+      creator?.email,
+      creator?.fullName,
+      creator?.name,
+      creator?.user?.username,
+      creator?.user?.email,
+      creator?.user?.fullName,
+      creator?.user?.name
+    ].map((value) => this.normalizeIdentity(value))
+    .filter((value): value is string => !!value);
+
+    if (!candidateValues.length) {
+      return false;
+    }
+
+    const userValues = [
+      this.currentUser?.username,
+      this.currentUser?.email,
+      this.currentUser?.name
+    ].map((value) => this.normalizeIdentity(value))
+    .filter((value): value is string => !!value);
+
+    if (!userValues.length) {
+      return false;
+    }
+
+    return candidateValues.some((candidate) => userValues.includes(candidate));
+  }
+
+  private normalizeIdentity(value: any): string | null {
+    if (value === undefined || value === null) {
+      return null;
+    }
+    const normalized = String(value).trim().toLowerCase();
+    return normalized || null;
   }
 
   private resolveProfileId(profile?: UserProfile | null): string | null {
@@ -771,11 +849,14 @@ export class CreateCourse implements OnInit, OnDestroy {
 
   private isNoCoursesFoundError(err: any): boolean {
     const status = err?.status ?? err?.error?.status;
-    if (status !== 400) {
-      return false;
-    }
+    // El backend actualmente puede responder 400, 404 o incluso 500 con mensaje 'No courses found.'
+    // cuando simplemente no existen cursos para el creador. Lo tratamos como caso NO-FATAL.
     const message = (err?.error?.message || err?.message || '').toString().toLowerCase();
-    return message.includes('no courses');
+    if (!message) { return false; }
+    const hasNoCoursesPhrase = message.includes('no courses');
+    if (!hasNoCoursesPhrase) { return false; }
+    // Aceptar varios códigos incorrectamente usados por el backend para este escenario.
+    return status === 400 || status === 404 || status === 500;
   }
 
   private isAuthenticationRequiredError(err: any): boolean {
@@ -787,6 +868,56 @@ export class CreateCourse implements OnInit, OnDestroy {
     }
     const message = (err?.error?.message || err?.message || '').toString().toLowerCase();
     return message.includes('full authentication is required');
+  }
+
+  private buildSavedCourseSnapshot(response: any, payload: CreateCourseDto, newCourseId: string) {
+    const raw = (response?.data ?? response) || {};
+    const computedId = raw.id ?? newCourseId ?? payload.id;
+    const creatorRef =
+      raw.creatorId ?? raw.creator?.id ?? payload.creatorId ?? this.getCurrentUserId();
+    return {
+      id: computedId ? String(computedId) : undefined,
+      creatorId: creatorRef ? String(creatorRef) : undefined,
+      title: raw.title ?? payload.title,
+      description: raw.description ?? payload.description,
+      image: raw.image ?? payload.image ?? undefined,
+      level: raw.level ?? payload.level,
+      price: Number(raw.price ?? payload.price ?? 0),
+      discountPrice: Number(raw.discountPrice ?? payload.discountPrice ?? 0),
+      language: raw.language ?? payload.language,
+      status: raw.status ?? payload.status ?? 'GUARDADO',
+      tags: raw.tags ?? payload.tags ?? [],
+      modules: raw.modules ?? []
+    };
+  }
+
+  private upsertSavedCourses(course: any) {
+    if (!course?.id) {
+      return;
+    }
+    const existingIdx = this.savedCourses.findIndex((c: any) => String(c.id) === String(course.id));
+    if (existingIdx >= 0) {
+      this.savedCourses[existingIdx] = { ...this.savedCourses[existingIdx], ...course };
+    } else {
+      this.savedCourses = [course, ...this.savedCourses];
+    }
+  }
+
+  statusLabel(status?: string | null): string {
+    const normalized = (status || '').toString().toUpperCase();
+    switch (normalized) {
+      case 'PUBLISHED':
+        return 'Publicado';
+      case 'IN_REVIEW':
+        return 'En revisión';
+      case 'SUSPENDED':
+        return 'Suspendido';
+      case 'ARCHIVED':
+        return 'Archivado';
+      case 'DRAFT':
+      default:
+        return 'Guardado';
+    }
   }
   private applySavedCourse(saved: any, silent: boolean) {
     this.createdCourseId = String(saved.id);

@@ -101,7 +101,9 @@
                 <button type="button" class="btn secondary" (click)="cancel()">Cancelar</button>
                 <button type="submit" class="btn">Siguiente</button>
             </div>
-               <button *ngIf="createdCourseId" (click)="goToDetail(createdCourseId)">Ver detalle</button>
+               <button *ngIf="createdCourseId" class="btn ghost small detail-link" (click)="goToDetail(createdCourseId)">
+                   <span>Ver detalle</span>
+               </button>
         </form>
 
         <!-- Step 2: Módulos -->
@@ -306,7 +308,7 @@
                         <div class="saved-course-info">
                             <p class="saved-title">{{ savedCourseSnapshot.title }}</p>
                             <p class="saved-subtitle">ID: {{ savedCourseSnapshot.id }}</p>
-                            <p class="saved-meta"><strong>Estado:</strong> {{ savedCourseSnapshot.status }}</p>
+                            <p class="saved-meta"><strong>Estado:</strong> {{ statusLabel(savedCourseSnapshot.status) }}</p>
                             <p class="saved-meta"><strong>Módulos:</strong> {{ savedCourseSnapshot.modules?.length || 0 }}</p>
                             <p class="saved-meta"><strong>Lecciones:</strong> {{ savedLessonsCount(savedCourseSnapshot) }}</p>
                         </div>
