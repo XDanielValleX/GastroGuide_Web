@@ -6,6 +6,21 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { environment } from '../../../environments/environment';
+import { UserSessionService } from '../../shared/user-session.service';
+
+interface LessonItem {
+  id: string | number;
+  title: string;
+  content: string;
+  videoUrl?: string | null;
+  contentType?: string;
+}
+
+interface ModuleItem {
+  id: string | number;
+  title: string;
+  lessons: LessonItem[];
+}
 
 interface Course {
   id: string | number;
@@ -17,6 +32,8 @@ interface Course {
   discountPrice?: number | null;
   language?: string;
   publishedAt?: string | null;
+  modules?: ModuleItem[];
+  isPublished?: boolean; // flag derivado para filtrar estudiantes
 }
 
 @Component({
@@ -39,9 +56,13 @@ export class Courses {
   pageSize: number = 12;
   previewCourse: Course | null = null;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  private currentRole: string | null = null;
+
+  constructor(private http: HttpClient, private router: Router, private userSession: UserSessionService) {}
 
   ngOnInit() {
+    // Obtener rol normalizado (ej: STUDENT)
+    this.currentRole = this.userSession.getRole();
     this.fetchCourses();
   }
 
@@ -81,17 +102,22 @@ export class Courses {
         const list = resp?.data || resp?.courses || resp || [];
         // normalize to Course[]
         this.courses = Array.isArray(list) ? list.map((c: any) => {
-          // Extraer el nombre del creador desde diferentes estructuras
+          // Instructor simplificado
           let instructorName = 'Instructor';
           if (c.creator && typeof c.creator === 'object') {
-            instructorName = c.creator.name || c.creator.username ||
-                           (c.creator.firstName && c.creator.lastName ? `${c.creator.firstName} ${c.creator.lastName}` : c.creator.firstName) ||
-                           'Instructor';
-          } else if (typeof c.creator === 'string' && c.creator.trim()) {
-            instructorName = c.creator;
-          } else {
-            instructorName = c.instructor || c.author || c.teacher || c.creatorName || 'Instructor';
+            instructorName = c.creator.fullName || c.creator.username || 'Instructor';
           }
+
+          // Determinar si el curso está publicado (considerar varias posibles propiedades del backend)
+          const isPublished = !!(
+            c.isPublished === true ||
+            c.published === true ||
+            c.status === 'PUBLISHED' ||
+            c.state === 'PUBLISHED' ||
+            c.visibility === 'PUBLIC' ||
+            c.publicationDate ||
+            c.publishedAt
+          );
 
           return {
             id: c.id ?? c._id ?? c.courseId,
@@ -102,7 +128,23 @@ export class Courses {
             price: Number(c.price ?? c.cost ?? 0),
             discountPrice: c.discountPrice !== undefined && c.discountPrice !== null ? Number(c.discountPrice) : (c.offerPrice !== undefined ? Number(c.offerPrice) : null),
             language: c.language || c.lang || 'ES',
-            publishedAt: c.publishedAt || c.createdAt || c.date || null
+            publishedAt: c.publishedAt || c.createdAt || c.date || null,
+            modules: Array.isArray(c.modules)
+              ? c.modules.map((m: any, i: number) => ({
+                  id: m.id || `mod-${i+1}`,
+                  title: m.title || `Módulo ${i+1}`,
+                  lessons: Array.isArray(m.lessons)
+                    ? m.lessons.map((l: any) => ({
+                        id: l.id,
+                        title: l.title,
+                        content: l.description || '',
+                        videoUrl: l.contentType === 'VIDEO' ? l.contentUrl : null,
+                        contentType: l.contentType
+                      }))
+                    : []
+                }))
+              : [],
+            isPublished
           };
         }) : [];
 
@@ -147,6 +189,11 @@ export class Courses {
             if (db !== da) return db - da;
             return (a.title || '').localeCompare(b.title || '');
           });
+    }
+
+    // Si el usuario es STUDENT, mostrar sólo cursos publicados
+    if (this.currentRole === 'STUDENT') {
+      list = list.filter(c => c.isPublished);
     }
 
     this.filteredCourses = list;
@@ -236,7 +283,8 @@ export class Courses {
       publishedAt: course.publishedAt,
       coverImage: course.image,
       image: course.image,
-      objective: course.description // usar descripción como objetivo inicial
+      objective: course.description, // usar descripción como objetivo inicial
+      modules: (course as any).modules || []
     } });
   }
 }
