@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { UserSessionService, UserProfile } from '../../shared/user-session.service';
 import { environment } from '../../../environments/environment';
+import { UserProfile, UserSessionService } from '../../shared/user-session.service';
 
 @Component({
   selector: 'app-profile',
@@ -82,6 +82,10 @@ export class Profile implements OnInit, OnDestroy {
 
   irACambiarPassword() {
     this.router.navigateByUrl('/password-fg');
+  }
+
+  verMisCursos() {
+    this.router.navigateByUrl('/home2/ver-mis-cursos');
   }
 
   handleImageError(event: Event) {
