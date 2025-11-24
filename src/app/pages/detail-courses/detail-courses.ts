@@ -3,7 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import Swal from 'sweetalert2';
 import { environment } from '../../../environments/environment';
+import { UserSessionService } from '../../shared/user-session.service';
 
 
 interface LessonItem {
@@ -48,15 +50,19 @@ export class DetailCourses {
   error: string | null = null;
   private readonly SAMPLE_PREFIX = 'SAMPLE_';
 
+  private currentRole: string | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private router: Router,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private userSession: UserSessionService
   ) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
+    this.currentRole = this.userSession.getRole();
     const nav = this.router.getCurrentNavigation();
     const state = (nav && nav.extras && nav.extras.state) ? nav.extras.state as any : history.state;
 
@@ -121,6 +127,32 @@ export class DetailCourses {
         if (Array.isArray(c.objectives) && c.objectives.length) objectiveText = c.objectives.join('. ');
         else if (typeof c.objective === 'string' && c.objective.trim()) objectiveText = c.objective;
         else if (c.description) objectiveText = c.description;
+
+        // Determinar si está publicado (mismas heurísticas que listado)
+        const isPublished = !!(
+          c.isPublished === true ||
+          c.published === true ||
+          c.status === 'PUBLISHED' ||
+          c.state === 'PUBLISHED' ||
+          c.visibility === 'PUBLIC' ||
+          c.publicationDate ||
+          c.publishedAt
+        );
+
+        // Si estudiante y no publicado => bloquear acceso
+        if (this.currentRole === 'STUDENT' && !isPublished) {
+          this.loading = false;
+          Swal.fire({
+            title: 'Curso no disponible',
+            text: 'Este curso todavía no está publicado.',
+            icon: 'info',
+            confirmButtonText: 'Volver'
+          }).then(() => {
+            this.router.navigate(['/courses']);
+          });
+          return;
+        }
+
         const backendCourse: CourseDetail = {
           id: c.id || id,
           title: c.title || titleFallback,
