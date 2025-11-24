@@ -71,6 +71,8 @@
 .module-header { width:100%; display:flex; justify-content:space-between; align-items:center; background:#FB8C71; color:#000; border:none; padding:.75rem 1rem; font-weight:600; cursor:pointer; font-size:.8rem; letter-spacing:.3px; }
 .module-header.open { background:#FF6028; color:#000; }
 .module-header:hover { filter:brightness(.95); }
+.mod-title { display:inline-flex; align-items:center; gap:.4rem; }
+.video-count { margin-left:.4rem; font-size:.72rem; background:#F5C500; color:#2E2500; padding:.05rem .4rem; border-radius:999px; line-height:1; }
 .chevron { font-size:.9rem; }
 .lessons { padding:.5rem .75rem .9rem; display:flex; flex-direction:column; gap:.65rem; background:#EDEEE6; }
 .lesson { background:#fff; border:1px solid #EEE0C6; border-radius:6px; padding:.6rem .7rem; display:flex; flex-direction:column; gap:.35rem; }
