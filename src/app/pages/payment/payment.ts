@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { environment } from '../../../environments/environment';
 import { PurchasedCoursesService } from '../../shared/purchased-courses.service';
+import { UserSessionService } from '../../shared/user-session.service';
 
 @Component({
   selector: 'app-payment',
@@ -40,10 +41,11 @@ export class Payment {
   processing = false;
 
   constructor(
-    private route: ActivatedRoute, 
-    private http: HttpClient, 
+    private route: ActivatedRoute,
+    private http: HttpClient,
     private router: Router,
-    private purchasedCoursesService: PurchasedCoursesService
+    private purchasedCoursesService: PurchasedCoursesService,
+    private userSession: UserSessionService
   ) {}
 
   ngOnInit() {
@@ -108,6 +110,32 @@ export class Payment {
 
   processPurchase() {
     if (this.processing || !this.course) return;
+    // Verificar rol: solo STUDENT puede comprar
+    try {
+      const role = this.userSession.getRole();
+      if (role !== 'STUDENT') {
+        Swal.fire({
+          title: 'Acceso denegado',
+          text: 'Sólo los usuarios con rol estudiante pueden comprar cursos.',
+          icon: 'warning',
+          confirmButtonColor: '#FF6028'
+        });
+        return;
+      }
+    } catch (e) {
+      // no bloquear en caso de error inesperado en sesión
+    }
+
+    // Verificar que el curso esté publicado
+    if (!this.isCoursePublished()) {
+      Swal.fire({
+        title: 'Curso no disponible',
+        text: 'Este curso no está publicado y no puede ser comprado.',
+        icon: 'warning',
+        confirmButtonColor: '#FF6028'
+      });
+      return;
+    }
     
     // Validar datos básicos del formulario
     if (!this.billingData.cardNumber || !this.billingData.expiryDate || 
@@ -159,30 +187,62 @@ export class Payment {
 
       console.log('Curso a guardar:', purchasedCourse);
 
-      // Guardar en el servicio
-      this.purchasedCoursesService.addCourse(purchasedCourse);
-
-      this.processing = false;
-
-      // Mostrar mensaje de éxito
-      Swal.fire({
-        title: '¡Compra exitosa!',
-        text: `Has adquirido el curso "${this.course!.title}"`,
-        icon: 'success',
-        confirmButtonText: 'Ver mis cursos',
-        confirmButtonColor: '#FF6028',
-        showCancelButton: true,
-        cancelButtonText: 'Continuar navegando'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Redirigir a ver mis cursos
-          this.router.navigate(['/home2/ver-mis-cursos']);
-        } else {
-          // Volver a cursos
-          this.router.navigate(['/home2/courses']);
-        }
-      });
+      // Antes de confirmar la compra en el cliente, registrar la matrícula en el backend
+      const studentId = this.userSession.snapshot?.id || (this.userSession.getToken() ? this.userSession.snapshot?.id : null);
+      if (studentId) {
+        this.enrollStudent(String(studentId), this.course!.id).subscribe({
+          next: () => {
+            // Guardar en el servicio local
+            this.purchasedCoursesService.addCourse(purchasedCourse);
+            this.processing = false;
+            this.showSuccessPurchase();
+          },
+          error: (err) => {
+            console.error('Error enrolling student:', err);
+            this.processing = false;
+            Swal.fire({
+              title: 'Error',
+              text: 'No se pudo completar la matrícula en el servidor. Intenta de nuevo más tarde.',
+              icon: 'error',
+              confirmButtonColor: '#FF6028'
+            });
+          }
+        });
+      } else {
+        // Sin studentId, guardamos localmente pero avisamos que la matrícula no se registró en el servidor
+        this.purchasedCoursesService.addCourse(purchasedCourse);
+        this.processing = false;
+        Swal.fire({
+          title: 'Compra completada (local)',
+          text: 'La compra se registró localmente, pero no se encontró tu perfil para registrar la matrícula en el servidor.',
+          icon: 'warning',
+          confirmButtonColor: '#FF6028'
+        });
+      }
     }, 1500);
+  }
+
+  private enrollStudent(studentId: string, courseId: string | number) {
+    const url = `${environment.apiUrl}/api/v1/students/${encodeURIComponent(studentId)}/enroll`;
+    return this.http.post(url, { courseId });
+  }
+
+  private showSuccessPurchase() {
+    Swal.fire({
+      title: '¡Compra exitosa!',
+      text: `Has adquirido el curso "${this.course!.title}"`,
+      icon: 'success',
+      confirmButtonText: 'Ver mis cursos',
+      confirmButtonColor: '#FF6028',
+      showCancelButton: true,
+      cancelButtonText: 'Continuar navegando'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.router.navigate(['/home2/ver-mis-cursos']);
+      } else {
+        this.router.navigate(['/home2/courses']);
+      }
+    });
   }
 
   private extractInstructor(courseData: any): string {
@@ -257,5 +317,14 @@ export class Payment {
     const candidate = direct != null ? direct : alt1;
     if (candidate != null && candidate < priceVal) return candidate;
     return null;
+  }
+
+  private isCoursePublished(): boolean {
+    const s = this.fullCourseData?.status || this.fullCourseData?.state || null;
+    if (s) {
+      return String(s).toUpperCase() === 'PUBLISHED';
+    }
+    // fallback: considerar publicado si existe fecha de publicación
+    return !!(this.fullCourseData?.publicationDate || this.fullCourseData?.publishedAt || this.fullCourseData?.publishedAt === 0);
   }
 }
