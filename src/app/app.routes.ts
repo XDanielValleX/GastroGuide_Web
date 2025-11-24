@@ -18,6 +18,7 @@ import { ProfileC } from './pages/profile-c/profile-c';
 import { Profile } from './pages/profile/profile';
 import { Reels } from './pages/reels/reels';
 import { SwitchToCreator } from './pages/switch-to-creator/switch-to-creator';
+import { VerMisCursosComponent } from './pages/ver-mis-cursos/ver-mis-cursos';
 import { AuthGuard } from './shared/auth.guard';
 import { RoleGuard } from './shared/role.guard';
 
@@ -33,7 +34,8 @@ export const routes: Routes = [
     { path: 'grids', component: Grids },
     { path: 'courses', component: Courses },
     { path: 'courses/:id', component: DetailCourses },
-    { path: 'payment/:id', component: Payment }
+    { path: 'payment/:id', component: Payment },
+    { path: 'ver-mis-cursos', component: VerMisCursosComponent }
   ] },
   {
     path: 'create-course',

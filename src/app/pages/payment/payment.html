@@ -1,10 +1,9 @@
-
 <div class="payment-container">
   <div class="billing-section">
     <h2>🧾 Dirección de facturación</h2>
 
     <label>Pais</label>
-    <select>
+    <select [(ngModel)]="billingData.country">
       <option>Colombia</option>
       <option>Perú</option>
       <option>Chile</option>
@@ -15,24 +14,24 @@
 
     <div class="card-box">
       <label>Número de tarjeta</label>
-      <input type="text" placeholder="1234 5678 9012 3456">
+      <input type="text" placeholder="1234 5678 9012 3456" [(ngModel)]="billingData.cardNumber" maxlength="19">
 
       <div class="row">
         <div>
           <label>Fecha de vencimiento</label>
-          <input type="text" placeholder="MM/AA">
+          <input type="text" placeholder="MM/AA" [(ngModel)]="billingData.expiryDate" maxlength="5">
         </div>
         <div>
           <label>CVC/CVV</label>
-          <input type="text" placeholder="CVC">
+          <input type="text" placeholder="CVC" [(ngModel)]="billingData.cvc" maxlength="4">
         </div>
       </div>
 
       <label>Nombre en la tarjeta</label>
-      <input type="text" placeholder="Nombre">
+      <input type="text" placeholder="Nombre" [(ngModel)]="billingData.cardName">
 
       <div class="save-card">
-        <input type="checkbox">
+        <input type="checkbox" [(ngModel)]="billingData.saveCard">
         <span>Guardar esta tarjeta para compras futuras</span>
       </div>
     </div>
@@ -56,7 +55,9 @@
         Descuento ({{ discountPercent() }}%): <span class="discount">- ${{ format(discountAmount()) }} COP</span>
       </p>
       <h3 class="total">Total: <span>${{ format(finalPrice()) }} COP</span></h3>
-      <button class="pay-btn">Pagar ${{ format(finalPrice()) }} COP</button>
+      <button class="pay-btn" (click)="processPurchase()" [disabled]="processing">
+        {{ processing ? 'Procesando...' : 'Pagar $' + format(finalPrice()) + ' COP' }}
+      </button>
       <p class="refund">Garantía de reembolso por 30 días ✔</p>
     </div>
   </div>

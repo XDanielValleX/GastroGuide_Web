@@ -11,12 +11,12 @@
     </div>
   </div>
 
-  <div class="cursos-grid">
+  <div class="cursos-grid" *ngIf="cursos.length > 0; else noCursos">
     <div class="curso-card" *ngFor="let curso of cursos">
-      <img [src]="curso.imagen" [alt]="curso.titulo" />
+      <img [src]="curso.image" [alt]="curso.title" />
       <div class="curso-info">
-        <h3>{{ curso.titulo }}</h3>
-        <p>{{ curso.descripcion }}</p>
+        <h3>{{ curso.title }}</h3>
+        <p>{{ curso.description }}</p>
 
         <div class="curso-meta">
           <div class="progress-bar">
@@ -26,10 +26,18 @@
         </div>
 
         <div class="curso-footer">
-          <span class="rating">⭐ {{ curso.rating }}</span>
-          <button class="btn-continuar">Continuar</button>
+          <span class="rating">⭐ {{ curso.rating || 4.5 }}</span>
+          <button class="btn-continuar" (click)="continuarCurso(curso)">Continuar</button>
         </div>
       </div>
     </div>
   </div>
+
+  <ng-template #noCursos>
+    <div class="empty-state">
+      <h3>📚 Aún no tienes cursos</h3>
+      <p>Explora nuestro catálogo y comienza a aprender hoy</p>
+      <button class="btn-explorar" routerLink="/home2/courses">Explorar cursos</button>
+    </div>
+  </ng-template>
 </div>
