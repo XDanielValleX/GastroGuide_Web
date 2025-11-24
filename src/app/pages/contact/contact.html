@@ -86,22 +86,34 @@
                     <p>Te responderemos lo más pronto posible</p>
                 </div>
 
-                <form class="contact-form">
+                                <!-- Alert modal (cuadro centrado) -->
+                                <div *ngIf="successMessage || errorMessage" class="alert-modal" (click)="clearMessages()">
+                                    <div class="alert-box" (click)="$event.stopPropagation()">
+                                        <div class="alert-content" [ngClass]="{ 'success': successMessage, 'error': errorMessage }">
+                                            <div class="alert-message">{{ successMessage || errorMessage }}</div>
+                                            <div class="alert-actions">
+                                                <button class="btn close-btn" type="button" (click)="clearMessages()">Cerrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                <form class="contact-form" #contactForm="ngForm" (ngSubmit)="sendEmail($event)">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">Nombre *</label>
-                            <input type="text" id="firstName" name="firstName" required>
+                            <input type="text" id="firstName" name="from_name" ngModel required>
                         </div>
                         <div class="form-group">
                             <label for="lastName">Apellido *</label>
-                            <input type="text" id="lastName" name="lastName" required>
+                            <input type="text" id="lastName" name="last_name" ngModel required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="email">Email *</label>
-                            <input type="email" id="email" name="email" required>
+                            <input type="email" id="email" name="from_email" ngModel required>
                         </div>
                         <div class="form-group">
                             <label for="phone">Teléfono</label>
@@ -111,7 +123,7 @@
 
                     <div class="form-group">
                         <label for="subject">Asunto *</label>
-                        <select id="subject" name="subject" required>
+                        <select id="subject" name="subject" ngModel required>
                             <option value="">Selecciona un tema</option>
                             <option value="general">Consulta General</option>
                             <option value="cursos">Información sobre Cursos</option>
@@ -124,12 +136,12 @@
 
                     <div class="form-group">
                         <label for="message">Mensaje *</label>
-                        <textarea id="message" name="message" rows="5" placeholder="Cuéntanos cómo podemos ayudarte..." required></textarea>
+                        <textarea id="message" name="message" ngModel rows="5" placeholder="Cuéntanos cómo podemos ayudarte..." required></textarea>
                     </div>
 
                     <div class="form-group checkbox-group">
                         <label class="checkbox-label">
-                            <input type="checkbox" name="newsletter">
+                            <input type="checkbox" name="newsletter" ngModel>
                             <span class="checkmark"></span>
                             Quiero recibir noticias y ofertas especiales por email
                         </label>
@@ -158,10 +170,10 @@
                 <div class="member-image">
                     <img src="/jhon.jpeg" alt="Chef Principal">
                     <div class="member-overlay">
-                        <p>5 años de experiencia</p>
+                        <p>2 años de experiencia</p>
                     </div>
                 </div>
-                <h4>Dev Jhon Arrieta</h4>
+                <h4>Jhon Arrieta</h4>
                 <span class="member-role">Dev FullStacks</span>
             </div>
 
@@ -169,21 +181,21 @@
                 <div class="member-image">
                     <img src="/Harri.jpeg" alt="Chef Instructor">
                     <div class="member-overlay">
-                        <p>Developer full stacks with Python, Java and Angular</p>
+                        <p>Developer with Angular and TypeScript</p>
                     </div>
                 </div>
                 <h4>Harri Morales</h4>
-                <span class="member-role">Dev FullStacks Python</span>
+                <span class="member-role">Dev Frontend</span>
             </div>
 
             <div class="team-member">
                 <div class="member-image">
-                    <img src="/orion.png" alt="Chef Repostería">
+                    <img src="/valle.jpeg" alt="Chef Repostería">
                     <div class="member-overlay">
                         <p>Developer full stacks with Ruby, Java and Angular</p>
                     </div>
                 </div>
-                <h4>Daniel Figueroa</h4>
+                <h4>Daniel Valle</h4>
                 <span class="member-role">Dev FullStacks JavaScipt</span>
             </div>
         </div>
