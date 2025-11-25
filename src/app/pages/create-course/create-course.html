@@ -34,253 +34,283 @@
             <div class="create-main">
                 <ng-container *ngIf="currentUser; else loginRequired">
 
-        <!-- Step 1: Información general -->
-        <form *ngIf="step===1" class="course-form" (ngSubmit)="nextStep()">
-            <div class="form-row">
-                <label>Título</label>
-                <input type="text" [(ngModel)]="course.title" name="title" required minlength="3" aria-label="Título del curso" />
-            </div>
+                    <!-- Step 1: Información general -->
+                    <form *ngIf="step===1" class="course-form" (ngSubmit)="nextStep()">
+                        <div class="form-row">
+                            <label>Título</label>
+                            <input type="text" [(ngModel)]="course.title" name="title" required minlength="3"
+                                aria-label="Título del curso" />
+                        </div>
 
-            <div class="form-row">
-                <label>Descripción</label>
-                <textarea [(ngModel)]="course.description" name="description" rows="4" minlength="10"
-                    required aria-label="Descripción del curso"></textarea>
-            </div>
+                        <div class="form-row">
+                            <label>Descripción</label>
+                            <textarea [(ngModel)]="course.description" name="description" rows="4" minlength="10"
+                                required aria-label="Descripción del curso"></textarea>
+                        </div>
 
-            <div class="form-grid-3">
-                <label>
-                    <span>Nivel</span>
-                    <select [(ngModel)]="course.level" name="level">
-                        <option value="BEGINNER">BEGINNER</option>
-                        <option value="INTERMEDIATE">INTERMEDIATE</option>
-                        <option value="ADVANCED">ADVANCED</option>
-                        <option value="EXPERT">EXPERT</option>
-                    </select>
-                </label>
+                        <div class="form-grid-3">
+                            <label>
+                                <span>Nivel</span>
+                                <select [(ngModel)]="course.level" name="level">
+                                    <option value="BEGINNER">BEGINNER</option>
+                                    <option value="INTERMEDIATE">INTERMEDIATE</option>
+                                    <option value="ADVANCED">ADVANCED</option>
+                                    <option value="EXPERT">EXPERT</option>
+                                </select>
+                            </label>
 
-                <label>
-                    <span>Idioma</span>
-                    <input type="text" [(ngModel)]="course.language" name="language" placeholder="es" />
-                </label>
+                            <label>
+                                <span>Idioma</span>
+                                <input type="text" [(ngModel)]="course.language" name="language" placeholder="es" />
+                            </label>
 
-                <label>
-                    <span>Precio base</span>
-                    <input type="number" [(ngModel)]="course.price" name="price" min="0" step="0.01" required />
-                </label>
-            </div>
+                            <label>
+                                <span>Precio base</span>
+                                <input type="number" [(ngModel)]="course.price" name="price" min="0" step="0.01"
+                                    required />
+                            </label>
+                        </div>
 
-            <div class="form-row">
-                <label>Precio con descuento (opcional)</label>
-                <input type="number" [(ngModel)]="course.discountPrice" name="discountPrice" min="0" step="0.01" aria-label="Precio con descuento" />
-            </div>
+                        <div class="form-row">
+                            <label>Precio con descuento (opcional)</label>
+                            <input type="number" [(ngModel)]="course.discountPrice" name="discountPrice" min="0"
+                                step="0.01" aria-label="Precio con descuento" />
+                        </div>
 
-            <div class="form-row">
-                <label>Imagen del curso (URL o subir)</label>
-                <div class="image-row">
-                    <input type="text" [(ngModel)]="course.image" name="imageUrl" placeholder="https://..." />
-                    <input type="file" accept="image/*" (change)="onImageFile($event)" aria-label="Subir imagen del curso"
-                        [disabled]="disableFileUpload" title="La carga local estará disponible pronto" />
-                </div>
-                <p class="upload-disabled" *ngIf="disableFileUpload">
-                    La opción de subir archivo está deshabilitada temporalmente. Usa una URL pública de imagen por ahora.
-                </p>
-                <div class="image-preview" *ngIf="course.image || previewImage">
-                    <img [src]="previewImage || course.image" alt="preview" />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <label>Tags (separados por coma)</label>
-                <input type="text" [(ngModel)]="tagsInput" name="tagsInput"
-                    placeholder="ej: pastelería, internacional" />
-            </div>
-
-            <div class="actions">
-                <button type="button" class="btn ghost" (click)="saveCourseInfo()" [disabled]="savingCourse">
-                    {{ savingCourse ? 'Guardando...' : 'Guardar información' }}</button>
-                <button type="button" class="btn secondary" (click)="cancel()">Cancelar</button>
-                <button type="submit" class="btn">Siguiente</button>
-            </div>
-               <button *ngIf="createdCourseId" (click)="goToDetail(createdCourseId)">Ver detalle</button>
-        </form>
-
-        <!-- Step 2: Módulos -->
-        <div *ngIf="step===2" class="modules-step">
-            <div class="info warning" *ngIf="!createdCourseId">
-                Guarda primero la información del curso para habilitar el guardado de módulos.
-            </div>
-            <div class="modules-list" *ngIf="modules.length; else modulesEmpty">
-                <div *ngFor="let m of modules; let i=index" class="module-card">
-                    <div class="module-header">
-                        <div class="module-title">
-                            <span class="chip">{{i+1}}</span>
-                            <div>
-                                <h4>{{m.title || 'Módulo sin título'}}</h4>
-                                <p class="module-description" *ngIf="m.description">{{m.description}}</p>
+                        <div class="form-row">
+                            <label>Imagen del curso (URL o subir)</label>
+                            <div class="image-row">
+                                <input type="text" [(ngModel)]="course.image" name="imageUrl"
+                                    placeholder="https://..." />
+                                <input type="file" accept="image/*" (change)="onImageFile($event)"
+                                    aria-label="Subir imagen del curso" [disabled]="disableFileUpload"
+                                    title="La carga local estará disponible pronto" />
+                            </div>
+                            <p class="upload-disabled" *ngIf="disableFileUpload">
+                                La opción de subir archivo está deshabilitada temporalmente. Usa una URL pública de
+                                imagen por ahora.
+                            </p>
+                            <div class="image-preview" *ngIf="course.image || previewImage">
+                                <img [src]="previewImage || course.image" alt="preview" />
                             </div>
                         </div>
-                        <div class="module-actions">
-                            <button type="button" class="icon" (click)="editModule(i)" title="Editar módulo">✏️</button>
-                            <button type="button" class="icon danger" (click)="removeModule(i)" title="Eliminar módulo">🗑️</button>
+
+                        <div class="form-row">
+                            <label>Tags (separados por coma)</label>
+                            <input type="text" [(ngModel)]="tagsInput" name="tagsInput"
+                                placeholder="ej: pastelería, internacional" />
+                        </div>
+
+                        <div class="actions">
+                            <button type="button" class="btn ghost" (click)="saveCourseInfo()"
+                                [disabled]="savingCourse">
+                                {{ savingCourse ? 'Guardando...' : 'Guardar información' }}</button>
+                            <button type="button" class="btn secondary" (click)="cancel()">Cancelar</button>
+                            <button type="submit" class="btn">Siguiente</button>
+                        </div>
+                        <button *ngIf="createdCourseId" class="btn ghost small detail-link"
+                            (click)="goToDetail(createdCourseId)">
+                            <span>Ver detalle</span>
+                        </button>
+                    </form>
+
+                    <!-- Step 2: Módulos -->
+                    <div *ngIf="step===2" class="modules-step">
+                        <div class="info warning" *ngIf="!createdCourseId">
+                            Guarda primero la información del curso para habilitar el guardado de módulos.
+                        </div>
+                        <div class="modules-list" *ngIf="modules.length; else modulesEmpty">
+                            <div *ngFor="let m of modules; let i=index" class="module-card">
+                                <div class="module-header">
+                                    <div class="module-title">
+                                        <span class="chip">{{i+1}}</span>
+                                        <div>
+                                            <h4>{{m.title || 'Módulo sin título'}}</h4>
+                                            <p class="module-description" *ngIf="m.description">{{m.description}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="module-actions">
+                                        <button type="button" class="icon" (click)="editModule(i)"
+                                            title="Editar módulo">✏️</button>
+                                        <button type="button" class="icon danger" (click)="removeModule(i)"
+                                            title="Eliminar módulo">🗑️</button>
+                                    </div>
+                                </div>
+                                <div class="module-meta">
+                                    <span class="badge" *ngIf="m.estimatedDuration">{{m.estimatedDuration}} min</span>
+                                    <span class="badge" *ngIf="m.lessons && m.lessons.length">{{m.lessons.length}}
+                                        lecciones</span>
+                                    <span class="badge locked" *ngIf="m.locked">Bloqueado</span>
+                                    <span class="badge success" *ngIf="m.id">Guardado</span>
+                                </div>
+
+                                <div *ngIf="editingModuleIndex===i" class="module-form">
+                                    <input [(ngModel)]="m.title" name="m-title-{{i}}" placeholder="Título del módulo" />
+                                    <textarea [(ngModel)]="m.description" name="m-desc-{{i}}"
+                                        placeholder="Descripción"></textarea>
+                                    <div class="mini-row">
+                                        <label>Duración estimada (min)</label>
+                                        <input type="number" [(ngModel)]="m.estimatedDuration" name="m-dur-{{i}}"
+                                            placeholder="Duración estimada (min)" />
+                                        <label><input type="checkbox" [(ngModel)]="m.locked" name="m-locked-{{i}}" />
+                                            Bloqueado</label>
+                                    </div>
+                                    <div class="module-form-actions">
+                                        <button class="small" type="button" (click)="saveModule(i)">Guardar</button>
+                                        <button class="small secondary" type="button"
+                                            (click)="cancelEditModule()">Cancelar</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <ng-template #modulesEmpty>
+                            <div class="empty-state">
+                                <p>Aún no hay módulos. Usa el formulario de abajo para comenzar.</p>
+                            </div>
+                        </ng-template>
+
+                        <div class="add-module">
+                            <h4>Agregar nuevo módulo</h4>
+                            <input [(ngModel)]="newModule.title" placeholder="Título módulo" />
+                            <textarea [(ngModel)]="newModule.description"
+                                placeholder="Descripción (opcional)"></textarea>
+                            <div class="mini-row">
+                                <label>Duración estimada (min)</label>
+                                <input type="number" [(ngModel)]="newModule.estimatedDuration"
+                                    placeholder="Duración estimada (min)" />
+                                <label><input type="checkbox" [(ngModel)]="newModule.locked" /> Bloqueado</label>
+                            </div>
+                            <div class="mini-actions">
+                                <button class="btn" (click)="addModule()">+ Agregar módulo</button>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button class="btn ghost" type="button" (click)="saveModules()"
+                                [disabled]="savingModules || !createdCourseId">
+                                {{ savingModules ? 'Guardando...' : 'Guardar módulos' }}</button>
+                            <button class="btn secondary" (click)="prevStep()">Atrás</button>
+                            <button class="btn" (click)="nextStep()">Siguiente</button>
                         </div>
                     </div>
-                    <div class="module-meta">
-                        <span class="badge" *ngIf="m.estimatedDuration">{{m.estimatedDuration}} min</span>
-                        <span class="badge" *ngIf="m.lessons && m.lessons.length">{{m.lessons.length}} lecciones</span>
-                        <span class="badge locked" *ngIf="m.locked">Bloqueado</span>
-                        <span class="badge success" *ngIf="m.id">Guardado</span>
-                    </div>
 
-                    <div *ngIf="editingModuleIndex===i" class="module-form">
-                        <input [(ngModel)]="m.title" name="m-title-{{i}}" placeholder="Título del módulo" />
-                        <textarea [(ngModel)]="m.description" name="m-desc-{{i}}" placeholder="Descripción"></textarea>
-                        <div class="mini-row">
-                            <label>Duración estimada (min)</label>
-                            <input type="number" [(ngModel)]="m.estimatedDuration" name="m-dur-{{i}}"
-                                placeholder="Duración estimada (min)" />
-                            <label><input type="checkbox" [(ngModel)]="m.locked" name="m-locked-{{i}}" />
-                                Bloqueado</label>
+                    <!-- Step 3: Lecciones -->
+                    <div *ngIf="step===3" class="lessons-step">
+                        <div *ngIf="modules.length===0" class="info">Agrega al menos un módulo antes de las lecciones.
                         </div>
-                        <div class="module-form-actions">
-                            <button class="small" type="button" (click)="saveModule(i)">Guardar</button>
-                            <button class="small secondary" type="button" (click)="cancelEditModule()">Cancelar</button>
-                        </div>
-                    </div>
 
-                </div>
-            </div>
-            <ng-template #modulesEmpty>
-                <div class="empty-state">
-                    <p>Aún no hay módulos. Usa el formulario de abajo para comenzar.</p>
-                </div>
-            </ng-template>
-
-            <div class="add-module">
-                <h4>Agregar nuevo módulo</h4>
-                <input [(ngModel)]="newModule.title" placeholder="Título módulo" />
-                <textarea [(ngModel)]="newModule.description" placeholder="Descripción (opcional)"></textarea>
-                <div class="mini-row">
-                    <label>Duración estimada (min)</label>
-                    <input type="number" [(ngModel)]="newModule.estimatedDuration"
-                        placeholder="Duración estimada (min)" />
-                    <label><input type="checkbox" [(ngModel)]="newModule.locked" /> Bloqueado</label>
-                </div>
-                <div class="mini-actions">
-                    <button class="btn" (click)="addModule()">+ Agregar módulo</button>
-                </div>
-            </div>
-
-            <div class="actions">
-                <button class="btn ghost" type="button" (click)="saveModules()"
-                    [disabled]="savingModules || !createdCourseId">
-                    {{ savingModules ? 'Guardando...' : 'Guardar módulos' }}</button>
-                <button class="btn secondary" (click)="prevStep()">Atrás</button>
-                <button class="btn" (click)="nextStep()">Siguiente</button>
-            </div>
-        </div>
-
-        <!-- Step 3: Lecciones -->
-        <div *ngIf="step===3" class="lessons-step">
-            <div *ngIf="modules.length===0" class="info">Agrega al menos un módulo antes de las lecciones.</div>
-
-            <div *ngFor="let m of modules; let mi = index" class="module-lessons">
-                <div class="module-lessons-header">
-                    <div class="module-title">
-                        <span class="chip">{{mi+1}}</span>
-                        <div>
-                            <h4>{{m.title || 'Módulo sin título'}}</h4>
-                            <p class="module-description" *ngIf="m.description">{{m.description}}</p>
-                        </div>
-                    </div>
-                    <div class="module-meta">
-                        <span class="badge" *ngIf="m.estimatedDuration">{{m.estimatedDuration}} min</span>
-                        <span class="badge" *ngIf="m.lessons && m.lessons.length">{{m.lessons.length}} lecciones</span>
-                        <span class="badge locked" *ngIf="m.locked">Bloqueado</span>
-                    </div>
-                </div>
-
-                <div class="lessons-list" *ngIf="m.lessons && m.lessons.length; else lessonsEmpty">
-                    <div *ngFor="let l of m.lessons; let li=index" class="lesson-row">
-                        <div class="lesson-main">
-                            <span class="chip light">{{li+1}}</span>
-                            <div>
-                                <p class="lesson-title">{{l.title || 'Sin título'}}</p>
-                                <p class="lesson-description" *ngIf="l.description">{{l.description}}</p>
-                                <div class="lesson-meta">
-                                    <span class="badge type">{{l.contentType || 'VIDEO'}}</span>
-                                    <span class="badge" *ngIf="l.duration">{{l.duration}} min</span>
-                                    <span class="badge success" *ngIf="l.isFree">Gratis</span>
+                        <div *ngFor="let m of modules; let mi = index" class="module-lessons">
+                            <div class="module-lessons-header">
+                                <div class="module-title">
+                                    <span class="chip">{{mi+1}}</span>
+                                    <div>
+                                        <h4>{{m.title || 'Módulo sin título'}}</h4>
+                                        <p class="module-description" *ngIf="m.description">{{m.description}}</p>
+                                    </div>
+                                </div>
+                                <div class="module-meta">
+                                    <span class="badge" *ngIf="m.estimatedDuration">{{m.estimatedDuration}} min</span>
+                                    <span class="badge" *ngIf="m.lessons && m.lessons.length">{{m.lessons.length}}
+                                        lecciones</span>
+                                    <span class="badge locked" *ngIf="m.locked">Bloqueado</span>
                                 </div>
                             </div>
+
+                            <div class="lessons-list" *ngIf="m.lessons && m.lessons.length; else lessonsEmpty">
+                                <div *ngFor="let l of m.lessons; let li=index" class="lesson-row">
+                                    <div class="lesson-main">
+                                        <span class="chip light">{{li+1}}</span>
+                                        <div>
+                                            <p class="lesson-title">{{l.title || 'Sin título'}}</p>
+                                            <p class="lesson-description" *ngIf="l.description">{{l.description}}</p>
+                                            <div class="lesson-meta">
+                                                <span class="badge type">{{l.contentType || 'VIDEO'}}</span>
+                                                <span class="badge" *ngIf="l.duration">{{l.duration}} min</span>
+                                                <span class="badge success" *ngIf="l.isFree">Gratis</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="lesson-actions">
+                                        <button class="icon" type="button" (click)="editLesson(mi, li)"
+                                            title="Editar lección">✏️</button>
+                                        <button class="icon danger" type="button" (click)="removeLesson(mi, li)"
+                                            title="Eliminar lección">🗑️</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <ng-template #lessonsEmpty>
+                                <div class="empty-state">
+                                    <p>Sin lecciones registradas para este módulo.</p>
+                                </div>
+                            </ng-template>
+
+                            <div class="add-lesson">
+                                <div class="add-lesson-header">
+                                    <h5>{{ editingLesson ? 'Editar lección' : 'Agregar lección' }}</h5>
+                                    <span class="badge warning" *ngIf="editingLesson">Editando
+                                        #{{editingLesson.moduleIndex + 1}}.{{editingLesson.lessonIndex + 1}}</span>
+                                </div>
+                                <input [(ngModel)]="newLesson.title" placeholder="Título lección" />
+                                <textarea [(ngModel)]="newLesson.description" placeholder="Descripción"></textarea>
+                                <div class="mini-row">
+                                    <select [(ngModel)]="newLesson.contentType"
+                                        aria-label="Tipo de contenido de la lección">
+                                        <option value="VIDEO">VIDEO</option>
+                                        <option value="TEXT">TEXT</option>
+                                        <option value="AUDIO">AUDIO</option>
+                                        <option value="DOCUMENT">DOCUMENT</option>
+                                        <option value="INTERACTIVE">INTERACTIVE</option>
+                                    </select>
+                                    <label class="mini-label">Duración (min)</label>
+                                    <input type="number" [(ngModel)]="newLesson.duration"
+                                        placeholder="Duración (min)" />
+                                </div>
+                                <input [(ngModel)]="newLesson.contentUrl"
+                                    placeholder="URL del contenido (https://...)" />
+                                <label class="checkbox-inline"><input type="checkbox" [(ngModel)]="newLesson.isFree" />
+                                    Gratis</label>
+                                <div class="mini-actions">
+                                    <button class="btn" type="button" (click)="addLessonToModule()">
+                                        {{ editingLesson ? 'Guardar cambios' : '+ Agregar lección (al módulo
+                                        seleccionado)' }}</button>
+                                    <button class="btn secondary" type="button" *ngIf="editingLesson"
+                                        (click)="cancelLessonEdit()">Cancelar</button>
+                                    <select [(ngModel)]="lessonModuleIndex"
+                                        aria-label="Módulo destino para la nueva lección">
+                                        <option *ngFor="let m of modules; let idx=index" [value]="idx">{{idx+1}} -
+                                            {{m.title ||
+                                            'Módulo ' + (idx+1)}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
                         </div>
-                        <div class="lesson-actions">
-                            <button class="icon" type="button" (click)="editLesson(mi, li)" title="Editar lección">✏️</button>
-                            <button class="icon danger" type="button" (click)="removeLesson(mi, li)" title="Eliminar lección">🗑️</button>
+                        <div class="actions">
+                            <button class="btn ghost" type="button" (click)="saveLessons()"
+                                [disabled]="savingLessons || !createdCourseId">
+                                {{ savingLessons ? 'Guardando...' : 'Guardar lecciones' }}</button>
+                            <button class="btn secondary" (click)="prevStep()">Atrás</button>
+                            <button class="btn" (click)="nextStep()">Siguiente</button>
                         </div>
                     </div>
-                </div>
-                <ng-template #lessonsEmpty>
-                    <div class="empty-state">
-                        <p>Sin lecciones registradas para este módulo.</p>
-                    </div>
-                </ng-template>
 
-                <div class="add-lesson">
-                    <div class="add-lesson-header">
-                        <h5>{{ editingLesson ? 'Editar lección' : 'Agregar lección' }}</h5>
-                        <span class="badge warning" *ngIf="editingLesson">Editando #{{editingLesson.moduleIndex + 1}}.{{editingLesson.lessonIndex + 1}}</span>
-                    </div>
-                    <input [(ngModel)]="newLesson.title" placeholder="Título lección" />
-                    <textarea [(ngModel)]="newLesson.description" placeholder="Descripción"></textarea>
-                    <div class="mini-row">
-                        <select [(ngModel)]="newLesson.contentType" aria-label="Tipo de contenido de la lección">
-                            <option value="VIDEO">VIDEO</option>
-                            <option value="TEXT">TEXT</option>
-                            <option value="AUDIO">AUDIO</option>
-                            <option value="DOCUMENT">DOCUMENT</option>
-                            <option value="INTERACTIVE">INTERACTIVE</option>
-                        </select>
-                        <label class="mini-label">Duración (min)</label>
-                        <input type="number" [(ngModel)]="newLesson.duration" placeholder="Duración (min)" />
-                    </div>
-                    <input [(ngModel)]="newLesson.contentUrl" placeholder="URL del contenido (https://...)" />
-                    <label class="checkbox-inline"><input type="checkbox" [(ngModel)]="newLesson.isFree" /> Gratis</label>
-                    <div class="mini-actions">
-                        <button class="btn" type="button" (click)="addLessonToModule()">
-                            {{ editingLesson ? 'Guardar cambios' : '+ Agregar lección (al módulo seleccionado)' }}</button>
-                        <button class="btn secondary" type="button" *ngIf="editingLesson" (click)="cancelLessonEdit()">Cancelar</button>
-                        <select [(ngModel)]="lessonModuleIndex" aria-label="Módulo destino para la nueva lección">
-                            <option *ngFor="let m of modules; let idx=index" [value]="idx">{{idx+1}} - {{m.title ||
-                                'Módulo ' + (idx+1)}}
-                            </option>
-                        </select>
-                    </div>
-                </div>
+                    <!-- Step 4: Publicar -->
+                    <div *ngIf="step===4" class="publish-step">
+                        <h3>Resumen</h3>
+                        <p><strong>Título:</strong> {{course.title}}</p>
+                        <p><strong>Nivel:</strong> {{course.level}}</p>
+                        <p><strong>Módulos:</strong> {{modules.length}}</p>
+                        <p><strong>Lecciones totales:</strong> {{countLessons()}}</p>
 
-            </div>
-            <div class="actions">
-                <button class="btn ghost" type="button" (click)="saveLessons()"
-                    [disabled]="savingLessons || !createdCourseId">
-                    {{ savingLessons ? 'Guardando...' : 'Guardar lecciones' }}</button>
-                <button class="btn secondary" (click)="prevStep()">Atrás</button>
-                <button class="btn" (click)="nextStep()">Siguiente</button>
-            </div>
-        </div>
-
-        <!-- Step 4: Publicar -->
-        <div *ngIf="step===4" class="publish-step">
-            <h3>Resumen</h3>
-            <p><strong>Título:</strong> {{course.title}}</p>
-            <p><strong>Nivel:</strong> {{course.level}}</p>
-            <p><strong>Módulos:</strong> {{modules.length}}</p>
-            <p><strong>Lecciones totales:</strong> {{countLessons()}}</p>
-
-            <div class="actions">
-                <button class="btn secondary" (click)="prevStep()">Atrás</button>
-                <button class="btn" (click)="publishCourse()" [disabled]="publishing">{{ publishing ? 'Publicando...' :
-                    'Publicar curso' }}</button>
-            </div>
-        </div>
+                        <div class="actions">
+                            <button class="btn secondary" (click)="prevStep()">Atrás</button>
+                            <button class="btn" (click)="publishCourse()" [disabled]="publishing">{{ publishing ?
+                                'Publicando...' :
+                                'Publicar curso' }}</button>
+                        </div>
+                    </div>
 
                 </ng-container>
                 <ng-template #loginRequired>
@@ -291,24 +321,28 @@
                     </div>
                 </ng-template>
 
-        <!-- Toast simple -->
-        <div class="toast" *ngIf="toast">{{ toast }}</div>
+                <!-- Toast simple -->
+                <div class="toast" *ngIf="toast">{{ toast }}</div>
 
             </div>
             <aside class="saved-sidebar" *ngIf="currentUser">
                 <div class="saved-card">
                     <div class="saved-card-header">
                         <h3>Guardado reciente</h3>
-                        <button class="btn ghost small" type="button" (click)="loadSavedCourses(createdCourseId || undefined)"
-                            [disabled]="loadingSavedCourses">{{ loadingSavedCourses ? 'Actualizando...' : 'Refrescar' }}</button>
+                        <button class="btn ghost small" type="button"
+                            (click)="loadSavedCourses(createdCourseId || undefined, !!createdCourseId)" [disabled]="loadingSavedCourses">{{
+                            loadingSavedCourses ? 'Actualizando...' : 'Refrescar' }}</button>
                     </div>
                     <ng-container *ngIf="savedCourseSnapshot; else emptySaved">
                         <div class="saved-course-info">
                             <p class="saved-title">{{ savedCourseSnapshot.title }}</p>
                             <p class="saved-subtitle">ID: {{ savedCourseSnapshot.id }}</p>
-                            <p class="saved-meta"><strong>Estado:</strong> {{ savedCourseSnapshot.status }}</p>
-                            <p class="saved-meta"><strong>Módulos:</strong> {{ savedCourseSnapshot.modules?.length || 0 }}</p>
-                            <p class="saved-meta"><strong>Lecciones:</strong> {{ savedLessonsCount(savedCourseSnapshot) }}</p>
+                            <p class="saved-meta"><strong>Estado:</strong> {{ statusLabel(savedCourseSnapshot.status) }}
+                            </p>
+                            <p class="saved-meta"><strong>Módulos:</strong> {{ savedCourseSnapshot.modules?.length || 0
+                                }}</p>
+                            <p class="saved-meta"><strong>Lecciones:</strong> {{ savedLessonsCount(savedCourseSnapshot)
+                                }}</p>
                         </div>
                         <div class="saved-modules" *ngIf="savedCourseSnapshot.modules?.length">
                             <h4>Módulos guardados</h4>
@@ -328,8 +362,7 @@
                     <div class="saved-courses-list" *ngIf="savedCourses.length">
                         <h4>Mis cursos guardados</h4>
                         <div class="saved-course-buttons">
-                            <button type="button" class="btn secondary small"
-                                *ngFor="let course of savedCourses"
+                            <button type="button" class="btn secondary small" *ngFor="let course of savedCourses"
                                 (click)="selectSavedCourse(course.id)">
                                 {{ course.title }}
                             </button>
