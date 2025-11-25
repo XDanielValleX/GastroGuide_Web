@@ -18,7 +18,7 @@
 				<option value="price_asc">Precio: bajo a alto</option>
 				<option value="price_desc">Precio: alto a bajo</option>
 			</select>
-			<button class="btn ghost" type="button" (click)="addSampleCourse(true)" title="Reinyectar curso de prueba">Curso de prueba</button>
+			<button class="btn ghost" type="button" *ngIf="!isStudentView" (click)="addSampleCourse(true)" title="Reinyectar curso de prueba">Curso de prueba</button>
 		</div>
 	</div>
 
@@ -38,6 +38,9 @@
 					<img [src]="course.image || '/assets/images/placeholder-course.png'" [alt]="course.title" (error)="onImgError($event)" />
 				</div>
 				<div class="card-body">
+					<div class="status-chip" *ngIf="!isStudentView" [class.published]="course.isPublished">
+						{{ course.isPublished ? 'Publicado' : 'Guardado' }}
+					</div>
 					<h3 class="title">{{ course.title }}</h3>
 					<p class="instructor">{{ course.instructor }}</p>
 					<p class="desc">{{ course.description || (course.title + ' - excelente curso') }}</p>
