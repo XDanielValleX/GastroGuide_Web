@@ -17,8 +17,8 @@ import { Payment } from './pages/payment/payment';
 import { ProfileC } from './pages/profile-c/profile-c';
 import { Profile } from './pages/profile/profile';
 import { Reels } from './pages/reels/reels';
+import { SwitchToCreator } from './pages/switch-to-creator/switch-to-creator';
 import { VerMisCursosComponent } from './pages/ver-mis-cursos/ver-mis-cursos';
-import { TakeCourse } from './pages/take-course/take-course';
 import { AuthGuard } from './shared/auth.guard';
 import { RoleGuard } from './shared/role.guard';
 
@@ -69,15 +69,6 @@ export const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['CREATOR'] }
   },
-  {
-    path: 'take-course',
-    component: TakeCourse,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'take-course/:id',
-    component: TakeCourse,
-    canActivate: [AuthGuard]
-  },
-  { path: 'payment/:id', component: Payment }
+  { path: 'payment/:id', component: Payment },
+  { path: 'switch-to-creator', component: SwitchToCreator }
 ];

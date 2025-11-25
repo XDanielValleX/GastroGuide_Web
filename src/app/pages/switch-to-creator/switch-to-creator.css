@@ -1,0 +1,271 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+.switch-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'San Francisco', Helvetica, Arial, sans-serif;
+    background: radial-gradient(circle at top, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.05));
+    padding: 1.5rem;
+}
+
+.session {
+    display: flex;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.left {
+    position: relative;
+    width: 220px;
+    background: rgba(255, 255, 255, 0.12);
+    border-start-start-radius: 16px;
+    border-end-start-radius: 16px;
+    overflow: hidden;
+}
+
+.left::before,
+.left::after {
+    content: '';
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    filter: blur(35px) brightness(1.2);
+    opacity: 0.75;
+    z-index: 0;
+}
+
+.left::before {
+    top: -200px;
+    left: -200px;
+    background: radial-gradient(circle at center, #FB8C00 0%, #EF6C00 100%);
+    animation: waves 6s infinite ease-in-out;
+}
+
+.left::after {
+    bottom: -200px;
+    right: -200px;
+    background: radial-gradient(circle at center, #F57C00 0%, #EF6C00 100%);
+    animation: waves2 7s infinite ease-in-out alternate;
+}
+
+.left svg {
+    position: relative;
+    z-index: 1;
+    height: 40px;
+    width: auto;
+    margin: 20px;
+    fill: #ffffff;
+}
+
+form {
+    padding: 40px 30px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 320px;
+    background: transparent;
+}
+
+h4 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #000;
+    opacity: 0.9;
+    margin: 0 0 8px;
+}
+
+h4 span {
+    color: #000;
+    font-weight: 700;
+}
+
+form p {
+    line-height: 155%;
+    font-size: 15px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 400;
+    max-width: 260px;
+    margin: 0 0 32px;
+    text-align: left;
+}
+
+.floating-label {
+    position: relative;
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.floating-label input {
+    width: calc(100% - 44px);
+    margin-left: auto;
+    display: flex;
+    font-size: 16px;
+    padding: 20px 0;
+    height: 56px;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    background: transparent;
+    box-sizing: border-box;
+    transition: all 0.3s linear;
+    color: #000;
+    font-weight: 400;
+}
+
+.floating-label input:focus {
+    border-bottom: 1px solid #FB8C00;
+    outline: 0;
+}
+
+.floating-label label {
+    position: absolute;
+    top: calc(50% - 7px);
+    left: 0;
+    opacity: 0;
+    transition: all 0.3s ease;
+    padding-left: 44px;
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 12.5px;
+    font-weight: 400;
+}
+
+.floating-label .icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 56px;
+    width: 44px;
+    display: flex;
+}
+
+.floating-label .icon svg {
+    height: 30px;
+    width: 30px;
+    margin: auto;
+    opacity: 0.25;
+    transition: all 0.3s ease;
+    fill: #000;
+}
+
+.floating-label input:not(:placeholder-shown) {
+    padding: 28px 0 12px 0;
+}
+
+.floating-label input:not(:placeholder-shown)+label {
+    transform: translateY(-10px);
+    opacity: 0.7;
+}
+
+.floating-label input:valid:not(:placeholder-shown)+label+.icon svg {
+    opacity: 1;
+    fill: #EF6C00;
+}
+
+button {
+    -webkit-appearance: none;
+    min-width: 100px;
+    border-radius: 24px;
+    text-align: center;
+    padding: 15px 40px;
+    margin-top: 10px;
+    margin-left: auto;
+    background-color: #EF6C00;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(239, 108, 0, 0.4);
+    border: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    background-color: #F57C00;
+    box-shadow: 0 4px 12px rgba(239, 108, 0, 0.6);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.message {
+    margin-top: 20px;
+    font-weight: 600;
+    color: #1f1f1f;
+    min-height: 20px;
+}
+
+@media (max-width: 700px) {
+    .session {
+        flex-direction: column;
+        width: 100%;
+        max-width: 360px;
+    }
+
+    .left {
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+        min-height: 140px;
+    }
+
+    form {
+        width: 100%;
+    }
+}
+
+@keyframes waves {
+    0% {
+        transform: rotate(0deg) translate(0, 0);
+    }
+
+    50% {
+        transform: rotate(180deg) translate(20px, -20px);
+    }
+
+    100% {
+        transform: rotate(360deg) translate(0, 0);
+    }
+}
+
+@keyframes waves2 {
+    0% {
+        transform: rotate(0deg) translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: rotate(-180deg) translate(-25px, 25px) scale(1.1);
+    }
+
+    100% {
+        transform: rotate(-360deg) translate(0, 0) scale(1);
+    }
+}
+
+.switch-to-creator-btn {
+    cursor: pointer;
+    transition: transform .25s ease;
+}
+
+.switch-to-creator-btn:hover svg {
+    transform: scale(1.15);
+}
+
+.switch-to-creator-btn:active svg {
+    transform: scale(0.92);
+}
+
+.switch-to-creator-btn svg {
+    position: relative;
+    z-index: 1;
+    height: 40px;
+    width: auto;
+    margin: 20px;
+    fill: #ffffff;
+    transition: transform .25s ease;
+}

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TakeCourse } from './take-course';
+import { SwitchToCreator } from './switch-to-creator';
 
-describe('TakeCourse', () => {
-  let component: TakeCourse;
-  let fixture: ComponentFixture<TakeCourse>;
+describe('SwitchToCreator', () => {
+  let component: SwitchToCreator;
+  let fixture: ComponentFixture<SwitchToCreator>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TakeCourse]
+      imports: [SwitchToCreator]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TakeCourse);
+    fixture = TestBed.createComponent(SwitchToCreator);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

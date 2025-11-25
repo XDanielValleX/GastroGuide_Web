@@ -547,14 +547,6 @@ select:focus {
     padding: 6px 12px;
 }
 
-.detail-link {
-    margin-top: 10px;
-    align-self: flex-start;
-    border-radius: 999px;
-    border-color: rgba(255, 106, 0, 0.2);
-    color: #ff6a00;
-}
-
 
     .add-lesson h5 {
         margin-top: 0;

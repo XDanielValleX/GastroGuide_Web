@@ -9,7 +9,6 @@ import { UserProfile, UserSessionService } from '../../shared/user-session.servi
 
 type Level = 'BEGINNER'|'INTERMEDIATE'|'ADVANCED'|'EXPERT';
 type ContentType = 'VIDEO'|'TEXT'|'AUDIO'|'DOCUMENT'|'INTERACTIVE';
-type CourseStatus = 'DRAFT'|'IN_REVIEW'|'SUSPENDED'|'PUBLISHED'|'ARCHIVED';
 
 interface CreateCourseDto {
   id?: string;
@@ -258,7 +257,7 @@ export class CreateCourse implements OnInit, OnDestroy {
   }
   countLessons() { return this.modules.reduce((acc,m:any)=>acc + (m.lessons?.length||0), 0); }
 
-  async saveCourseInfo(status: CourseStatus = 'DRAFT'): Promise<boolean> {
+  async saveCourseInfo(status: 'DRAFT' | 'PUBLISHED' = 'DRAFT'): Promise<boolean> {
     if (this.savingCourse) { return false; }
     if (!this.course.title || this.course.title.length < 3 || !this.course.description || this.course.description.length < 10) {
       this.showToast('Completa título y descripción (mínimo 10 caracteres).');
@@ -302,13 +301,6 @@ export class CreateCourse implements OnInit, OnDestroy {
       this.course.status = status;
       this.course.id = this.createdCourseId;
       this.course.creatorId = String(creatorPayloadId);
-      const localSnapshot = this.buildSavedCourseSnapshot(courseResp, payload, this.createdCourseId);
-      this.savedCourseSnapshot = localSnapshot;
-      this.upsertSavedCourses(localSnapshot);
-      if (localSnapshot?.image) {
-        this.previewImage = localSnapshot.image;
-        this.uploadedImagePath = localSnapshot.image;
-      }
       await this.refreshSavedSnapshot(createdCourseId);
       this.showToast(status === 'PUBLISHED' ? 'Curso publicado' : 'Curso guardado');
       success = true;
@@ -454,10 +446,12 @@ export class CreateCourse implements OnInit, OnDestroy {
     }
     try {
       this.publishing = true;
-      const detailSaved = await this.saveCourseInfo('PUBLISHED');
-      if (!detailSaved || !this.createdCourseId) {
-        this.showToast('Guarda la información básica antes de publicar.');
-        return;
+      if (!this.createdCourseId) {
+        const initialSaved = await this.saveCourseInfo();
+        if (!initialSaved) {
+          this.showToast('Guarda la información básica antes de publicar.');
+          return;
+        }
       }
       const modulesSaved = await this.saveModules();
       if (!modulesSaved) {
@@ -467,15 +461,8 @@ export class CreateCourse implements OnInit, OnDestroy {
       if (!lessonsSaved) {
         return;
       }
-      await this.publishCourseStatus(this.createdCourseId);
-      this.course.status = 'PUBLISHED';
-      if (this.savedCourseSnapshot) {
-        this.savedCourseSnapshot = {
-          ...this.savedCourseSnapshot,
-          status: 'PUBLISHED'
-        };
-      }
-      await this.refreshSavedSnapshot(this.createdCourseId);
+      const published = await this.saveCourseInfo('PUBLISHED');
+      if (!published) { return; }
       this.showToast('Curso guardado y publicado correctamente.');
       // Navegar directamente a detalle con prefill
       if (this.createdCourseId) {
@@ -493,58 +480,46 @@ export class CreateCourse implements OnInit, OnDestroy {
     }
   }
 
-  private async publishCourseStatus(courseId: string | number) {
-    const normalizedId = this.castBackendId(courseId) ?? courseId;
-    const url = `${environment.apiUrl}/api/v1/courses/course/publish/${normalizedId}`;
-    await this.authorizedPut(url, {});
-  }
-
-  async loadSavedCourses(targetCourseId?: string, autoSelect: boolean = false) {
+  async loadSavedCourses(targetCourseId?: string) {
     this.loadingSavedCourses = true;
-    const fallbackSnapshot = this.savedCourseSnapshot ? this.normalizeCourseSnapshot(this.savedCourseSnapshot) : null;
-    const fallbackId = fallbackSnapshot?.id ? String(fallbackSnapshot.id) : null;
     try {
       const ownerId = this.getCurrentUserId();
       if (!ownerId) {
-        this.resetSavedCourses(true);
+        this.resetSavedCourses();
         return;
       }
       const token = this.userSession.getToken();
       if (!token) {
         this.showToast('Inicia sesión para sincronizar tus cursos guardados.');
-        this.resetSavedCourses(true);
+        this.resetSavedCourses();
         return;
       }
       const role = (this.userSession.getRole(this.currentUser) || '').toUpperCase();
       if (!role.includes('CREATOR')) {
         this.showToast('Activa tu perfil de creador para gestionar cursos.');
+        this.resetSavedCourses();
+        return;
       }
-      const creatorUrl = `${environment.apiUrl}/api/v1/courses/all/creator/${ownerId}`;
-      const resp: any = await this.authorizedGet(creatorUrl);
+      // Request server-side filtering when available to avoid fetching unrelated courses.
+      const resp: any = await this.authorizedGet(
+        `${environment.apiUrl}/api/v1/courses/all`,
+        { creatorId: ownerId }
+      );
       const allCourses = Array.isArray(resp) ? resp : (resp?.data || []);
-      const ownedCourses = allCourses.filter((course: any) => this.belongsToCurrentUser(course, ownerId));
-      this.savedCourses = ownedCourses
-        .map((course: any) => this.normalizeCourseSnapshot(course))
-        .filter((course: any): course is any => !!course);
+      this.savedCourses = allCourses.filter((course: any) => this.belongsToCurrentUser(course, ownerId));
 
-      const autoTargetId = autoSelect ? (targetCourseId || this.createdCourseId || fallbackId) : undefined;
-      let hydratedCourse: any | null = null;
-      if (autoTargetId) {
-        const localMatch = this.savedCourses.find((c: any) => String(c.id) === String(autoTargetId));
-        hydratedCourse = await this.hydrateCourseSnapshot(autoTargetId, localMatch || fallbackSnapshot);
-      }
-
-      if (autoSelect && hydratedCourse) {
-        this.applySavedCourse(hydratedCourse, true);
+      const selectedId = targetCourseId || this.createdCourseId;
+      if (selectedId) {
+        const match = this.savedCourses.find((c: any) => String(c.id) === String(selectedId));
+        if (match) {
+          this.applySavedCourse(match, true);
+        } else {
+          this.savedCourseSnapshot = null;
+        }
       } else {
-        this.savedCourseSnapshot = hydratedCourse || fallbackSnapshot || this.savedCourseSnapshot || this.savedCourses[0] || null;
+        this.savedCourseSnapshot = null;
       }
-
-      const snapshotMatchesEditedCourse =
-        !!this.savedCourseSnapshot &&
-        !!this.createdCourseId &&
-        String(this.savedCourseSnapshot.id) === String(this.createdCourseId);
-      if (snapshotMatchesEditedCourse && this.savedCourseSnapshot.image) {
+      if (this.savedCourseSnapshot?.image) {
         this.previewImage = this.savedCourseSnapshot.image;
         this.uploadedImagePath = this.savedCourseSnapshot.image;
       }
@@ -552,14 +527,14 @@ export class CreateCourse implements OnInit, OnDestroy {
       if (this.isMissingAuthTokenError(err)) {
         this.showToast('Tu sesión expiró. Inicia sesión nuevamente.');
         this.redirectToLogin();
-        this.resetSavedCourses(true);
+        this.resetSavedCourses();
       } else if (this.isForbiddenError(err)) {
         this.showToast('Activa tu perfil de creador para gestionar cursos.');
-        this.resetSavedCourses(true);
+        this.resetSavedCourses();
       } else if (this.handleUnauthorizedResponse(err, 'Tu sesión no tiene permisos para cargar cursos guardados. Inicia sesión nuevamente.')) {
-        this.resetSavedCourses(true);
+        this.resetSavedCourses();
       } else if (this.isNoCoursesFoundError(err)) {
-        this.resetSavedCourses(true);
+        this.resetSavedCourses();
         this.showToast('Aún no tienes cursos guardados.');
       } else {
         console.error('loadSavedCourses error', err);
@@ -577,23 +552,18 @@ export class CreateCourse implements OnInit, OnDestroy {
   }
 
   private async refreshSavedSnapshot(targetCourseId?: string) {
-    await this.loadSavedCourses(targetCourseId, true);
+    await this.loadSavedCourses(targetCourseId);
   }
 
-  async selectSavedCourse(courseId: string) {
+  selectSavedCourse(courseId: string) {
     if (!courseId) { return; }
     const selected = this.savedCourses.find((c:any) => String(c.id) === String(courseId));
     if (!selected) { return; }
-    const ownsCourse = this.belongsToCurrentUser(selected);
-    if (!ownsCourse) {
-      console.warn('Intentando cargar curso sin coincidencia de propietario', { courseId, selected });
+    if (!this.belongsToCurrentUser(selected)) {
+      this.showToast('No tienes permiso para editar este curso.');
+      return;
     }
-    const hydrated = await this.hydrateCourseSnapshot(courseId, selected);
-    if (hydrated) {
-      this.applySavedCourse(hydrated, false);
-    } else {
-      this.applySavedCourse(selected, false);
-    }
+    this.applySavedCourse(selected, false);
   }
 
   // Navega a la vista de detalle pasando estado para render inmediato
@@ -629,72 +599,6 @@ export class CreateCourse implements OnInit, OnDestroy {
   savedLessonsCount(course: any): number {
     if (!course?.modules?.length) { return 0; }
     return course.modules.reduce((acc: number, module: any) => acc + (module.lessons?.length || 0), 0);
-  }
-
-  private async fetchCourseDetailSnapshot(courseId: string | number): Promise<any | null> {
-    if (!courseId) {
-      return null;
-    }
-    const normalizedId = this.castBackendId(courseId) ?? courseId;
-    const url = `${environment.apiUrl}/api/v1/courses/course/${normalizedId}`;
-    try {
-      const detail = await firstValueFrom(this.http.get<any>(url));
-      return detail ?? null;
-    } catch (err) {
-      console.warn('No se pudo obtener el detalle del curso', err);
-      return null;
-    }
-  }
-
-  private normalizeCourseSnapshot(raw: any): any {
-    if (!raw) {
-      return null;
-    }
-    const normalizedLevel = (raw.level || 'BEGINNER').toString().toUpperCase();
-    const normalizedStatus = (raw.status || (raw.publicationDate ? 'PUBLISHED' : 'DRAFT')).toString().toUpperCase();
-    const modules = Array.isArray(raw.modules) ? raw.modules : [];
-    return {
-      id: raw.id ?? raw._id ?? raw.courseId ?? raw.uuid,
-      creatorId: raw.creatorId ?? raw.creator?.id ?? raw.creator?.userId ?? raw.userId ?? raw.creator?.user?.id,
-      title: raw.title ?? raw.name ?? 'Curso sin título',
-      description: raw.description ?? raw.summary ?? '',
-      image: raw.image ?? raw.coverImage ?? raw.thumbnail ?? null,
-      level: (['BEGINNER','INTERMEDIATE','ADVANCED','EXPERT'].includes(normalizedLevel) ? normalizedLevel : 'BEGINNER') as Level,
-      price: Number(raw.price ?? 0),
-      discountPrice: raw.discountPrice !== undefined && raw.discountPrice !== null ? Number(raw.discountPrice) : 0,
-      language: (raw.language || 'es').toString(),
-      status: (['PUBLISHED','IN_REVIEW','SUSPENDED','ARCHIVED','DRAFT'].includes(normalizedStatus) ? normalizedStatus : 'DRAFT') as CourseStatus,
-      tags: Array.isArray(raw.tags) ? raw.tags : [],
-      modules: modules.map((module: any, index: number) => ({
-        id: module.id ?? module.moduleId ?? `module-${index + 1}`,
-        title: module.title ?? `Módulo ${index + 1}`,
-        description: module.description ?? '',
-        estimatedDuration: Number(module.estimatedDuration ?? module.totalDuration ?? 0),
-        locked: !!module.locked,
-        lessons: Array.isArray(module.lessons)
-          ? module.lessons.map((lesson: any, idx: number) => ({
-              id: lesson.id ?? lesson.lessonId ?? `lesson-${index + 1}-${idx + 1}`,
-              title: lesson.title ?? `Lección ${idx + 1}`,
-              description: lesson.description ?? '',
-              duration: Number(lesson.duration ?? 0),
-              contentType: lesson.contentType ?? 'VIDEO',
-              contentUrl: lesson.contentUrl ?? '',
-              isFree: lesson.isFree ?? true
-            }))
-          : []
-      }))
-    };
-  }
-
-  private async hydrateCourseSnapshot(courseId: string | number, fallback?: any): Promise<any | null> {
-    const detail = await this.fetchCourseDetailSnapshot(courseId);
-    if (detail) {
-      return this.normalizeCourseSnapshot(detail);
-    }
-    if (fallback) {
-      return this.normalizeCourseSnapshot(fallback);
-    }
-    return null;
   }
 
   private async ensureImageIsStored(): Promise<string | undefined> {
@@ -738,14 +642,12 @@ export class CreateCourse implements OnInit, OnDestroy {
     this.course.creatorId = resolvedId ?? undefined;
   }
 
-  private resetSavedCourses(preserveLocal = false) {
+  private resetSavedCourses() {
     this.savedCourses = [];
-    if (!preserveLocal) {
-      this.savedCourseSnapshot = null;
-      this.createdCourseId = null;
-      this.previewImage = null;
-      this.uploadedImagePath = null;
-    }
+    this.savedCourseSnapshot = null;
+    this.createdCourseId = null;
+    this.previewImage = null;
+    this.uploadedImagePath = null;
   }
 
   private getCurrentUserId(): string | null {
@@ -754,79 +656,20 @@ export class CreateCourse implements OnInit, OnDestroy {
 
   private belongsToCurrentUser(course: any, providedOwnerId?: string | null): boolean {
     const resolvedOwnerId = (providedOwnerId ?? this.getCurrentUserId())?.trim();
-    const ownerMatches = this.compareIds(resolvedOwnerId, course);
-    if (ownerMatches) {
-      return true;
-    }
-    return this.matchCreatorIdentity(course?.creator);
-  }
-
-  private compareIds(resolvedOwnerId: string | null | undefined, course: any): boolean {
     if (!resolvedOwnerId) {
       return false;
     }
-    const normalizedOwner = String(resolvedOwnerId).trim();
-    if (!normalizedOwner) {
+    const courseOwner =
+      course?.creatorId ??
+      course?.creator?.id ??
+      course?.creator?.userId ??
+      course?.userId ??
+      course?.user?.id;
+    if (courseOwner === undefined || courseOwner === null) {
       return false;
     }
-    const candidateIds = [
-      course?.creatorId,
-      course?.creator?.id,
-      course?.creator?.userId,
-      course?.creator?.user?.id,
-      course?.creator?.user?.userId,
-      course?.userId,
-      course?.user?.id
-    ];
-    return candidateIds.some((candidate) => {
-      if (candidate === undefined || candidate === null) {
-        return false;
-      }
-      const normalizedCandidate = String(candidate).trim();
-      return normalizedCandidate ? normalizedCandidate === normalizedOwner : false;
-    });
-  }
-
-  private matchCreatorIdentity(creator: any): boolean {
-    if (!creator || !this.currentUser) {
-      return false;
-    }
-    const candidateValues = [
-      creator?.username,
-      creator?.email,
-      creator?.fullName,
-      creator?.name,
-      creator?.user?.username,
-      creator?.user?.email,
-      creator?.user?.fullName,
-      creator?.user?.name
-    ].map((value) => this.normalizeIdentity(value))
-    .filter((value): value is string => !!value);
-
-    if (!candidateValues.length) {
-      return false;
-    }
-
-    const userValues = [
-      this.currentUser?.username,
-      this.currentUser?.email,
-      this.currentUser?.name
-    ].map((value) => this.normalizeIdentity(value))
-    .filter((value): value is string => !!value);
-
-    if (!userValues.length) {
-      return false;
-    }
-
-    return candidateValues.some((candidate) => userValues.includes(candidate));
-  }
-
-  private normalizeIdentity(value: any): string | null {
-    if (value === undefined || value === null) {
-      return null;
-    }
-    const normalized = String(value).trim().toLowerCase();
-    return normalized || null;
+    const normalizedCourseOwner = String(courseOwner).trim();
+    return normalizedCourseOwner ? normalizedCourseOwner === resolvedOwnerId : false;
   }
 
   private resolveProfileId(profile?: UserProfile | null): string | null {
@@ -889,15 +732,6 @@ export class CreateCourse implements OnInit, OnDestroy {
     return firstValueFrom(this.http.post<T>(url, body, options));
   }
 
-  private async authorizedPut<T>(url: string, body: any = {}, params?: Record<string, any>): Promise<T> {
-    const headers = this.requireAuthHeaders();
-    const options: { headers: HttpHeaders; params?: Record<string, any> } = { headers };
-    if (params) {
-      options.params = params;
-    }
-    return firstValueFrom(this.http.put<T>(url, body ?? {}, options));
-  }
-
   private requireAuthHeaders(): HttpHeaders {
     const token = this.userSession.getToken();
     if (!token) {
@@ -937,14 +771,11 @@ export class CreateCourse implements OnInit, OnDestroy {
 
   private isNoCoursesFoundError(err: any): boolean {
     const status = err?.status ?? err?.error?.status;
-    // El backend actualmente puede responder 400, 404 o incluso 500 con mensaje 'No courses found.'
-    // cuando simplemente no existen cursos para el creador. Lo tratamos como caso NO-FATAL.
+    if (status !== 400) {
+      return false;
+    }
     const message = (err?.error?.message || err?.message || '').toString().toLowerCase();
-    if (!message) { return false; }
-    const hasNoCoursesPhrase = message.includes('no courses');
-    if (!hasNoCoursesPhrase) { return false; }
-    // Aceptar varios códigos incorrectamente usados por el backend para este escenario.
-    return status === 400 || status === 404 || status === 500;
+    return message.includes('no courses');
   }
 
   private isAuthenticationRequiredError(err: any): boolean {
@@ -956,56 +787,6 @@ export class CreateCourse implements OnInit, OnDestroy {
     }
     const message = (err?.error?.message || err?.message || '').toString().toLowerCase();
     return message.includes('full authentication is required');
-  }
-
-  private buildSavedCourseSnapshot(response: any, payload: CreateCourseDto, newCourseId: string) {
-    const raw = (response?.data ?? response) || {};
-    const computedId = raw.id ?? newCourseId ?? payload.id;
-    const creatorRef =
-      raw.creatorId ?? raw.creator?.id ?? payload.creatorId ?? this.getCurrentUserId();
-    return {
-      id: computedId ? String(computedId) : undefined,
-      creatorId: creatorRef ? String(creatorRef) : undefined,
-      title: raw.title ?? payload.title,
-      description: raw.description ?? payload.description,
-      image: raw.image ?? payload.image ?? undefined,
-      level: raw.level ?? payload.level,
-      price: Number(raw.price ?? payload.price ?? 0),
-      discountPrice: Number(raw.discountPrice ?? payload.discountPrice ?? 0),
-      language: raw.language ?? payload.language,
-      status: raw.status ?? payload.status ?? 'GUARDADO',
-      tags: raw.tags ?? payload.tags ?? [],
-      modules: raw.modules ?? []
-    };
-  }
-
-  private upsertSavedCourses(course: any) {
-    if (!course?.id) {
-      return;
-    }
-    const existingIdx = this.savedCourses.findIndex((c: any) => String(c.id) === String(course.id));
-    if (existingIdx >= 0) {
-      this.savedCourses[existingIdx] = { ...this.savedCourses[existingIdx], ...course };
-    } else {
-      this.savedCourses = [course, ...this.savedCourses];
-    }
-  }
-
-  statusLabel(status?: string | null): string {
-    const normalized = (status || '').toString().toUpperCase();
-    switch (normalized) {
-      case 'PUBLISHED':
-        return 'Publicado';
-      case 'IN_REVIEW':
-        return 'En revisión';
-      case 'SUSPENDED':
-        return 'Suspendido';
-      case 'ARCHIVED':
-        return 'Archivado';
-      case 'DRAFT':
-      default:
-        return 'Guardado';
-    }
   }
   private applySavedCourse(saved: any, silent: boolean) {
     this.createdCourseId = String(saved.id);

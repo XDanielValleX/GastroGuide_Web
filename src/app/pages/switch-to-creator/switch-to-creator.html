@@ -1,0 +1,36 @@
+<div class="switch-wrapper">
+    <div class="session">
+
+        <!-- LEFT: SVG funcionando como botón -->
+        <div class="left switch-to-creator-btn" (click)="goToHome()">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                    d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm7 3c-2.828 0-5 2.172-5 5s2.172 5 5 5 5-2.172 5-5-2.172-5-5-5zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm7.5-3.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+            </svg>
+        </div>
+
+        <!-- FORMULARIO -->
+        <form (ngSubmit)="promote(promoteForm)" #promoteForm="ngForm">
+            <h4>Promover a <span>Creator</span></h4>
+            <p>Ingresa el correo del usuario que deseas ascender a creador. Se actualizará su rol inmediatamente.</p>
+
+            <div class="floating-label">
+                <input id="creator-email" name="creatorEmail" type="text" [(ngModel)]="email"
+                    placeholder="correo@ejemplo.com" required autocomplete="email" inputmode="email"
+                    pattern="^[A-Za-z0-9._%+-ñÑ]+@[A-Za-z0-9.-ñÑ]+\.[A-Za-z]{2,}$" />
+                <label for="creator-email">Correo del usuario</label>
+
+                <span class="icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                            d="M12 13 2 6.76V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6.76L12 13zm0-2.47L21.5 5h-19L12 10.53z" />
+                    </svg>
+                </span>
+            </div>
+
+            <button type="submit">Promover usuario</button>
+            <p class="message">{{ message }}</p>
+        </form>
+
+    </div>
+</div>

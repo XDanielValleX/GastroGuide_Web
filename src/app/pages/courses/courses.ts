@@ -34,7 +34,6 @@ interface Course {
   publishedAt?: string | null;
   modules?: ModuleItem[];
   isPublished?: boolean; // flag derivado para filtrar estudiantes
-  status?: string | null;
 }
 
 @Component({
@@ -58,14 +57,12 @@ export class Courses {
   previewCourse: Course | null = null;
 
   private currentRole: string | null = null;
-  isStudentView = false;
 
   constructor(private http: HttpClient, private router: Router, private userSession: UserSessionService) {}
 
   ngOnInit() {
     // Obtener rol normalizado (ej: STUDENT)
-    this.currentRole = (this.userSession.getRole() || '').toUpperCase();
-    this.isStudentView = this.currentRole === 'STUDENT';
+    this.currentRole = this.userSession.getRole();
     this.fetchCourses();
   }
 
@@ -78,15 +75,10 @@ export class Courses {
     price: 49.99,
     discountPrice: 19.99,
     language: 'ES',
-    publishedAt: new Date().toISOString(),
-    isPublished: true,
-    status: 'PUBLISHED'
+    publishedAt: new Date().toISOString()
   };
 
   addSampleCourse(force: boolean = false) {
-    if (this.isStudentView) {
-      return; // evitar cursos artificiales en vista estudiante
-    }
     const exists = this.courses.some(c => String(c.id) === String(this.SAMPLE_COURSE.id));
     if (exists && !force) {
       return; // evitar duplicados
@@ -100,13 +92,10 @@ export class Courses {
     this.applyFilters();
   }
 
-  fetchCourses(useAllForStudent: boolean = false) {
+  fetchCourses() {
     this.loading = true;
     this.error = null;
-    const isStudentFetch = this.isStudentView && !useAllForStudent;
-    const url = isStudentFetch
-      ? `${environment.apiUrl}/api/v1/courses/all/published`
-      : `${environment.apiUrl}/api/v1/courses/all`;
+    const url = `${environment.apiUrl}/api/v1/courses/all`;
     this.http.get<any>(url).subscribe({
       next: (resp) => {
         // accept different shapes: resp.data || resp.courses || resp
@@ -120,20 +109,15 @@ export class Courses {
           }
 
           // Determinar si el curso está publicado (considerar varias posibles propiedades del backend)
-          const normalizedStatus = (c.status || c.state || c.estado || '').toString().toUpperCase();
           const isPublished = !!(
             c.isPublished === true ||
             c.published === true ||
             c.status === 'PUBLISHED' ||
             c.state === 'PUBLISHED' ||
-            normalizedStatus === 'PUBLICADO' ||
-            normalizedStatus === 'PUBLICA' ||
-            normalizedStatus === 'PUBLIC' ||
             c.visibility === 'PUBLIC' ||
             c.publicationDate ||
             c.publishedAt
           );
-          const finalPublished = isStudentFetch ? true : isPublished;
 
           return {
             id: c.id ?? c._id ?? c.courseId,
@@ -160,25 +144,20 @@ export class Courses {
                     : []
                 }))
               : [],
-              isPublished: finalPublished,
-              status: c.status || (finalPublished ? 'PUBLISHED' : 'DRAFT')
+            isPublished
           };
         }) : [];
 
         this.applyFilters();
-        // Inyectar curso de prueba sólo para creadores/admin
+        // Inyectar curso de prueba si no viene del backend
         this.addSampleCourse(false);
         this.loading = false;
       },
       error: (err) => {
-        if (this.isStudentView && !useAllForStudent) {
-          // Como respaldo intenta traer lista general y filtrar manualmente
-          this.fetchCourses(true);
-          return;
-        }
         console.error('Error loading courses', err);
         this.error = err?.error?.message || err?.message || 'Error cargando cursos';
         this.loading = false;
+        // Incluso en error, permitir ver el curso de prueba
         this.addSampleCourse(false);
       }
     });
@@ -212,9 +191,9 @@ export class Courses {
           });
     }
 
-    // Si el usuario es STUDENT, aseguramos que sólo vea publicados (la API ya filtra, esto es de respaldo)
-    if (this.isStudentView) {
-      list = list.filter(c => c.isPublished !== false);
+    // Si el usuario es STUDENT, mostrar sólo cursos publicados
+    if (this.currentRole === 'STUDENT') {
+      list = list.filter(c => c.isPublished);
     }
 
     this.filteredCourses = list;

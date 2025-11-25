@@ -1,72 +1,27 @@
 /* Estilos para la selección de rol */
 .role-select {
     display: flex;
+    gap: 1rem;
     align-items: center;
-    gap: 0.5rem;
     margin-bottom: 1.5rem;
-    padding: 0.4rem 0.9rem 0.4rem 0.75rem;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.65);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-    width: fit-content;
-    max-width: 100%;
-    box-sizing: border-box;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
 }
 .role-select label {
-    font-weight: 600;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-    color: rgba(0, 0, 0, 0.65);
-    margin: 0 0.35rem 0 0;
-    flex: 0 0 auto;
+    font-weight: 500;
+    margin-right: 0.5rem;
 }
 .role-select button {
-    padding: 0.28rem 0.9rem;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: rgba(0, 0, 0, 0.6);
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
     cursor: pointer;
-    font-weight: 600;
-    font-size: 0.74rem;
-    letter-spacing: 0.01em;
-    transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
-    min-width: 4.2rem;
-    flex: 0 1 auto;
-}
-.role-select button:last-child {
-    margin-right: 0.1rem;
-}
-
-@media (max-width: 480px) {
-    .role-select {
-        width: 100%;
-        justify-content: space-between;
-        flex-wrap: wrap;
-    }
-
-    .role-select button {
-        flex: 1 1 calc(50% - 0.5rem);
-        min-width: 5.2rem;
-    }
-}
-.role-select button:hover {
-    color: #EF6C00;
-    border-color: rgba(239, 108, 0, 0.35);
-}
-.role-select button:focus-visible {
-    outline: none;
-    border-color: rgba(239, 108, 0, 0.55);
-    box-shadow: 0 0 0 3px rgba(239, 108, 0, 0.15);
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s, border 0.2s;
 }
 .role-select button.selected {
-    background: linear-gradient(120deg, #FFB74D, #EF6C00);
+    background: #2e7d32;
     color: #fff;
-    box-shadow: 0 8px 16px rgba(239, 108, 0, 0.35);
+    border: 1px solid #2e7d32;
 }
 :host {
     display: flex;
@@ -103,8 +58,8 @@ label {
     /* efecto cristal */
     border-radius: 16px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.25);
 }
 

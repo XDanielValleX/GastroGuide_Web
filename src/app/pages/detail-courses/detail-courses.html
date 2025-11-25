@@ -5,8 +5,7 @@
     <p class="subtitle">{{ course.description || 'Descripción no disponible.' }}</p>
     <p class="instructor">Por {{ course.instructor }}</p>
     <div class="meta-row">
-      <div class="meta-item" title="Última actualización"><span class="icon">🕒</span> Última actualización: {{
-        formatDate(course.publishedAt) || '—' }}</div>
+      <div class="meta-item" title="Última actualización"><span class="icon">🕒</span> Última actualización: {{ formatDate(course.publishedAt) || '—' }}</div>
       <div class="meta-item" title="Idioma"><span class="icon">🌐</span> {{ course.language || 'ES' }}</div>
     </div>
   </header>
@@ -41,31 +40,34 @@
     <!-- Purchase / side column -->
     <aside class="purchase">
       <div class="video-preview" *ngIf="getFirstVideo(); else showImage">
-        <iframe width="100%" height="240" [src]="getSafeVideo(getFirstVideo()!)" frameborder="0" allowfullscreen>
+        <iframe
+          width="100%"
+          height="240"
+          [src]="getSafeVideo(getFirstVideo()!)"
+          frameborder="0"
+          allowfullscreen>
         </iframe>
       </div>
 
       <ng-template #showImage>
         <div class="video-preview">
-          <img class="preview-img" [src]="course.coverImage || '/assets/images/placeholder-course.png'"
-            (error)="onImgError($event)">
+          <img class="preview-img"
+               [src]="course.coverImage || '/assets/images/placeholder-course.png'"
+               (error)="onImgError($event)">
         </div>
       </ng-template>
       <div class="price-block" *ngIf="course">
         <div class="price-row">
-          <span class="current">{{ course.discountPrice != null ? ('$'+course.discountPrice) : ('$'+course.price)
-            }}</span>
+          <span class="current">{{ course.discountPrice != null ? ('$'+course.discountPrice) : ('$'+course.price) }}</span>
           <span class="old" *ngIf="course.discountPrice != null">{{ '$'+course.price }}</span>
         </div>
-        <div class="discount" *ngIf="course.discountPrice != null">{{ (((course.price || 0) - (course.discountPrice ||
-          0)) / (course.price || 1) * 100) | number:'1.0-0' }} % de descuento</div>
+        <div class="discount" *ngIf="course.discountPrice != null">{{ (((course.price || 0) - (course.discountPrice || 0)) / (course.price || 1) * 100) | number:'1.0-0' }} % de descuento</div>
       </div>
       <div class="purchase-actions">
         <button class="btn primary">Añadir a la cesta</button>
         <button class="btn secondary"
           [routerLink]="currentInHome2() ? ['/home2/payment', course.id] : ['/payment', course.id]"
-          [state]="{ title: course.title, price: course.price, discountPrice: course.discountPrice }">Comprar
-          ahora</button>
+          [state]="{ title: course.title, price: course.price, discountPrice: course.discountPrice }">Comprar ahora</button>
       </div>
       <div class="plan-card premium side">
         <div class="plan-icon">⚙️</div>
@@ -79,8 +81,5 @@
   </div>
 </div>
 <ng-template #detailLoading>
-  <div class="course-detail">
-    <p *ngIf="loading">Cargando curso...</p>
-    <p *ngIf="error">{{ error }}</p>
-  </div>
+  <div class="course-detail"><p *ngIf="loading">Cargando curso...</p><p *ngIf="error">{{ error }}</p></div>
 </ng-template>
